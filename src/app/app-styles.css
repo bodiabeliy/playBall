@@ -89,6 +89,10 @@ a {
   scrollbar-color: #bcbbbf transparent;
 }
 
+.MuiOutlinedInput-input {
+  padding: 8px !important;
+}
+
 @media (max-width: 768px) {
   html,
   body {

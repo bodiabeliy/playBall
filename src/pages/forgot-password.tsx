@@ -1,10 +1,8 @@
 import { Typography, Button, TextField, Box, useMediaQuery, useTheme, InputAdornment } from '@mui/material'
 import loginBg from '../shared/assets/images/login-bg.png'
 import LogoIcon from '../shared/assets/icons/logo.svg?react'
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
 
-import { getSignUpRoute } from '../shared/types/routes'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useFormValidation } from '../shared/hooks/use-form-field'
 import type { IUserDto } from '../app/providers/types'
 import { CONFIRMATION_TYPES } from '../app/services/api/constants'
@@ -19,7 +17,7 @@ export function ForgotPasswordPage() {
     password: '',
   })
 
-  const { formData, handleFieldChange, isReadyForSubmit, errors } = useFormValidation<IUserDto>(
+  const { formData, handleFieldChange } = useFormValidation<IUserDto>(
     {
       email: '',
     },
@@ -51,11 +49,10 @@ export function ForgotPasswordPage() {
           height: '66px',
           justifySelf: 'flex-start',
         }}>
-        <LogoIcon />
       </Box>
       <Box
         sx={{
-          maxWidth: 600,
+           maxWidth: 400,
           width: '100%',
           mx: 'auto',
           my: isMobile ? 0 : 'auto',
@@ -68,27 +65,28 @@ export function ForgotPasswordPage() {
           flexDirection: 'column',
           alignItems: 'stretch',
         }}>
-        <Typography variant="h5" color="rgba(21, 22, 24, 0.87)">
-          Відновлення пароля
-        </Typography>
-        <Typography variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Будь ласка, введіть свою електронну пошту, і ми надішлемо інструкції для відновлення пароля
+          <Box sx={{mx:"auto"}}>
+             <LogoIcon />
+          </Box>
+        <Typography sx={{textAlign:"center",width:"270px", mx:"auto"}} variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Enter the email address associated with your account and we’ll send you a link to reset your password.
         </Typography>
         <form style={{ width: '100%', marginTop: '16px' }}>
           <TextField
-            label="Електронна пошта"
+            // label="Електронна пошта"
             variant="outlined"
+            placeholder='Email'
             fullWidth
             onChange={(event) => handleFieldChange('email', event.target.value)}
-            error={!!errors.email}
-            helperText={errors.email}
+            // error={!!errors.email}
+            // helperText={errors.email}
             sx={{
               mb: 4,
             }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  {errors.email ? <ErrorOutlineOutlinedIcon sx={{ color: '#D32F2F' }} /> : ''}
+                  {/* {errors.email ? <ErrorOutlineOutlinedIcon sx={{ color: '#D32F2F' }} /> : ''} */}
                 </InputAdornment>
               ),
             }}
@@ -98,30 +96,17 @@ export function ForgotPasswordPage() {
             variant="contained"
             color="primary"
             fullWidth
-            disabled={!isReadyForSubmit}
             sx={{
               mb: 2,
+              bgcolor:"#034C53",
               padding: '12px 22px',
               boxShadow:
                 '0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12)',
               textTransform: 'uppercase',
             }}>
-            Відновити пароль
+            Send reset link
           </Button>
         </form>
-        <Typography variant="body1" align="left" sx={{ mt: 1, color: 'rgba(21, 22, 24, 0.6)' }}>
-          Ще не маєте акаунта?
-          <Link
-            to={getSignUpRoute()}
-            style={{
-              color: '#0029d9',
-              textDecoration: 'underline',
-              textDecorationColor: '#99a9f0',
-              marginLeft: '4px',
-            }}>
-            Зареєструватися
-          </Link>
-        </Typography>
       </Box>
     </Box>
   )

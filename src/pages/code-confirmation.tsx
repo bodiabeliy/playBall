@@ -1,6 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router'
 import type { IUserEmailCode } from '../app/providers/types/index'
-import { getLoginRoute } from '../shared/types/routes'
 
 import { useAppDispatch, useAppSelector } from '../app/providers/store-helpers'
 
@@ -100,11 +99,10 @@ export function CodeConfirmationPage() {
           height: '66px',
           justifySelf: 'flex-start',
         }}>
-        <LogoIcon />
       </Box>
       <Box
         sx={{
-          maxWidth: 600,
+           maxWidth: 400,
           width: '100%',
           mx: 'auto',
           my: isMobile ? 0 : 'auto',
@@ -117,19 +115,17 @@ export function CodeConfirmationPage() {
           flexDirection: 'column',
           alignItems: 'stretch',
         }}>
-        <Typography variant="h5" color="rgba(21, 22, 24, 0.87)">
-          Підтвердження електронної пошти
-        </Typography>
-        <Typography variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Введіть код, який ми надіслали на вашу електронну пошту
-          {confirmationType_ == CONFIRMATION_TYPES.resetPassword
-            ? ' для відновлення паролю'
-            : ' для підтвердження реєстрації'}
+          <Box sx={{mx:"auto"}}>
+            <LogoIcon />
+          </Box>
+        <Typography sx={{textAlign:"center", width:"315px", mx:"auto"}} variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+         We’ve sent a password reset link to your email. Please check your inbox and follow the instructions to create a new password
         </Typography>
         <form style={{ width: '100%', marginTop: '16px' }}>
           <TextField
             sx={{ mb: 2 }}
-            label="Введіть код"
+            // label="Введіть код"
+            placeholder='Enter code'
             variant="outlined"
             fullWidth
             value={formData.code}
@@ -145,17 +141,7 @@ export function CodeConfirmationPage() {
             }}
           />
 
-          <Link
-            to={'/code-confirmation'}
-            onClick={() => sendConfirmationRequest()}
-            style={{
-              color: '#0029d9',
-              textDecoration: 'underline',
-              textDecorationColor: '#99a9f0',
-              marginLeft: '4px',
-            }}>
-            Не отримали код підтвердження?
-          </Link>
+        
 
           <Button
             variant="contained"
@@ -163,17 +149,34 @@ export function CodeConfirmationPage() {
             fullWidth
             sx={{
               mb: 2,
-              mt: 5,
+              mt: 4,
+              bgcolor:"#034C53",
               padding: '12px 22px',
               boxShadow:
                 '0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12)',
               textTransform: 'uppercase',
             }}
             onClick={() => submitForm()}>
-            {confirmationType_ == CONFIRMATION_TYPES.resetPassword ? 'ВІДНОВИТИ' : 'ЗАРЕЄСТРУВАТИСЯ'}
+            Okay
           </Button>
+         <Box sx={{display:"flex", justifyContent:"center"}}>
+           <Typography variant="body1">
+           No email?
+          </Typography>
+            <Link
+            to={'/code-confirmation'}
+            onClick={() => sendConfirmationRequest()}
+            style={{
+              color: '#034C53',
+              textDecoration: 'underline',
+              textDecorationColor: '#034C53',
+              marginLeft: '4px',
+            }}>
+             Click here to resend?
+          </Link>
+         </Box>
         </form>
-        <Typography variant="body2" align="left" sx={{ mt: 1, color: 'rgba(21, 22, 24, 0.6)' }}>
+        {/* <Typography variant="body2" align="left" sx={{ mt: 1, color: 'rgba(21, 22, 24, 0.6)' }}>
           Вже маєте акаунт?{' '}
           <Link
             to={getLoginRoute()}
@@ -185,7 +188,7 @@ export function CodeConfirmationPage() {
             }}>
             Увійти
           </Link>
-        </Typography>
+        </Typography> */}
       </Box>
       <ToastContainer
         position="top-right"

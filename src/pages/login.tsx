@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router'
 import { Typography, Button, InputAdornment, TextField, Box, useTheme, IconButton } from '@mui/material'
 import loginBg from '../shared/assets/images/login-bg.png'
 import LogoIcon from '../shared/assets/icons/logo.svg?react'
-import { getForgotPasswordRoute, getSignUpRoute } from '../shared/types/routes'
+import ForgotPassword from '../shared/assets/icons/forgot-password.svg?react'
+import { getForgotPasswordRoute } from '../shared/types/routes'
 import { useMediaQuery } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../app/providers/store-helpers'
 import { useFormValidation } from '../shared/hooks/use-form-field'
 import type { IUserDto } from '../app/providers/types'
 import { useEffect, useState } from 'react'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { Visibility } from '@mui/icons-material'
 import { login } from '../app/services/UserService'
 import { toast, ToastContainer } from 'react-toastify'
 import { notificationMessageSelector, isErrorSelector } from '../app/providers/reducers/UserSlice'
@@ -97,11 +98,10 @@ export function LoginPage() {
           height: '66px',
           justifySelf: 'flex-start',
         }}>
-        <LogoIcon />
       </Box>
       <Box
         sx={{
-          maxWidth: 600,
+          maxWidth: 400,
           width: '100%',
           mx: 'auto',
           my: isMobile ? 0 : 'auto',
@@ -114,19 +114,23 @@ export function LoginPage() {
           flexDirection: 'column',
           alignItems: 'stretch',
         }}>
-        <Typography variant="h5" color="rgba(21, 22, 24, 0.87)">
-          Вхід
-        </Typography>
-        <Typography variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Будь ласка, введіть свою електронну пошту, щоб увійти
+          <Box sx={{mx:"auto"}}>
+             <LogoIcon />
+          </Box>
+        
+       
+        <Typography sx={{textAlign:"center",width:"250px", mx:"auto"}} variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Log in to manage your bookings, players, and club activity.
         </Typography>
         <form style={{ width: '100%', marginTop: '16px' }}>
           <TextField
-            label="Електронна пошта"
+            // label="Електронна пошта"
             variant="outlined"
             fullWidth
+            placeholder='Email'
             sx={{
               mb: 4,
+             
             }}
             value={formData?.email}
             onChange={(event) => handleFieldChange('email', event.target.value)}
@@ -134,9 +138,10 @@ export function LoginPage() {
             helperText={isValidated && errors.email}
           />
           <TextField
-            label="Введіть пароль"
+            // label="Введіть пароль"
             variant="outlined"
             fullWidth
+            placeholder='Password'
             value={formData.password}
             onChange={(event) => handleFieldChange('password', event.target.value)}
             error={isValidated && !!errors.password}
@@ -151,7 +156,7 @@ export function LoginPage() {
                     onMouseDown={handleMouseDownPassword}
                     onMouseUp={handleMouseUpPassword}
                     edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <ForgotPassword /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -159,14 +164,13 @@ export function LoginPage() {
           />
           <Link
             style={{
-              color: '#0029d9',
               marginTop: '16px',
               display: 'block',
-              textDecoration: 'underline',
-              textDecorationColor: '#99a9f0',
+              textAlign:"right",
+              color:"rgba(21, 22, 24, 0.6)",
             }}
             to={getForgotPasswordRoute()}>
-            Забули пароль?
+            Forgot password?
           </Link>
           <Button
             variant="contained"
@@ -176,27 +180,15 @@ export function LoginPage() {
             sx={{
               mb: 2,
               mt: 4,
+              bgcolor:"#034C53",
               padding: '12px 22px',
               boxShadow:
                 '0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12)',
               textTransform: 'uppercase',
             }}>
-            Увійти
+            Log in
           </Button>
         </form>
-        <Typography variant="body2" align="left" sx={{ mt: 1, color: 'rgba(21, 22, 24, 0.6)' }}>
-          Ще не маєте акаунта?
-          <Link
-            to={getSignUpRoute()}
-            style={{
-              color: '#0029d9',
-              textDecoration: 'underline',
-              textDecorationColor: '#99a9f0',
-              marginLeft: '4px',
-            }}>
-            Зареєструватися
-          </Link>
-        </Typography>
       </Box>
       <ToastContainer
         position="top-right"

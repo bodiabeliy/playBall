@@ -130,11 +130,10 @@ export function SignUpPage() {
           height: '66px',
           justifySelf: 'flex-start',
         }}>
-        <LogoIcon />
       </Box>
       <Box
         sx={{
-          maxWidth: 600,
+           maxWidth: 400,
           width: '100%',
           mx: 'auto',
           my: isMobile ? 0 : 'auto',
@@ -150,7 +149,7 @@ export function SignUpPage() {
         <Typography variant="h5" color="rgba(21, 22, 24, 0.87)">
           Реєстрація
         </Typography>
-        <Typography variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+        <Typography sx={{textAlign:"center",width:"250px", mx:"auto"}} variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
           Введіть свої дані щоб розпочати роботу
         </Typography>
         <form style={{ width: '100%', marginTop: '16px' }}>

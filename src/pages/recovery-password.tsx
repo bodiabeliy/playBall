@@ -1,15 +1,19 @@
-import { Link, useLocation, useNavigate } from 'react-router'
 
-import { Typography, Button, InputAdornment, TextField, Box, useTheme, IconButton } from '@mui/material'
-import loginBg from '../shared/assets/images/login-bg.png'
-import LogoIcon from '../shared/assets/icons/logo.svg?react'
-import { getSignUpRoute } from '../shared/types/routes'
+import { useState } from 'react'
+
+import { useLocation, useNavigate } from 'react-router'
 import { useMediaQuery } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../app/providers/store-helpers'
 import { useFormValidation } from '../shared/hooks/use-form-field'
 import type { IUserRecoveryPassword } from '../app/providers/types'
-import { useState } from 'react'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+
+import { Typography, Button, InputAdornment, TextField, Box, useTheme, IconButton } from '@mui/material'
+import loginBg from '../shared/assets/images/login-bg.png'
+import LogoIcon from '../shared/assets/icons/logo.svg?react'
+import ForgotPassword from '../shared/assets/icons/forgot-password.svg?react'
+
+
+import { Visibility } from '@mui/icons-material'
 import { resetPassword } from '../app/services/UserService'
 import { toast, ToastContainer } from 'react-toastify'
 import { notificationMessageSelector } from '../app/providers/reducers/UserSlice'
@@ -91,11 +95,10 @@ export function RecoveryPasswordPage() {
           height: '66px',
           justifySelf: 'flex-start',
         }}>
-        <LogoIcon />
       </Box>
       <Box
         sx={{
-          maxWidth: 600,
+           maxWidth: 400,
           width: '100%',
           mx: 'auto',
           my: isMobile ? 0 : 'auto',
@@ -108,16 +111,17 @@ export function RecoveryPasswordPage() {
           flexDirection: 'column',
           alignItems: 'stretch',
         }}>
-        <Typography variant="h5" color="rgba(21, 22, 24, 0.87)">
-          Створіть новий пароль
-        </Typography>
-        <Typography variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Будь ласка, введіть новий пароль для вашого облікового запису
+        <Box sx={{mx:"auto"}}>
+             <LogoIcon />
+          </Box>
+        <Typography sx={{textAlign:"center",width:"250px", mx:"auto"}} variant="body1" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Your password must be at least 8 characters long and include a number or symbol
         </Typography>
         <form style={{ width: '100%', marginTop: '16px' }}>
           <TextField
-            label="Введіть пароль"
+            // label="Введіть пароль"
             variant="outlined"
+            placeholder='New Password'
             fullWidth
             value={formData.password}
             onChange={(event) => handleFieldChange('password', event.target.value)}
@@ -131,7 +135,7 @@ export function RecoveryPasswordPage() {
                     onMouseDown={handleMouseDownPassword}
                     onMouseUp={handleMouseUpPassword}
                     edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <ForgotPassword /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -139,9 +143,10 @@ export function RecoveryPasswordPage() {
           />
           <TextField
             sx={{ mt: 2 }}
-            label="Введіть пароль повторно"
+            // label="Введіть пароль повторно"
             variant="outlined"
             fullWidth
+            placeholder='Confirm Password'
             value={formData.recoveryPassword}
             onChange={(event) => handleFieldChange('recoveryPassword', event.target.value)}
             type={showRecoveryPassword ? 'text' : 'password'}
@@ -156,7 +161,7 @@ export function RecoveryPasswordPage() {
                     onMouseDown={handleMouseDownPassword}
                     onMouseUp={handleMouseUpPassword}
                     edge="end">
-                    {showRecoveryPassword ? <VisibilityOff /> : <Visibility />}
+                    {showRecoveryPassword ? <ForgotPassword /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -172,27 +177,15 @@ export function RecoveryPasswordPage() {
             sx={{
               mb: 2,
               mt: 4,
+              bgcolor:"#034C53",
               padding: '12px 22px',
               boxShadow:
                 '0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12)',
               textTransform: 'uppercase',
             }}>
-            Відновити пароль
+            Reset password
           </Button>
         </form>
-        <Typography variant="body2" align="left" sx={{ mt: 1, color: 'rgba(21, 22, 24, 0.6)' }}>
-          Ще не маєте акаунта?
-          <Link
-            to={getSignUpRoute()}
-            style={{
-              color: '#0029d9',
-              textDecoration: 'underline',
-              textDecorationColor: '#99a9f0',
-              marginLeft: '4px',
-            }}>
-            Зареєструватися
-          </Link>
-        </Typography>
       </Box>
       <ToastContainer
         position="top-right"
