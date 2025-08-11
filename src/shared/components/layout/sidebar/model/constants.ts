@@ -1,30 +1,35 @@
-import DesktopIcon from '../../../../assets/icons/desktop.svg?react'
-import ScheduleIcon from '../../../../assets/icons/schedule.svg?react'
-import PatientsIcon from '../../../../assets/icons/patients.svg?react'
-import LeadsIcon from '../../../../assets/icons/leads.svg?react'
+// import DesktopIcon from '../../../../assets/icons/desktop.svg?react'
+import BookingIcon from '../../../../assets/icons/booking.svg?react'
+import ActivitiesIcon from '../../../../assets/icons/activities.svg?react'
+import CourtIcon from '../../../../assets/icons/courts.svg?react'
 import ChatIcon from '../../../../assets/icons/chat.svg?react'
-import TaskIcon from '../../../../assets/icons/task.svg?react'
-import BankIcon from '../../../../assets/icons/bank.svg?react'
-import CoinsIcon from '../../../../assets/icons/coins.svg?react'
-import LabIcon from '../../../../assets/icons/lab.svg?react'
-import ReportsIcon from '../../../../assets/icons/reports.svg?react'
-import SettingsIcon from '../../../../assets/icons/settings.svg?react'
-import type { Clinic, SidebarSection } from './types'
+import PricingIcon from '../../../../assets/icons/pricing.svg?react'
+import PaymentIcon from '../../../../assets/icons/payments.svg?react'
+import ReportIcon from '../../../../assets/icons/reports.svg?react'
+import CustomersIcon from '../../../../assets/icons/customers.svg?react'
+import WalletIcon from '../../../../assets/icons/wallets.svg?react'
+import SettingIcon from '../../../../assets/icons/settings_general.svg?react'
+import LogoutIcon from '../../../../assets/icons/logout.svg?react'
 
-export const MOCK_CLINICS: Clinic[] = [
+
+
+
+import type { Clubs, SidebarSection } from './types'
+
+export const MOCK_CLUBS: Clubs[] = [
   {
     id: '1',
-    name: 'Клініка 1',
+    name: 'Club 1',
     isActive: true,
   },
   {
     id: '2',
-    name: 'Клініка 2',
+    name: 'Club 2',
     isActive: false,
   },
   {
     id: '3',
-    name: 'Клініка 3',
+    name: 'Club 3',
     isActive: false,
   },
 ]
@@ -35,97 +40,69 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
     title: 'sidebar.main',
     items: [
       {
-        id: 'desktop',
-        text: 'sidebar.desktop',
-        icon: DesktopIcon,
-        link: '/',
+        id: 'reports',
+        text: 'sidebar.reports',
+        icon: ReportIcon,
       },
       {
-        id: 'schedule',
-        text: 'sidebar.schedule',
-        icon: ScheduleIcon,
-        link: '/schedule',
-        hasSubItems: true,
-        subItems: [
-          {
-            id: 'lost-consultation',
-            text: 'sidebar.lost-consultation',
-            link: '/lost-consultation',
-          },
-          {
-            id: 'expired-consultation',
-            text: 'sidebar.expired-consultation',
-            link: '/overdue-services',
-          },
-        ],
+        id: 'activities',
+        text: 'sidebar.activities',
+        icon: ActivitiesIcon,
+        link: '/patients', //change
       },
       {
-        id: 'patients',
-        text: 'sidebar.patients',
-        icon: PatientsIcon,
-        link: '/patients',
+        id: 'courts',
+        text: 'sidebar.courts',
+        icon: CourtIcon,
+        link: '/patients', //change
       },
-    ],
-  },
-  {
-    id: 'info',
-    title: 'sidebar.info',
-    items: [
       {
-        id: 'leads',
-        text: 'sidebar.leads',
-        link: '/leads',
-        icon: LeadsIcon,
+        id: 'pricing',
+        text: 'sidebar.pricing',
+        icon: PricingIcon,
+        link: '/patients', //change
       },
+      {
+        id: 'booking',
+        text: 'sidebar.booking',
+        icon: BookingIcon,
+        link: '/booking',
+      },
+      {
+        id: 'customers',
+        text: 'sidebar.customers',
+        icon: CustomersIcon,
+        link: '/leads', //change
+      },
+
       {
         id: 'chat',
         text: 'sidebar.chats',
         icon: ChatIcon,
-        link: '/chat',
       },
       {
-        id: 'tasks',
-        text: 'sidebar.tasks',
-        icon: TaskIcon,
-      },
-    ],
-  },
-  {
-    id: 'finance',
-    title: 'sidebar.finance',
-    items: [
-      {
-        id: 'bank-and-cash',
-        text: 'sidebar.bank-and-cash',
-        icon: BankIcon,
-        link: '/financial-management',
+        id: 'wallets',
+        text: 'sidebar.wallet-transactions',
+        icon: WalletIcon,
+        link: '/patients', //change
       },
       {
-        id: 'purchases',
-        text: 'sidebar.purchases',
-        icon: CoinsIcon,
-      },
-    ],
-  },
-  {
-    id: 'management',
-    title: 'sidebar.management',
-    items: [
-      {
-        id: 'lab',
-        text: 'sidebar.lab',
-        icon: LabIcon,
-      },
-      {
-        id: 'reports',
-        text: 'sidebar.reports',
-        icon: ReportsIcon,
+        id: 'payment',
+        text: 'sidebar.payments',
+        icon: PaymentIcon,
+        link: '/patients', //change
       },
       {
         id: 'settings',
         text: 'sidebar.settings',
-        icon: SettingsIcon,
-        link: '/clinic-settings',
+        icon: SettingIcon,
+        link: '/settings', 
+      },
+      {
+        id: 'logout',
+        text: 'sidebar.logout',
+        icon: LogoutIcon,
+        link: '/patients', //change
       },
     ],
   },

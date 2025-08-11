@@ -1,4 +1,4 @@
-export interface Clinic {
+export interface Clubs {
   id: string
   name: string
   isActive?: boolean
@@ -29,5 +29,5 @@ export interface SidebarState {
   openSchedule: boolean
   openPatients: boolean
   openPurchases: boolean
-  selectedClinic: Clinic
+  selectedClinic: Clubs
 }

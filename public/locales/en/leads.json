@@ -1,0 +1,7 @@
+{
+  "pageTitle": "Customers",
+  "actoinButton": "Add customer",
+  "kanbanSelectDefault": "All",
+
+  "kanbanCardTitle": " {{title}} "
+}

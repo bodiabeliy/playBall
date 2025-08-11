@@ -3,7 +3,7 @@ const ROUTES = {
   CODE_CONFIRMATION: '/code-confirmation',
   LOGIN: '/login',
   HOME: '/',
-  SCHEDULE: '/schedule',
+  BOOKING: '/booking',
   FORGOT_PASSWORD: '/forgot-password',
   RECOVERY_PASSWORD: '/recovery-password',
   SETTINGS: '/settings',
@@ -26,7 +26,7 @@ export const getSignUpRoute = () => ROUTES.SIGN_UP
 export const getConfirmationPage = () => ROUTES.CODE_CONFIRMATION
 export const getLoginRoute = () => ROUTES.LOGIN
 export const getHomeRoute = () => ROUTES.HOME
-export const getScheduleRoute = () => ROUTES.SCHEDULE
+export const getBookingeRoute = () => ROUTES.BOOKING
 export const getForgotPasswordRoute = () => ROUTES.FORGOT_PASSWORD
 export const getRecoveryPasswordRoute = () => ROUTES.RECOVERY_PASSWORD
 export const getSettingsRoute = () => ROUTES.SETTINGS

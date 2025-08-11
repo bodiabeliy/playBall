@@ -38,7 +38,7 @@ interface LeadFormProps {
 }
 
 export function LeadForm({ isMobile, activeTab }: LeadFormProps) {
-  const { t } = useTranslation('leads')
+  const { t } = useTranslation('customers')
 
   const location = useLocation()
   const { name, avatar } = location.state.lead

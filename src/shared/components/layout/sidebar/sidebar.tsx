@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Box } from '@mui/material'
+import { Box, Paper } from '@mui/material'
 import { useNavigate, useLocation } from 'react-router'
-import ClinicIcon from '../../../assets/icons/clinic.svg?react'
-import { ClinicSelector } from '../../ui/clinic-selector'
+
 import { SidebarSectionComponent, UserProfileComponent } from './ui'
 import { useSidebarLayoutContext } from '../../../contexts/sidebar-layout-context'
-import { SIDEBAR_SECTIONS, MOCK_CLINICS, USER_PROFILE } from './model'
-import type { Clinic, SidebarItem } from './model'
+import { SIDEBAR_SECTIONS, USER_PROFILE } from './model'
+import type {  SidebarItem } from './model'
+
+import LogoIcon from '../../../../shared/assets/icons/logo.svg?react'
+import LogoCollapse from '../../../../shared/assets/icons/logo-collapse.svg?react'
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -20,7 +22,7 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
 
   // State for expandable items
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
-  const [selectedClinic, setSelectedClinic] = useState<Clinic>(MOCK_CLINICS[0])
+  // const [selectedClinic, setSelectedClinic] = useState<Clinic>(MOCK_CLINICS[0])
 
   // Auto-expand items based on current route
   useEffect(() => {
@@ -55,10 +57,6 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
     }
   }, [location.pathname, isMobile, isNavigating])
 
-  const handleClinicSelect = (clinic: Clinic) => {
-    setSelectedClinic(clinic)
-    console.log('Selected clinic:', clinic)
-  }
 
   const handleNavigation = (item: SidebarItem) => {
     if (item.link && !isNavigating) {
@@ -114,19 +112,19 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
   }
 
   const getActiveStyles = (isItemActive: boolean) => ({
-    bgcolor: isItemActive ? '#5a67d8' : 'transparent',
-    '&:hover': { bgcolor: isItemActive ? '#5a67d8' : 'rgba(255,255,255,0.08)' },
+    bgcolor: isItemActive ? '#F6F6F6' : 'transparent',
+    '&:hover': { bgcolor: isItemActive ? '#F6F6F6' : 'rgba(255,255,255,0.08)' },
   })
 
   const getActiveIconStyles = (isItemActive: boolean) => ({
-    color: isItemActive ? 'white' : 'rgba(255,255,255,0.7)',
+    color: isItemActive ? 'black' : 'rgba(255,255,255,0.7)',
     minWidth: isCollapsed ? 'auto' : '32px',
     justifyContent: 'center',
   })
 
   const getActiveTextStyles = (isItemActive: boolean) => ({
     fontSize: '14px',
-    color: isItemActive ? 'white' : 'inherit',
+    color: isItemActive ? 'black' : 'inherit',
   })
 
   useEffect(() => {
@@ -136,11 +134,10 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
   }, [])
 
   return (
-    <Box
+    <Paper
       sx={{
         height: '100%',
-        bgcolor: '#2c334a',
-        color: 'white',
+        bgcolor: 'white',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
@@ -162,7 +159,7 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
       }}>
       <Box
         sx={{
-          p: isCollapsed ? '12px 8px' : '16px',
+          p: isCollapsed ? '12px 8px' : '2px 30px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: isCollapsed ? 'center' : 'flex-start',
@@ -170,14 +167,9 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
           flexShrink: 0,
         }}>
         {isCollapsed ? (
-          <ClinicIcon
-            style={{
-              fontSize: 24,
-              color: 'white',
-            }}
-          />
+          <LogoCollapse onClick={() => navigate("/")} />
         ) : (
-          <ClinicSelector clinics={MOCK_CLINICS} selectedClinic={selectedClinic} onClinicSelect={handleClinicSelect} />
+          <LogoIcon onClick={() => navigate("/")} />
         )}
       </Box>
       <Box
@@ -219,6 +211,6 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
           onSettingsClick={handleSettingsClick}
         />
       </Box>
-    </Box>
+    </Paper>
   )
 }

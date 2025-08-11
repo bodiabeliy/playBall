@@ -22,7 +22,7 @@ import {
   getForgotPasswordRoute,
   getHomeRoute,
   getLoginRoute,
-  getScheduleRoute,
+  getBookingeRoute,
   getSettingsRoute,
   getSignUpRoute,
   getClinicSettingsRoute,
@@ -95,7 +95,7 @@ const authorizedRoutes = [
   },
   {
     element: <SchedulePage />,
-    path: getScheduleRoute(),
+    path: getBookingeRoute(),
   },
   {
     element: <SettingsPage />,

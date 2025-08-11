@@ -13,7 +13,7 @@ import { LeadInfoContent } from '../../features/leads/ui/lead-form'
 import { useTranslation } from 'react-i18next'
 
 export function LeadInfoPage() {
-  const { t } = useTranslation('leads')
+  const { t } = useTranslation('customers')
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))

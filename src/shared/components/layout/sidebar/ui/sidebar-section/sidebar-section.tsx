@@ -1,5 +1,4 @@
-import { List, Typography, Box, type TypographyProps, type Theme, type SxProps } from '@mui/material'
-import { useTranslation } from 'react-i18next'
+import { List, type TypographyProps, type Theme, type SxProps } from '@mui/material'
 import { SidebarItemComponent } from '../sidebar-item'
 import type { SidebarItem, SidebarSection } from '../../model'
 
@@ -28,22 +27,10 @@ export function SidebarSectionComponent({
   getActiveTextStyles,
   isItemActive,
 }: SidebarSectionProps) {
-  const { t } = useTranslation()
 
   return (
     <>
-      {!isCollapsed && section.title && (
-        <Typography
-          sx={{
-            fontSize: '14px',
-            fontWeight: 500,
-            margin: isMobile ? '8px 0 8px 16px' : '8px 0 8px 32px',
-            color: '#b9c5fd',
-            whiteSpace: 'nowrap',
-          }}>
-          {t(section.title)}
-        </Typography>
-      )}
+     
       <List sx={{ p: 0 }}>
         {section.items.map((item) => (
           <SidebarItemComponent
@@ -61,16 +48,6 @@ export function SidebarSectionComponent({
           />
         ))}
       </List>
-      {!isCollapsed && section.id !== 'services' && (
-        <Box
-          sx={{
-            backgroundColor: '#9da2fa',
-            width: 'calc(100% - 32px)',
-            height: '1px',
-            margin: '8px 16px',
-          }}
-        />
-      )}
     </>
   )
 }

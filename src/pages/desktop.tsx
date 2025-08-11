@@ -36,8 +36,8 @@ export function DesktopPage() {
           </IconButton>
         </>
       }>
-      <Typography>Головна</Typography>
-      {isAuthorization && 'Користувач увійшов'}
+      <Typography>Dashboard</Typography>
+      {isAuthorization && 'User already login'}
     </SidebarLayout>
   )
 }

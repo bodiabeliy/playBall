@@ -25,7 +25,7 @@ import { LeadSelector } from '../../shared/components/ui/dropdown'
 import { useTranslation } from 'react-i18next'
 
 export function LeadsPage() {
-  const { t } = useTranslation('leads')
+  const { t } = useTranslation('customers')
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))

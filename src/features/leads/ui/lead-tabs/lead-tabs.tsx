@@ -120,7 +120,7 @@ interface LeadTabsProps {
 }
 
 export function LeadTabs({ activeTab, isMobile, taskOnClick }: LeadTabsProps) {
-  const { t } = useTranslation('leads')
+  const { t } = useTranslation('customers')
 
   return (
     <Box

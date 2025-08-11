@@ -130,6 +130,7 @@ export function SignUpPage() {
           height: '66px',
           justifySelf: 'flex-start',
         }}>
+        <LogoIcon />
       </Box>
       <Box
         sx={{

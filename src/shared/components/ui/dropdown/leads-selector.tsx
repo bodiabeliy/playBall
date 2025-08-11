@@ -36,7 +36,7 @@ export const LeadSelector = ({
   bgcolor = '',
   bodyContent = 'Всі',
 }: FilterSelectorProps) => {
-  const { t } = useTranslation('leads')
+  const { t } = useTranslation('customers')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedOptiion, setSelectedOption] = useState(t('kanbanSelectDefault'))

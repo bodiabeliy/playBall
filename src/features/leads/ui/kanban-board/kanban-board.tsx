@@ -126,7 +126,7 @@ const initialColumns = [
 ]
 // decompose this component in the future
 export function KanbanBoard() {
-  const { t } = useTranslation('leads')
+  const { t } = useTranslation('customers')
   const [columns, setColumns] = useState(initialColumns)
   const dragItem = useRef<{ colIdx: number; leadIdx: number } | null>(null)
   const dragOver = useRef<{ colIdx: number; leadIdx: number } | null>(null)
