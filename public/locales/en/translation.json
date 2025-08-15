@@ -156,7 +156,7 @@
     "confirm": "Delete",
     "cancel": "Cancel"
   },
-  "clinic-selector": {
-    "create-clinic": "Create clinic"
+  "club-selector": {
+    "create-club": "Create club"
   }
 }

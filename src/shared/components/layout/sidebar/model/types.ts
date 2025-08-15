@@ -1,4 +1,4 @@
-export interface Clubs {
+export interface Club {
   id: string
   name: string
   isActive?: boolean
@@ -9,6 +9,7 @@ export interface SidebarItem {
   text: string
   icon: React.ComponentType<{ style?: React.CSSProperties }>
   link?: string
+  isAction?:boolean
   hasSubItems?: boolean
   subItems?: SidebarSubItem[]
 }
@@ -29,5 +30,5 @@ export interface SidebarState {
   openSchedule: boolean
   openPatients: boolean
   openPurchases: boolean
-  selectedClinic: Clubs
+  selectedClub: Club
 }

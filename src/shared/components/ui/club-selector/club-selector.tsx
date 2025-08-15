@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import type { MouseEvent } from 'react'
 import { Button, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
-import { Add, Business } from '@mui/icons-material'
-import ClubIcon from '../../../assets/icons/Club.svg?react'
+import SportsTennisIcon from '@mui/icons-material/SportsTennis';
+import { Add } from '@mui/icons-material'
+import ClubIcon from '../../../assets/icons/club.svg?react'
 import { useTranslation } from 'react-i18next'
 import { getCreateClubRoute } from '../../../types/routes'
 import { useNavigate } from 'react-router'
@@ -16,26 +17,26 @@ export interface Club {
 }
 
 interface ClubSelectorProps {
-  Clubs: Club[]
-  selectedClub: Club | null
-  onClubSelect: (Club: Club) => void
+  clubs: Club[]
   disabled?: boolean
 }
 
-export const ClubSelector = ({ Clubs, selectedClub, onClubSelect, disabled = false }: ClubSelectorProps) => {
+export const ClubSelector = ({ clubs, disabled = false }: ClubSelectorProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const { handleDrawerToggle } = useSidebarLayoutContext()
+  const [currentClub, setCurrentClubClub]= useState(clubs[0])
 
   const handleOpen = (event: MouseEvent<HTMLElement>) => {
     if (!disabled) setAnchorEl(event.currentTarget)
   }
   const handleClose = () => setAnchorEl(null)
 
-  const handleClubSelect = (Club: Club) => {
-    onClubSelect(Club)
+  
+  const handleClubSelect = (club: Club) => {
+    setCurrentClubClub(club)
     handleClose()
   }
   const handleCreateClub = () => {
@@ -56,20 +57,16 @@ export const ClubSelector = ({ Clubs, selectedClub, onClubSelect, disabled = fal
           justifyContent: 'flex-start',
           width: '100%',
           minWidth: 0,
-          color: 'white',
           textTransform: 'none',
           px: 2,
           py: 1,
           borderRadius: '8px',
           fontWeight: 500,
           fontSize: '15px',
-          bgcolor: 'rgba(255,255,255,0.06)',
-          '&:hover': {
-            bgcolor: 'rgba(90,103,216,0.15)',
-          },
+        
         }}
-        startIcon={<ClubIcon style={{ fontSize: 18, color: 'white' }} />}>
-        {selectedClub?.name || ''}
+        startIcon={<ClubIcon style={{ fontSize: 18, }} />}>
+        {currentClub?.name || ''}
       </Button>
       <Menu
         anchorEl={anchorEl}
@@ -77,8 +74,6 @@ export const ClubSelector = ({ Clubs, selectedClub, onClubSelect, disabled = fal
         onClose={handleClose}
         PaperProps={{
           sx: {
-            bgcolor: '#2c334a',
-            color: 'white',
             minWidth: 220,
             boxShadow: 3,
             borderRadius: 2,
@@ -87,25 +82,25 @@ export const ClubSelector = ({ Clubs, selectedClub, onClubSelect, disabled = fal
           },
         }}
         MenuListProps={{ sx: { p: 0 } }}>
-        {Clubs.map((Club) => (
+        {clubs.map((Club) => (
           <MenuItem
             key={Club.id}
-            selected={selectedClub?.id === Club.id}
+            selected={currentClub?.id === Club.id}
             onClick={() => handleClubSelect(Club)}
             sx={{
-              bgcolor: selectedClub?.id === Club.id ? '#343b51' : 'transparent',
-              '&:hover': { bgcolor: '#343b51' },
+              bgcolor: currentClub?.id === Club.id ? '#F6F6F6' : 'transparent',
+              '&:hover': { bgcolor: '#F6F6F6' },
               px: 2,
               py: 1.2,
               gap: 1,
             }}>
-            <ListItemIcon sx={{ minWidth: 32, color: 'white' }}>
-              <Business fontSize="small" />
+            <ListItemIcon sx={{ minWidth: 32, }}>
+              <SportsTennisIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText
               primary={
                 <Typography
-                  sx={{ fontWeight: selectedClub?.id === Club.id ? 600 : 400, fontSize: 15, color: 'white' }}>
+                  sx={{ fontWeight: currentClub?.id === Club.id ? 600 : 400, fontSize: 15 }}>
                   {Club.name}
                 </Typography>
               }
@@ -115,21 +110,19 @@ export const ClubSelector = ({ Clubs, selectedClub, onClubSelect, disabled = fal
         <MenuItem
           onClick={handleCreateClub}
           sx={{
-            color: '#9da2fa',
             fontWeight: 500,
             fontSize: 15,
             gap: 1,
             px: 2,
             py: 1.2,
             '&:hover': {
-              color: 'white',
-              bgcolor: '#343b51',
+              bgcolor: '#F6F6F6',
             },
           }}>
-          <ListItemIcon sx={{ minWidth: 32, color: '#9da2fa' }}>
+          <ListItemIcon sx={{ minWidth: 32,  }}>
             <Add fontSize="small" />
           </ListItemIcon>
-          {t('Club-selector.create-Club')}
+          {t('club-selector.create-club')}
         </MenuItem>
       </Menu>
     </>

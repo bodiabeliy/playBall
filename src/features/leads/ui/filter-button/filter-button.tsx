@@ -1,5 +1,6 @@
 import { Badge, Button } from '@mui/material'
-import { FilterList, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import FilterIcon from "../../../../shared/assets/icons/filter.svg?react"
 
 interface FilterButtonProps {
   activeFilters: number
@@ -14,14 +15,14 @@ export function FilterButton({ isExpanded, isMobile = false, onClick, activeFilt
     <Button
       variant="outlined"
       onClick={onClick}
-      startIcon={<FilterList />}
+      startIcon={<FilterIcon />}
       fullWidth={isMobile}
       endIcon={isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       sx={{
+        border:"1px solid #888888",
+        color:"#888888",
         height: isMobile ? 32 : 'auto',
         alignSelf: 'center',
-        borderColor: '#0029d9',
-        color: '#0029d9',
         textTransform: 'uppercase',
         fontWeight: 500,
         fontSize: '14px',
@@ -29,7 +30,7 @@ export function FilterButton({ isExpanded, isMobile = false, onClick, activeFilt
         py: 1,
         position: 'relative',
       }}>
-      ФІЛЬТР
+      Filter
       <Badge
         badgeContent={activeFilters}
         sx={{
@@ -37,7 +38,7 @@ export function FilterButton({ isExpanded, isMobile = false, onClick, activeFilt
           top: 4,
           left: 20,
           '& .MuiBadge-badge': {
-            backgroundColor: '#0029d9',
+            backgroundColor: '#034C53',
             color: 'white',
             fontSize: '12px',
             fontWeight: 600,

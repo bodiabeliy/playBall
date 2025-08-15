@@ -1,13 +1,11 @@
 import { useEffect } from 'react'
 
-import { Box, IconButton, ListItemButton, Typography } from '@mui/material'
-import LogoutIcon from '@mui/icons-material/Logout'
-import { getUser, logout } from '../../../../../../app/services/UserService'
+import { Box, Typography } from '@mui/material'
+import { getUser } from '../../../../../../app/services/UserService'
 import { useAppDispatch, useAppSelector } from '../../../../../../app/providers/store-helpers'
 import { userSelector } from '../../../../../../app/providers/reducers/UserSlice'
 
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
-import { useNavigate } from 'react-router'
 
 interface UserProfileProps {
   isCollapsed: boolean
@@ -18,16 +16,12 @@ interface UserProfileProps {
 export function UserProfileComponent({ isCollapsed, onSettingsClick }: UserProfileProps) {
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(userSelector)
-  const navigate = useNavigate()
 
   useEffect(() => {
     dispatch(getUser())
   }, [])
 
-  const sessionLogout = async () => {
-    await dispatch(logout())
-    await navigate('/', { replace: true })
-  }
+
   return (
     <Box
       sx={{
@@ -54,7 +48,7 @@ export function UserProfileComponent({ isCollapsed, onSettingsClick }: UserProfi
         tabIndex={0}
         role="button"
         aria-label="Перейти до налаштувань профілю">
-        {!isCollapsed ? (
+        {!isCollapsed && (
           <Box>
             <Box sx={{ display: 'flex' }}>
               {currentUser.photo != null ? (
@@ -73,52 +67,15 @@ export function UserProfileComponent({ isCollapsed, onSettingsClick }: UserProfi
               )}
 
               <Box sx={{ marginLeft: '6px' }} onClick={onSettingsClick}>
-                <Typography sx={{ fontWeight: 500, fontSize: '14px', whiteSpace: 'nowrap', color: 'white' }}>
+                <Typography sx={{ fontWeight: 500, fontSize: '14px', whiteSpace: 'nowrap', }}>
                   {currentUser?.firstname + ' ' + currentUser.lastname}
                 </Typography>
-                <Typography sx={{ fontSize: '12px', color: '#b9c5fd', whiteSpace: 'nowrap' }}>
+                <Typography sx={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
                   {currentUser?.email}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', ml: '-5%' }}>
-                <ListItemButton
-                  onClick={() => sessionLogout()}
-                  sx={{
-                    borderRadius: '6px',
-                    py: isCollapsed ? '12px' : '8px',
-                    justifyContent: isCollapsed ? 'center' : 'flex-start',
-                    minHeight: isCollapsed ? '48px' : 'auto',
-                  }}>
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: 'white',
-                      padding: '4px',
-                    }}>
-                    <LogoutIcon />
-                  </IconButton>
-                </ListItemButton>
-              </Box>
             </Box>
           </Box>
-        ) : (
-          <ListItemButton
-            onClick={() => sessionLogout()}
-            sx={{
-              borderRadius: '6px',
-              py: isCollapsed ? '12px' : '8px',
-              justifyContent: isCollapsed ? 'center' : 'flex-start',
-              minHeight: isCollapsed ? '48px' : 'auto',
-            }}>
-            <IconButton
-              size="small"
-              sx={{
-                color: 'white',
-                padding: '4px',
-              }}>
-              <LogoutIcon />
-            </IconButton>
-          </ListItemButton>
         )}
       </Box>
     </Box>

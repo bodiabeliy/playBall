@@ -9,7 +9,6 @@ import {
   useTheme,
   TextField,
   DialogActions,
-  IconButton,
 } from '@mui/material'
 import RocketIcon from '../shared/assets/icons/rocket.svg?react'
 import LetterIcon from '../shared/assets/icons/letter.svg?react'
@@ -18,8 +17,8 @@ import { useMediaQuery } from '@mui/material'
 import FileUpload from '../features/file-upload'
 import { useState } from 'react'
 import { SidebarLayout } from '../shared'
-import MoreVerticalIcon from '../shared/assets/icons/more-vertical.svg?react'
-import BellIcon from '../shared/assets/icons/bell.svg?react'
+import { ClubSelector } from '../shared/components/ui/club-selector'
+import { MOCK_CLUBS } from '../shared/components/layout/sidebar/model'
 
 export function CreateClubPage() {
   const theme = useTheme()
@@ -28,29 +27,7 @@ export function CreateClubPage() {
   return (
     <SidebarLayout
       title="Створення клініки"
-      rightSidebar={
-        <>
-          <IconButton
-            sx={{
-              background: '#f5f7fe',
-              border: '1px solid rgba(0, 41, 217, 0.3)',
-              borderRadius: '8px',
-              width: '40px',
-              height: '40px',
-            }}>
-            <MoreVerticalIcon style={{ color: '#8a4bdc' }} />
-          </IconButton>
-          <IconButton
-            sx={{
-              background: '#8a4bdc',
-              borderRadius: '8px',
-              width: '40px',
-              height: '40px',
-            }}>
-            <BellIcon style={{ color: 'white' }} />
-          </IconButton>
-        </>
-      }>
+      rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
       <Box
         sx={{
           p: isMobile ? 2 : 4,

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Box, useTheme, useMediaQuery, IconButton } from '@mui/material'
+import { Box, useTheme, useMediaQuery, Typography } from '@mui/material'
 import { useNavigate } from 'react-router'
 import { SidebarLayout } from '../../shared'
 import { SearchField } from '../../shared/components'
@@ -19,10 +19,11 @@ import type { Lead, LeadFilter } from '../../features/leads/model/types'
 import type { SendMessageData } from '../../features/leads/ui/send-message-modal/send-message-modal'
 
 import MoreVerticalIcon from '../../shared/assets/icons/more-vertical.svg?react'
-import BellIcon from '../../shared/assets/icons/bell.svg?react'
 import ViewSwitcher from '../../features/leads/ui/view-switcher/view-switcher'
 import { LeadSelector } from '../../shared/components/ui/dropdown'
 import { useTranslation } from 'react-i18next'
+import { ClubSelector } from '../../shared/components/ui/club-selector'
+import { MOCK_CLUBS } from '../../shared/components/layout/sidebar'
 
 export function LeadsPage() {
   const { t } = useTranslation('customers')
@@ -228,29 +229,7 @@ export function LeadsPage() {
   return (
     <SidebarLayout
       title={isMobile ? ' ' : t('pageTitle')}
-      rightSidebar={
-        <>
-          <IconButton
-            sx={{
-              background: '#f5f7fe',
-              border: '1px solid rgba(0, 41, 217, 0.3)',
-              borderRadius: '8px',
-              width: '40px',
-              height: '40px',
-            }}>
-            <MoreVerticalIcon style={{ color: '#8a4bdc' }} />
-          </IconButton>
-          <IconButton
-            sx={{
-              background: '#8a4bdc',
-              borderRadius: '8px',
-              width: '40px',
-              height: '40px',
-            }}>
-            <BellIcon style={{ color: 'white' }} />
-          </IconButton>
-        </>
-      }>
+      rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
       <Box
         sx={{
           p: isMobile ? 2 : 4,
@@ -258,58 +237,42 @@ export function LeadsPage() {
           display: 'flex',
           flexDirection: 'column',
         }}>
+        {/* Top bar: Activities title left, controls right */}
         <Box
           sx={{
             display: 'flex',
-            gap: 2,
+            alignItems: 'center',
+            justifyContent: 'space-between',
             mb: 3,
-            alignItems: isMobile ? 'stretch' : 'center',
-            flexDirection: 'row',
           }}>
-          <Box sx={{ flex: 0 }}>
+          {/* Left: Title */}
+          <Typography variant="h6" sx={{ fontWeight: 500 }}>Activities</Typography>
+          {/* Right: Controls */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* Filter button */}
+            <FilterButton
+              activeFilters={activeFiltersCount}
+              isMobile={isMobile}
+              isExpanded={isFiltersExpanded}
+              onClick={handleFilterClick}
+            />
+           
+            {/* Search field */}
             <SearchField
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder={isMobile ? '' : 'Пошук...'}
-              fullWidth={isMobile}
-              isStartAdornment={isMobile}
+              placeholder={isMobile ? '' : 'Search activity'}
+              fullWidth={false}
+              isStartAdornment={false}
+              sx={{ maxWidth: 100 }}
             />
-          </Box>
-          <FilterButton
-            activeFilters={activeFiltersCount}
-            isMobile={isMobile}
-            isExpanded={isFiltersExpanded}
-            onClick={handleFilterClick}
-          />
-
-          {isMobile && (
-            <LeadSelector
-              options={LEADS_MOBILE_OPTIONS}
-              bodyContent={<MoreVerticalIcon style={{ color: '#0029D9' }} />}
-              selectedFilterOption={selectedOption}
-              onFilterSelect={handleFilterSelect}
-              onClick={() => setisShowKanban((isKanbanShow) => !isKanbanShow)}
-              isShowKanban={isShowKanban}
+            {/* Create Activity button */}
+            <AddLeadButton
+              onClick={handleAddLead}
               isMobile={isMobile}
+              children={t('actionButton')}
+              // sx={{ bgcolor: '#004e64', color: '#fff', borderRadius: '8px', px: 2, py: 1, fontWeight: 500 }}
             />
-          )}
-          {!isMobile && (
-            <>
-              <ViewSwitcher
-                isShowKanban={isShowKanban}
-                onClick={() => setisShowKanban((isKanbanShow) => !isKanbanShow)}
-              />
-            </>
-          )}
-          <Box sx={{ ml: isMobile ? 0 : 'auto', display: 'flex', gap: 2, alignItems: 'center' }}>
-            <SelectionToolbar
-              selectedCount={selectedLeads.length}
-              onSelectAll={handleSelectAll}
-              onDelete={handleDeleteSelected}
-              onEdit={handleEditSelected}
-              onSendMessage={handleSendMessageSelected}
-            />
-            <AddLeadButton onClick={handleAddLead} isMobile={isMobile} children={t('actoinButton')} />
           </Box>
         </Box>
         {isFiltersExpanded && (
@@ -331,6 +294,7 @@ export function LeadsPage() {
             borderRadius: '16px',
             overflow: 'hidden',
           }}>
+          {/* Table and selection toolbar below top bar */}
           <LeadsTable
             leads={paginatedLeads}
             totalRows={totalRows}

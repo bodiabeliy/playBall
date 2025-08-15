@@ -14,9 +14,9 @@ import LogoutIcon from '../../../../assets/icons/logout.svg?react'
 
 
 
-import type { Clubs, SidebarSection } from './types'
+import type { Club, SidebarSection } from './types'
 
-export const MOCK_CLUBS: Clubs[] = [
+export const MOCK_CLUBS: Club[] = [
   {
     id: '1',
     name: 'Club 1',
@@ -72,13 +72,14 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
         id: 'customers',
         text: 'sidebar.customers',
         icon: CustomersIcon,
-        link: '/leads', //change
+        link: '/customers', //change
       },
 
       {
         id: 'chat',
         text: 'sidebar.chats',
         icon: ChatIcon,
+        link: '/chat', 
       },
       {
         id: 'wallets',
@@ -102,7 +103,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
         id: 'logout',
         text: 'sidebar.logout',
         icon: LogoutIcon,
-        link: '/patients', //change
+        isAction:true
       },
     ],
   },

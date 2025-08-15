@@ -26,6 +26,8 @@ import { useParams, useNavigate } from 'react-router'
 import { SidebarLayout } from '../shared'
 import { mockPatients } from '../features/patients/model/constants'
 import type { Patient } from '../features/patients/model/types'
+import { ClubSelector } from '../shared/components/ui/club-selector'
+import { MOCK_CLUBS } from '../shared/components/layout/sidebar'
 
 export function PatientEditPage() {
   const { id } = useParams<{ id: string }>()
@@ -108,7 +110,7 @@ export function PatientEditPage() {
   }
 
   return (
-    <SidebarLayout title="Пацієнт" rightSidebar={<></>}>
+    <SidebarLayout title="Пацієнт" rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
       <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto', width: '100%' }}>
         <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
           <Box sx={{ flex: { md: 2 } }}>

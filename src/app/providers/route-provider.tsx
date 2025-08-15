@@ -5,8 +5,8 @@ import { ForgotPasswordPage } from '../../pages/forgot-password'
 import { ClinicSettingsPage } from '../../widgets'
 import { LostConsultationPage } from '../../pages/lost-consultation'
 
-import { LeadsPage } from '../../pages/leads/leads'
-import { LeadInfoPage } from '../../pages/leads/lead-info'
+import { LeadsPage } from '../../pages/customers/customers'
+import { LeadInfoPage } from '../../pages/customers/customer-info'
 
 import { OverdueServicesPage } from '../../pages/overdue-services'
 import { PatientsPage } from '../../pages/patients'
@@ -33,8 +33,8 @@ import {
   getPatientEditRoute,
   getCreateClubRoute,
   getChatRoute,
-  getLeadsRoute,
-  getLeadInfoRoute,
+  getCustomersRoute,
+  getCustomerInfoRoute,
   getFinancialManagementRoute,
   getConfirmationPage,
   getRecoveryPasswordRoute,
@@ -139,11 +139,11 @@ const authorizedRoutes = [
   },
   {
     element: <LeadsPage />,
-    path: getLeadsRoute(),
+    path: getCustomersRoute(),
   },
   {
     element: <LeadInfoPage />,
-    path: getLeadInfoRoute(':id'),
+    path: getCustomerInfoRoute(':id'),
   },
 ]
 

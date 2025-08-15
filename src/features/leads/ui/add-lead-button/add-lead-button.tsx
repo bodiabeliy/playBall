@@ -15,6 +15,7 @@ export function AddLeadButton({ onClick, isMobile, children }: AddLeadButtonProp
           variant="contained"
           onClick={onClick}
           sx={{
+            bgcolor:"#034C53",
             textTransform: 'uppercase',
             position: 'relative',
           }}>

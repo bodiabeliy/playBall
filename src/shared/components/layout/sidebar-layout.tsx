@@ -164,7 +164,7 @@ export function SidebarLayout({ children, title, subtitle, rightSidebar }: Sideb
                   </IconButton>
                 )}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Typography variant="h5">{title}</Typography>
+                  <Typography variant="h5">{""}</Typography>
                   {subtitle && !isTablet && (
                     <Typography variant="body1">
                       {' '}

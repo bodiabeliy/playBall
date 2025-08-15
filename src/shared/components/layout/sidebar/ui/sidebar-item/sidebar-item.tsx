@@ -15,6 +15,8 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import type { SidebarItem } from '../../model'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
+import { useAppDispatch } from '../../../../../../app/providers/store-helpers'
+import { logout } from '../../../../../../app/services/UserService'
 
 interface SidebarItemProps {
   item: SidebarItem
@@ -44,6 +46,8 @@ export function SidebarItemComponent({
   const IconComponent = item.icon
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
 
   const handleMainContentClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -51,6 +55,11 @@ export function SidebarItemComponent({
     if (item.link) {
       onClick()
     }
+     if (item.isAction) {
+       navigate('/', { replace: true })
+       dispatch(logout())
+    }
+
   }
 
   const handleArrowClick = (e: React.MouseEvent) => {
@@ -113,7 +122,6 @@ export function SidebarItemComponent({
                   padding: '8px 32px',
                   '&:before': {
                     content: '""',
-                    backgroundColor: '#9da2fa',
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',

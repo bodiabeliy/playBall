@@ -18,8 +18,8 @@ const ROUTES = {
   CHAT: '/chat',
   FINANCIAL_MANAGEMENT: '/financial-management',
 
-  LEADS: '/leads',
-  LEAD_INFO: '/leads/:id',
+  CUSTOMERS: '/customers',
+  CUSTOMER_INFO: '/customer/:id',
 }
 
 export const getSignUpRoute = () => ROUTES.SIGN_UP
@@ -40,5 +40,5 @@ export const getCreateClubRoute = () => ROUTES.CREATE_CLUB
 export const getDesktopRoute = () => ROUTES.DESKTOP
 export const getChatRoute = () => ROUTES.CHAT
 export const getFinancialManagementRoute = () => ROUTES.FINANCIAL_MANAGEMENT
-export const getLeadsRoute = () => ROUTES.LEADS
-export const getLeadInfoRoute = (id: string) => ROUTES.LEAD_INFO.replace(':id', id)
+export const getCustomersRoute = () => ROUTES.CUSTOMERS
+export const getCustomerInfoRoute = (id: string) => ROUTES.CUSTOMER_INFO.replace(':id', id)

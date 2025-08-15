@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material'
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 import { SettingsNavigation } from '../widgets/settings-page/components/settings-navigation'
 import { SettingsContent } from '../widgets/settings-page/components/settings-content'
 import { SidebarLayout } from '../shared'
 import { SettingsNavigationMobile } from '../widgets/settings-page/components/settings-navigation/settings-navigation-mobile'
-import MoreVerticalIcon from '../shared/assets/icons/more-vertical.svg?react'
-import BellIcon from '../shared/assets/icons/bell.svg?react'
+
+import { ClubSelector } from '../shared/components/ui/club-selector'
+import { MOCK_CLUBS } from '../shared/components/layout/sidebar/model'
 
 export function ClinicSettingsPage() {
   const [subtitle, setSubtitle] = useState('')
@@ -21,32 +22,8 @@ export function ClinicSettingsPage() {
     <SidebarLayout
       title="Налаштування"
       subtitle={subtitle}
-      rightSidebar={
-        <>
-          <IconButton
-            sx={{
-              background: '#f5f7fe',
-              border: '1px solid rgba(0, 41, 217, 0.3)',
-              borderRadius: '8px',
-              width: '40px',
-              height: '40px',
-            }}
-            onClick={() => {
-              setActiveTabMobile(null)
-            }}>
-            <MoreVerticalIcon style={{ color: '#8a4bdc' }} />
-          </IconButton>
-          <IconButton
-            sx={{
-              background: '#8a4bdc',
-              borderRadius: '8px',
-              width: '40px',
-              height: '40px',
-            }}>
-            <BellIcon style={{ color: 'white' }} />
-          </IconButton>
-        </>
-      }>
+      rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}
+      >
       {isMobile ? (
         <>
           {activeTabMobile === null && <SettingsNavigationMobile onTabChange={setActiveTabMobile} />}
