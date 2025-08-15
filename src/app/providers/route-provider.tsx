@@ -13,7 +13,7 @@ import { PatientsPage } from '../../pages/patients'
 import { PatientDetailsPage } from '../../pages/patient-details'
 import { PatientEditPage } from '../../pages/patient-edit'
 import { DesktopPage } from '../../pages/desktop'
-import { CreateClinicPage } from '../../pages/create-clinic'
+import { CreateClubPage } from '../../pages/create-clinic'
 import SettingsPage from '../../pages/settings'
 import { ChatPage } from '../../pages/chat'
 import { FinancialManagementPage } from '../../pages/financial-management'
@@ -31,7 +31,7 @@ import {
   getPatientsRoute,
   getPatientDetailsRoute,
   getPatientEditRoute,
-  getCreateClinicRoute,
+  getCreateClubRoute,
   getChatRoute,
   getLeadsRoute,
   getLeadInfoRoute,
@@ -126,8 +126,8 @@ const authorizedRoutes = [
     path: getPatientEditRoute(':id'),
   },
   {
-    element: <CreateClinicPage />,
-    path: getCreateClinicRoute(),
+    element: <CreateClubPage />,
+    path: getCreateClubRoute(),
   },
   {
     element: <ChatPage />,

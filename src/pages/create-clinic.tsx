@@ -21,7 +21,7 @@ import { SidebarLayout } from '../shared'
 import MoreVerticalIcon from '../shared/assets/icons/more-vertical.svg?react'
 import BellIcon from '../shared/assets/icons/bell.svg?react'
 
-export function CreateClinicPage() {
+export function CreateClubPage() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [isCreateClinicDialogOpen, setIsCreateClinicDialogOpen] = useState(false)

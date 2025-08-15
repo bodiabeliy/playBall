@@ -13,7 +13,7 @@ const ROUTES = {
   PATIENT_EDIT: '/patients/:id/edit',
   LOST_CONSULTATION: '/lost-consultation',
   OVERDUE_SERVICES: '/overdue-services',
-  CREATE_CLINIC: '/create-clinic',
+  CREATE_CLUB: '/create-club',
   DESKTOP: '/desktop',
   CHAT: '/chat',
   FINANCIAL_MANAGEMENT: '/financial-management',
@@ -36,7 +36,7 @@ export const getPatientDetailsRoute = (id: string) => ROUTES.PATIENT_DETAILS.rep
 export const getPatientEditRoute = (id: string) => ROUTES.PATIENT_EDIT.replace(':id', id)
 export const getLostConsultationRoute = () => ROUTES.LOST_CONSULTATION
 export const getOverdueServicesRoute = () => ROUTES.OVERDUE_SERVICES
-export const getCreateClinicRoute = () => ROUTES.CREATE_CLINIC
+export const getCreateClubRoute = () => ROUTES.CREATE_CLUB
 export const getDesktopRoute = () => ROUTES.DESKTOP
 export const getChatRoute = () => ROUTES.CHAT
 export const getFinancialManagementRoute = () => ROUTES.FINANCIAL_MANAGEMENT

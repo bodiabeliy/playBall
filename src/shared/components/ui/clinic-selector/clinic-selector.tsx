@@ -2,27 +2,27 @@ import { useState } from 'react'
 import type { MouseEvent } from 'react'
 import { Button, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import { Add, Business } from '@mui/icons-material'
-import ClinicIcon from '../../../assets/icons/clinic.svg?react'
+import ClubIcon from '../../../assets/icons/Club.svg?react'
 import { useTranslation } from 'react-i18next'
-import { getCreateClinicRoute } from '../../../types/routes'
+import { getCreateClubRoute } from '../../../types/routes'
 import { useNavigate } from 'react-router'
 import { useSidebarLayoutContext } from '../../../contexts/sidebar-layout-context'
 
-export interface Clinic {
+export interface Club {
   id: string
   name: string
   address?: string
   isActive?: boolean
 }
 
-interface ClinicSelectorProps {
-  clinics: Clinic[]
-  selectedClinic: Clinic | null
-  onClinicSelect: (clinic: Clinic) => void
+interface ClubSelectorProps {
+  Clubs: Club[]
+  selectedClub: Club | null
+  onClubSelect: (Club: Club) => void
   disabled?: boolean
 }
 
-export const ClinicSelector = ({ clinics, selectedClinic, onClinicSelect, disabled = false }: ClinicSelectorProps) => {
+export const ClubSelector = ({ Clubs, selectedClub, onClubSelect, disabled = false }: ClubSelectorProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -34,13 +34,13 @@ export const ClinicSelector = ({ clinics, selectedClinic, onClinicSelect, disabl
   }
   const handleClose = () => setAnchorEl(null)
 
-  const handleClinicSelect = (clinic: Clinic) => {
-    onClinicSelect(clinic)
+  const handleClubSelect = (Club: Club) => {
+    onClubSelect(Club)
     handleClose()
   }
-  const handleCreateClinic = () => {
+  const handleCreateClub = () => {
     handleClose()
-    navigate(getCreateClinicRoute())
+    navigate(getCreateClubRoute())
     handleDrawerToggle()
   }
 
@@ -68,8 +68,8 @@ export const ClinicSelector = ({ clinics, selectedClinic, onClinicSelect, disabl
             bgcolor: 'rgba(90,103,216,0.15)',
           },
         }}
-        startIcon={<ClinicIcon style={{ fontSize: 18, color: 'white' }} />}>
-        {selectedClinic?.name || ''}
+        startIcon={<ClubIcon style={{ fontSize: 18, color: 'white' }} />}>
+        {selectedClub?.name || ''}
       </Button>
       <Menu
         anchorEl={anchorEl}
@@ -87,13 +87,13 @@ export const ClinicSelector = ({ clinics, selectedClinic, onClinicSelect, disabl
           },
         }}
         MenuListProps={{ sx: { p: 0 } }}>
-        {clinics.map((clinic) => (
+        {Clubs.map((Club) => (
           <MenuItem
-            key={clinic.id}
-            selected={selectedClinic?.id === clinic.id}
-            onClick={() => handleClinicSelect(clinic)}
+            key={Club.id}
+            selected={selectedClub?.id === Club.id}
+            onClick={() => handleClubSelect(Club)}
             sx={{
-              bgcolor: selectedClinic?.id === clinic.id ? '#343b51' : 'transparent',
+              bgcolor: selectedClub?.id === Club.id ? '#343b51' : 'transparent',
               '&:hover': { bgcolor: '#343b51' },
               px: 2,
               py: 1.2,
@@ -105,15 +105,15 @@ export const ClinicSelector = ({ clinics, selectedClinic, onClinicSelect, disabl
             <ListItemText
               primary={
                 <Typography
-                  sx={{ fontWeight: selectedClinic?.id === clinic.id ? 600 : 400, fontSize: 15, color: 'white' }}>
-                  {clinic.name}
+                  sx={{ fontWeight: selectedClub?.id === Club.id ? 600 : 400, fontSize: 15, color: 'white' }}>
+                  {Club.name}
                 </Typography>
               }
             />
           </MenuItem>
         ))}
         <MenuItem
-          onClick={handleCreateClinic}
+          onClick={handleCreateClub}
           sx={{
             color: '#9da2fa',
             fontWeight: 500,
@@ -129,7 +129,7 @@ export const ClinicSelector = ({ clinics, selectedClinic, onClinicSelect, disabl
           <ListItemIcon sx={{ minWidth: 32, color: '#9da2fa' }}>
             <Add fontSize="small" />
           </ListItemIcon>
-          {t('clinic-selector.create-clinic')}
+          {t('Club-selector.create-Club')}
         </MenuItem>
       </Menu>
     </>

@@ -1,2 +1,2 @@
-export { ClinicSelector } from './clinic-selector'
-export type { Clinic } from './clinic-selector'
+export { ClubSelector } from './clinic-selector'
+export type { Club } from './clinic-selector'
