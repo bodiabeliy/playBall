@@ -13,7 +13,7 @@ import { BranchesApi } from '../../api/branches-api'
 import { AddBranchDialog } from '../../ui/add-branch'
 import { BackBtn } from '../../../back-btn'
 
-export function WorkersManagement({ setSubtitle }: { setSubtitle: (subtitle: string) => void }) {
+export function WorkersManagement() {
   const [activeTab, setActiveTab] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
@@ -72,7 +72,6 @@ export function WorkersManagement({ setSubtitle }: { setSubtitle: (subtitle: str
 
   const handleEditWorker = (worker: Worker) => {
     setEditingWorker(worker)
-    setSubtitle(`Працівники / ${worker.name}`)
   }
 
   const handleDeleteWorker = async (worker: Worker) => {
@@ -108,12 +107,6 @@ export function WorkersManagement({ setSubtitle }: { setSubtitle: (subtitle: str
     console.log('Saving branch')
     setOpenAddBranchDialog(false)
   }
-
-  useEffect(() => {
-    if (!editingWorker) {
-      setSubtitle('Працівники')
-    }
-  }, [editingWorker, setSubtitle])
 
   return (
     <>

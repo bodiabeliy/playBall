@@ -1,15 +1,12 @@
 import { Box, useTheme, useMediaQuery, Tabs, Tab } from '@mui/material'
-import { useEffect } from 'react'
 import { TAB_LABELS } from '../../model/constants'
 import { usePriceSettings } from '../../model/hooks'
 import { PriceContent } from '../../ui/price-content/price-content'
 import { NomenclatureContent } from '../../ui/nomenclature-content/nomenclature-content'
 import { TemplatesContent } from '../../ui/price-content/templates-content'
 
-export function PriceSettings({ setSubtitle }: { setSubtitle: (subtitle: string) => void }) {
-  useEffect(() => {
-    setSubtitle('Прайс')
-  }, [setSubtitle])
+export function PriceSettings() {
+
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))

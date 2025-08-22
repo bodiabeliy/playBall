@@ -31,8 +31,7 @@ import PencilIcon from '../shared/assets/icons/pencil.svg?react'
 import RefreshIcon from '../shared/assets/icons/refresh.svg?react'
 import CheckIcon from '../shared/assets/icons/check-green.svg?react'
 import File2Icon from '../shared/assets/icons/file2.svg?react'
-import { ClubSelector } from '../shared/components/ui/club-selector'
-import { MOCK_CLUBS } from '../shared/components/layout/sidebar'
+
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -177,7 +176,7 @@ export function FinancialManagementPage() {
   })
 
   return (
-    <SidebarLayout title="Банк і каса" rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
+    <SidebarLayout title="Банк і каса">
       <Box sx={{ display: 'flex', height: 'calc(100vh - 66px)', bgcolor: 'white' }}>
         <Box
           sx={{

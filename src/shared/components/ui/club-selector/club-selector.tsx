@@ -8,16 +8,11 @@ import { useTranslation } from 'react-i18next'
 import { getCreateClubRoute } from '../../../types/routes'
 import { useNavigate } from 'react-router'
 import { useSidebarLayoutContext } from '../../../contexts/sidebar-layout-context'
+import type { IClub } from '../../../../app/providers/types/club';
 
-export interface Club {
-  id: string
-  name: string
-  address?: string
-  isActive?: boolean
-}
 
 interface ClubSelectorProps {
-  clubs: Club[]
+  clubs: IClub[]
   disabled?: boolean
 }
 
@@ -35,7 +30,7 @@ export const ClubSelector = ({ clubs, disabled = false }: ClubSelectorProps) => 
   const handleClose = () => setAnchorEl(null)
 
   
-  const handleClubSelect = (club: Club) => {
+  const handleClubSelect = (club: IClub) => {
     setCurrentClubClub(club)
     handleClose()
   }

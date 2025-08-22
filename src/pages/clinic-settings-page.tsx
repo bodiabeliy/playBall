@@ -5,11 +5,9 @@ import { SettingsContent } from '../widgets/settings-page/components/settings-co
 import { SidebarLayout } from '../shared'
 import { SettingsNavigationMobile } from '../widgets/settings-page/components/settings-navigation/settings-navigation-mobile'
 
-import { ClubSelector } from '../shared/components/ui/club-selector'
-import { MOCK_CLUBS } from '../shared/components/layout/sidebar/model'
 
-export function ClinicSettingsPage() {
-  const [subtitle, setSubtitle] = useState('')
+
+export function ClubSettingsPage() {
   const theme = useTheme()
 
   const isSmallDesktop = useMediaQuery(theme.breakpoints.down('lg'))
@@ -20,20 +18,18 @@ export function ClinicSettingsPage() {
 
   return (
     <SidebarLayout
-      title="Налаштування"
-      subtitle={subtitle}
-      rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}
-      >
+      title=" "
+    >
       {isMobile ? (
         <>
           {activeTabMobile === null && <SettingsNavigationMobile onTabChange={setActiveTabMobile} />}
-          {activeTabMobile !== null ? <SettingsContent activeTab={activeTabMobile} setSubtitle={setSubtitle} /> : null}
+          {activeTabMobile !== null ? <SettingsContent activeTab={activeTabMobile} /> : null}
         </>
       ) : (
         <Box
           sx={{ display: 'grid', gridTemplateColumns: isSmallDesktop ? '1fr' : '2fr 10fr', gap: '24px', mt: '16px' }}>
           <SettingsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-          <SettingsContent activeTab={activeTab} setSubtitle={setSubtitle} />
+          <SettingsContent activeTab={activeTab} />
         </Box>
       )}
     </SidebarLayout>

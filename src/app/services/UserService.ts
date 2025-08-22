@@ -8,7 +8,7 @@ import {
   isAuth,
 } from '../providers/reducers/UserSlice'
 import type { AppDispatch } from '../providers/store'
-import type { IUser, IUserDto } from '../providers/types'
+import type { IUser, IUserDto } from '../providers/types/user'
 
 import { CONFIRMATION_TYPES } from './api/constants'
 
@@ -28,13 +28,14 @@ export const registerUser = (formData: IUser) => async (dispatch: AppDispatch) =
 export const login = (formData: IUserDto) => async (dispatch: AppDispatch) => {
   const { email, password } = formData
   try {
-    const response = await $api.post(`/auth/login`, {
+    const response = await $api.post(`/club-panel/auth/sign-in`, {
       email,
       password,
     })
-    console.log('response.data', response.data)
     dispatch(isAuth(true))
-    localStorage.setItem('token', response.data.accessToken)
+    localStorage.setItem('token', response.data.access_token)
+    localStorage.setItem('refresh', response.data.refresh_token)
+
     return { success: true }
   } catch (error) {
     let errorMessage = ''
@@ -48,9 +49,10 @@ export const login = (formData: IUserDto) => async (dispatch: AppDispatch) => {
 
 export const logout = () => async (dispatch: AppDispatch) => {
   try {
-    await $api.post(`/auth/logout`)
+    await $api.post(`/club-panel/auth/sign-out`)
     dispatch(isAuth(false))
     localStorage.removeItem('token')
+    localStorage.removeItem('refresh')
   } catch (error) {
     let errorMessage = ''
     if (request.isAxiosError(error) && error.response) {
@@ -69,7 +71,6 @@ export const getUser = () => async (dispatch: AppDispatch) => {
     })
     dispatch(getCurrentUser(response.data))
   } catch (error) {
-    localStorage.removeItem('token')
     let errorMessage = ''
     if (request.isAxiosError(error) && error.response) {
       errorMessage = error.response?.data?.message
@@ -93,7 +94,7 @@ export const checkAuth = () => async () => {
 export const codeRequestConfirmate = (email: string, confirmationType: string) => async (dispatch: AppDispatch) => {
   if (confirmationType == CONFIRMATION_TYPES.resetPassword) {
     try {
-      const response = await $api.post(`/auth/request-password-reset`, { email })
+      const response = await $api.post(`/club-panel/password/request-reset`, { email })
       console.log('response request confirm', response.data)
       dispatch(getCurrentUserNotification(response.data?.message))
     } catch (error) {
@@ -104,25 +105,25 @@ export const codeRequestConfirmate = (email: string, confirmationType: string) =
       }
     }
   }
-  if (confirmationType == CONFIRMATION_TYPES.registerAccount) {
-    try {
-      const response = await $api.post(`/auth/request-confirm-email`, { email })
-      console.log('response request confirm', response.data)
-    } catch (error) {
-      let errorMessage = ''
-      if (request.isAxiosError(error) && error.response) {
-        errorMessage = error.response?.data?.message
-        dispatch(getCurrentUserNotification(errorMessage))
-      }
-    }
-  }
+  // if (confirmationType == CONFIRMATION_TYPES.registerAccount) {
+  //   try {
+  //     const response = await $api.post(`/auth/request-confirm-email`, { email })
+  //     console.log('response request confirm', response.data)
+  //   } catch (error) {
+  //     let errorMessage = ''
+  //     if (request.isAxiosError(error) && error.response) {
+  //       errorMessage = error.response?.data?.message
+  //       dispatch(getCurrentUserNotification(errorMessage))
+  //     }
+  //   }
+  // }
 }
 
 export const codeConfirmate = (email: string, code: string) => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.post(`/auth/confirm-email`, { email, code })
-    localStorage.setItem('token', response.data.accessToken)
-    dispatch(isAuth(true))
+    await $api.post(`/club-panel/password/verify-reset`, { email, code })
+    // localStorage.setItem('token', response.data.accessToken)
+    // dispatch(isAuth(true))
   } catch (error) {
     let errorMessage = ''
     if (request.isAxiosError(error) && error.response) {
@@ -133,7 +134,7 @@ export const codeConfirmate = (email: string, code: string) => async (dispatch: 
 }
 export const resetPassword = (email: string, code: string, password: string) => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.post(`/auth/reset-password`, { email, code, password })
+    const response = await $api.post(`/club-panel/password/confirm-reset`, { email, code, password })
     console.log('success', response.data)
     localStorage.setItem('token', response.data.accessToken)
   } catch (error) {

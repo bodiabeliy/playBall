@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type { IUser } from '../types/index'
+import type { IUser } from '../types/user'
 import type { RootState } from '../store'
 
 export interface userState {

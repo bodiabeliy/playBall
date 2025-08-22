@@ -22,8 +22,7 @@ import MoreVerticalIcon from '../../shared/assets/icons/more-vertical.svg?react'
 import ViewSwitcher from '../../features/leads/ui/view-switcher/view-switcher'
 import { LeadSelector } from '../../shared/components/ui/dropdown'
 import { useTranslation } from 'react-i18next'
-import { ClubSelector } from '../../shared/components/ui/club-selector'
-import { MOCK_CLUBS } from '../../shared/components/layout/sidebar'
+
 
 export function LeadsPage() {
   const { t } = useTranslation('customers')
@@ -229,7 +228,7 @@ export function LeadsPage() {
   return (
     <SidebarLayout
       title={isMobile ? ' ' : t('pageTitle')}
-      rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
+      >
       <Box
         sx={{
           p: isMobile ? 2 : 4,

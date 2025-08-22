@@ -2,7 +2,7 @@ import { SchedulePage } from '../../pages/schedule'
 import { SignUpPage } from '../../pages/sign-up'
 import { LoginPage } from '../../pages/login'
 import { ForgotPasswordPage } from '../../pages/forgot-password'
-import { ClinicSettingsPage } from '../../widgets'
+import { ClubSettingsPage } from '../../widgets'
 import { LostConsultationPage } from '../../pages/lost-consultation'
 
 import { LeadsPage } from '../../pages/customers/customers'
@@ -25,7 +25,7 @@ import {
   getBookingeRoute,
   getSettingsRoute,
   getSignUpRoute,
-  getClinicSettingsRoute,
+  getClubSettingsRoute,
   getLostConsultationRoute,
   getOverdueServicesRoute,
   getPatientsRoute,
@@ -102,8 +102,8 @@ const authorizedRoutes = [
     path: getSettingsRoute(),
   },
   {
-    element: <ClinicSettingsPage />,
-    path: getClinicSettingsRoute(),
+    element: <ClubSettingsPage />,
+    path: getClubSettingsRoute(),
   },
   {
     element: <LostConsultationPage />,
@@ -162,7 +162,7 @@ export function RouteProvider() {
 
   return (
     <Routes>
-      {isAuthorization
+      {isAuthorization || token
         ? authorizedRoutes.map((route) => <Route key={route.path} element={route.element} path={route.path} />)
         : unAuthorizedRoutes.map((route) => <Route key={route.path} element={route.element} path={route.path} />)}
     </Routes>

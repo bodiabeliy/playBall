@@ -1,12 +1,5 @@
 import { Tab, Tabs, useMediaQuery, useTheme } from '@mui/material'
-import ProfileIcon from '../../../../shared/assets/icons/settings/profile.svg?react'
-import WorkersIcon from '../../../../shared/assets/icons/settings/workers.svg?react'
-import ScheduleIcon from '../../../../shared/assets/icons/settings/schedule.svg?react'
-import CashIcon from '../../../../shared/assets/icons/settings/cash.svg?react'
-import IntegrationsIcon from '../../../../shared/assets/icons/settings/integrations.svg?react'
-import SettingsIcon from '../../../../shared/assets/icons/settings/settings.svg?react'
-import DictionaryIcon from '../../../../shared/assets/icons/settings/dictionary.svg?react'
-import PriceIcon from '../../../../shared/assets/icons/settings/price.svg?react'
+
 import { TabLabel } from '../../../../shared/components/ui/tab-label'
 
 interface SettingsNavigationProps {
@@ -16,7 +9,7 @@ interface SettingsNavigationProps {
 
 export function SettingsNavigation({ activeTab, onTabChange }: SettingsNavigationProps) {
   const theme = useTheme()
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'))
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'))
 
   return (
     <Tabs
@@ -25,80 +18,108 @@ export function SettingsNavigation({ activeTab, onTabChange }: SettingsNavigatio
         onTabChange(newValue)
       }}
       variant="scrollable"
-      orientation={isTablet ? 'horizontal' : 'vertical'}
+      orientation={!isTablet ? 'horizontal' : 'vertical'}
       sx={{
         '& .MuiTabs-flexContainer': {
-          flexDirection: isTablet ? 'row' : 'column',
-          justifyContent: 'flex-start',
+          flexDirection: !isTablet ? 'row' : 'column',
+          justifyContent: 'space-around',
           alignItems: 'flex-start',
         },
         '& .MuiTabs-indicator': {
-          backgroundColor: '#0029d9',
+          display: 'none',
         },
       }}>
       <Tab
         sx={{
+          minHeight:"30px",
+          borderRadius: '8px',
+          fontWeight: 500,
+          fontSize: '16px',
+           color: '#DFDFDF',
+          background: 'transparent',
+          transition: 'background 0.2s',
           '&.Mui-selected': {
-            color: '#0029d9',
+            color: '#fff',
+            background: '#034C53',
+            borderRadius: '8px',
           },
+          border:"1px solid #DFDFDF"
         }}
-        label={<TabLabel icon={<ProfileIcon />} label="Профіль клініки" />}
+        label={<TabLabel label="Arena" />}
       />
       <Tab
         sx={{
+          minHeight:"30px",
+          borderRadius: '8px',
+          fontWeight: 500,
+          fontSize: '16px',
+           color: '#DFDFDF',
+          background: 'transparent',
+          transition: 'background 0.2s',
           '&.Mui-selected': {
-            color: '#0029d9',
+            color: '#fff',
+            background: '#034C53',
+            borderRadius: '8px',
           },
+          border:"1px solid #DFDFDF"
         }}
-        label={<TabLabel icon={<WorkersIcon />} label="Працівники" />}
+        label={<TabLabel label="Security & Password" />}
       />
       <Tab
         sx={{
+          minHeight:"30px",
+          borderRadius: '8px',
+          fontWeight: 500,
+          fontSize: '16px',
+           color: '#DFDFDF',
+          background: 'transparent',
+          transition: 'background 0.2s',
           '&.Mui-selected': {
-            color: '#0029d9',
+            color: '#fff',
+            background: '#034C53',
+            borderRadius: '8px',
           },
+          border:"1px solid #DFDFDF"
         }}
-        label={<TabLabel icon={<ScheduleIcon />} label="Розклад" />}
+        label={<TabLabel label="Cancellation Policy" />}
       />
       <Tab
         sx={{
+          minHeight:"30px",
+          borderRadius: '8px',
+          fontWeight: 500,
+          fontSize: '16px',
+           color: '#DFDFDF',
+          background: 'transparent',
+          transition: 'background 0.2s',
           '&.Mui-selected': {
-            color: '#0029d9',
+            color: '#fff',
+            background: '#034C53',
+            borderRadius: '8px',
           },
+          border:"1px solid #DFDFDF"
+
         }}
-        label={<TabLabel icon={<PriceIcon />} label="Прайс" />}
+        label={<TabLabel  label="Access control settings" />}
       />
       <Tab
         sx={{
+          minHeight:"30px",
+          borderRadius: '8px',
+          fontWeight: 500,
+          fontSize: '16px',
+           color: '#DFDFDF',
+          background: 'transparent',
+          transition: 'background 0.2s',
           '&.Mui-selected': {
-            color: '#0029d9',
+            color: '#fff',
+            background: '#034C53',
+            borderRadius: '8px',
           },
+          border:"1px solid #DFDFDF"
+
         }}
-        label={<TabLabel icon={<CashIcon />} label="Налаштування ЗП, бонуси" />}
-      />
-      <Tab
-        sx={{
-          '&.Mui-selected': {
-            color: '#0029d9',
-          },
-        }}
-        label={<TabLabel icon={<IntegrationsIcon />} label="Інтеграції" />}
-      />
-      <Tab
-        sx={{
-          '&.Mui-selected': {
-            color: '#0029d9',
-          },
-        }}
-        label={<TabLabel icon={<SettingsIcon />} label="Загальні налаштування" />}
-      />
-      <Tab
-        sx={{
-          '&.Mui-selected': {
-            color: '#0029d9',
-          },
-        }}
-        label={<TabLabel icon={<DictionaryIcon />} label="Довідники" />}
+        label={<TabLabel label="Lighting management settings" />}
       />
     </Tabs>
   )

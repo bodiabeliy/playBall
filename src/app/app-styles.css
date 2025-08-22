@@ -93,6 +93,11 @@ a {
   padding: 8px !important;
 }
 
+.MuiTab-root {
+  padding: 0px 15px !important;
+}
+
+
 @media (max-width: 768px) {
   html,
   body {

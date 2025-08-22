@@ -18,8 +18,7 @@ import { mockPatients } from '../features/patients/model/constants'
 import type { Patient } from '../features/patients/model/types'
 import type { SendMessageData } from '../features/patients/ui/send-message-modal/send-message-modal'
 import type { MassActionsData } from '../features/patients/ui/mass-actions-modal/mass-actions-modal'
-import { ClubSelector } from '../shared/components/ui/club-selector'
-import { MOCK_CLUBS } from '../shared/components/layout/sidebar'
+
 
 export function PatientsPage() {
   const theme = useTheme()
@@ -231,7 +230,7 @@ export function PatientsPage() {
   }
 
   return (
-    <SidebarLayout title="Пацієнти" rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
+    <SidebarLayout title="Пацієнти">
       <Box
         sx={{
           p: isMobile ? 2 : 4,

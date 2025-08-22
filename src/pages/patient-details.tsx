@@ -4,8 +4,7 @@ import { SidebarLayout } from '../shared'
 import { PatientDetailsWidget } from '../widgets/patient-details'
 import { PatientDetailsActions } from '../features/patient-details'
 import { mockPatients } from '../features/patients/model/constants'
-import { ClubSelector } from '../shared/components/ui/club-selector'
-import { MOCK_CLUBS } from '../shared/components/layout/sidebar'
+
 
 export function PatientDetailsPage() {
   const { id } = useParams<{ id: string }>()
@@ -14,7 +13,7 @@ export function PatientDetailsPage() {
 
   if (!patient) {
     return (
-      <SidebarLayout title="Пацієнт не знайдено" rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
+      <SidebarLayout title="Пацієнт не знайдено">
         <Box sx={{ p: 4 }}>
           <Typography>Пацієнт з ID {id} не знайдено</Typography>
         </Box>

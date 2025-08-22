@@ -1,19 +1,22 @@
-import { type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { Box, Drawer, useMediaQuery, useTheme } from '@mui/material'
 import { Sidebar } from './sidebar'
 import { useSidebarLayoutContext } from '../../contexts/sidebar-layout-context'
 import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import { Menu as MenuIcon } from '@mui/icons-material'
 import BurgerIcon from '../../assets/icons/burger.svg?react'
+import { ClubSelector } from '../ui/club-selector/club-selector'
+import { useAppDispatch, useAppSelector } from '../../../app/providers/store-helpers'
+import { clubsSelector } from '../../../app/providers/reducers/ClubSlice'
+import { getAllClubs } from '../../../app/services/ClubService'
 
 interface SidebarLayoutProps {
   children: ReactNode
   title?: string
   subtitle?: string
-  rightSidebar: ReactNode
 }
 
-export function SidebarLayout({ children, title, subtitle, rightSidebar }: SidebarLayoutProps) {
+export function SidebarLayout({ children, title, subtitle }: SidebarLayoutProps) {
   const theme = useTheme()
   const {
     isMobile,
@@ -29,6 +32,14 @@ export function SidebarLayout({ children, title, subtitle, rightSidebar }: Sideb
   const isTablet = useMediaQuery(theme.breakpoints.down('md'))
 
   const drawerContent = <Sidebar isCollapsed={isMobile ? false : isSidebarCollapsed} />
+
+  const dispatch = useAppDispatch()
+  const clubsList = useAppSelector(clubsSelector)
+
+  useEffect(() => {
+    dispatch(getAllClubs())
+  }, [])
+
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', width: '100vw', bgcolor: '#f8f9fa', position: 'relative' }}>
@@ -173,7 +184,9 @@ export function SidebarLayout({ children, title, subtitle, rightSidebar }: Sideb
                   )}
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{rightSidebar}</Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ClubSelector clubs={clubsList} />
+              </Box>
             </Toolbar>
           </AppBar>
         ) : null}

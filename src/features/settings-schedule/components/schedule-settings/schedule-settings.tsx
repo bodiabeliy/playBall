@@ -1,5 +1,5 @@
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { SettingsSection } from '../settings-section/settings-section'
 import { WorkingDaysSection } from '../working-days-section/working-days-section'
 import { DaysOffSection } from '../days-off-section/days-off-section'
@@ -7,10 +7,8 @@ import { CabinetsManagementSection } from '../cabinets-management-section/cabine
 import type { Cabinet } from '../cabinets-management-section/cabinets-management-section'
 import type { WorkingDay } from '../working-days-section/working-days-section'
 
-export function ScheduleSettings({ setSubtitle }: { setSubtitle: (subtitle: string) => void }) {
-  useEffect(() => {
-    setSubtitle('Розклад')
-  }, [setSubtitle])
+export function ScheduleSettings() {
+
 
   const [settings, setSettings] = useState({ showVisitsInColor: true, minFreeTime: '' })
   const [workingDays, setWorkingDays] = useState<WorkingDay[]>([])

@@ -219,7 +219,6 @@ export function ScheduleProvider({ children }: ScheduleProviderProps) {
     async (updatedEvent: Event) => {
       const response = await updateEvent(updatedEvent)
       if (response.success) {
-        await refetchScheduleData()
         return response.data
       } else {
         throw new Error(response.error || 'Failed to save event')
@@ -232,7 +231,6 @@ export function ScheduleProvider({ children }: ScheduleProviderProps) {
     async (eventId: number) => {
       const response = await deleteEvent(eventId)
       if (response.success) {
-        await refetchScheduleData()
         return response.data
       } else {
         throw new Error(response.error || 'Failed to delete event')
@@ -245,7 +243,6 @@ export function ScheduleProvider({ children }: ScheduleProviderProps) {
     async (newEvent: Omit<Event, 'id'>) => {
       const response = await createEvent(newEvent)
       if (response.success) {
-        await refetchScheduleData()
         return response.data
       } else {
         throw new Error(response.error || 'Failed to create event')

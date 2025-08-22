@@ -1,5 +1,5 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { DICTIONARY_SETTINGS_TABS } from '../../model/constant'
 import ChevronRightIcon from '../../../../shared/assets/icons/chevron.svg?react'
 import { LeadsStatuses } from '../leads-statuses/leads-statuses'
@@ -8,14 +8,11 @@ const DICTIONARY_SETTINGS_COMPONENTS = {
   'leads-statuses': LeadsStatuses,
 }
 
-export function DictionarySettings({ setSubtitle }: { setSubtitle: (subtitle: string) => void }) {
+export function DictionarySettings() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [activeTab, setActiveTab] = useState<string | null>(null)
 
-  useEffect(() => {
-    setSubtitle('Довідники')
-  }, [setSubtitle])
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab)

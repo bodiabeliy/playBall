@@ -17,17 +17,18 @@ import { useMediaQuery } from '@mui/material'
 import FileUpload from '../features/file-upload'
 import { useState } from 'react'
 import { SidebarLayout } from '../shared'
-import { ClubSelector } from '../shared/components/ui/club-selector'
-import { MOCK_CLUBS } from '../shared/components/layout/sidebar/model'
+
 
 export function CreateClubPage() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [isCreateClinicDialogOpen, setIsCreateClinicDialogOpen] = useState(false)
+
+
   return (
     <SidebarLayout
       title="Створення клініки"
-      rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
+      >
       <Box
         sx={{
           p: isMobile ? 2 : 4,

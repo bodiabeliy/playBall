@@ -20,8 +20,7 @@ import { FilterList, KeyboardArrowLeft } from '@mui/icons-material'
 import { SidebarLayout } from '../shared'
 import { SearchField } from '../shared/components'
 import { PaginationFooter } from '../features/settings-workers/ui/pagination-footer'
-import { ClubSelector } from '../shared/components/ui/club-selector'
-import { MOCK_CLUBS } from '../shared/components/layout/sidebar'
+
 
 interface Patient {
   id: string
@@ -175,7 +174,7 @@ export function LostConsultationPage() {
   const totalRows = filteredPatients.length
 
   return (
-    <SidebarLayout title="Пацієнти" rightSidebar={<ClubSelector clubs={MOCK_CLUBS} />}>
+    <SidebarLayout title="Пацієнти">
       <Box
         sx={{
           p: isMobile ? 2 : 4,
