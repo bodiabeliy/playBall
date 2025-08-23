@@ -79,9 +79,10 @@ export const getUser = () => async (dispatch: AppDispatch) => {
   }
 }
 // not realize yet
-export const checkAuth = () => async () => {
+export const refreshCurrentToken = () => async () => {
   try {
-    const response = await $api.get(`/auth/refresh`, { withCredentials: true })
+    const response = await $api.get(`/club-panel/auth/token/refresh`, 
+    { withCredentials: true })
     console.log('response check', response)
 
     console.log('response.data', response.data)

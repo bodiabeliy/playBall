@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { registerUser } from '../app/services/UserService'
 import { useAppDispatch, useAppSelector } from '../app/providers/store-helpers'
 
-import type { IUser } from '../app/providers/types/index'
+import type { IUser } from '../app/providers/types/user'
 import { getLoginRoute } from '../shared/types/routes'
 
 import PhoneInput from 'react-phone-number-input'
@@ -11,7 +11,6 @@ import PhoneInput from 'react-phone-number-input'
 import { useFormValidation } from '../shared/hooks/use-form-field'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 
-import MuiPhoneInput from '../shared/components/ui/mui-phone-input/mui-phone-input'
 
 import { Typography, Button, InputAdornment, TextField, Box, useTheme, useMediaQuery, IconButton } from '@mui/material'
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
@@ -192,7 +191,7 @@ export function SignUpPage() {
               defaultCountry="UA"
               className={isValidated && errors.phone ? 'PhoneInput error' : 'PhoneInput'}
               maxLength={9}
-              countrySelectComponent={MuiPhoneInput}
+              // countrySelectComponent={MuiPhoneInput}
             />
           </Box>
           <TextField

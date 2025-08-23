@@ -15,7 +15,9 @@ const initialState: clubState = {
   club: {
     name: '',
     address: '',
-    city: ''
+    city: '',
+    id: 0,
+    logo: undefined
   } ,
   clubs:[],
   isLoading: false,

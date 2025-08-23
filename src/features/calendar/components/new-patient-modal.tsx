@@ -25,9 +25,7 @@ import 'react-phone-number-input/style.css'
 import PlusIcon from '../../../shared/assets/icons/plus.svg?react'
 import type { NewPatient as ApiNewPatient } from '../api/patients'
 import { isValidPhoneNumber } from 'react-phone-number-input'
-import '../../../shared/styles/phone-input.css'
 import { UniversalDatePicker } from '../../../shared/components'
-import MuiPhoneInput from '../../../shared/components/ui/mui-phone-input/mui-phone-input'
 
 interface NewPatientModalProps {
   open: boolean
@@ -185,7 +183,7 @@ export const NewPatientModal: React.FC<NewPatientModalProps> = ({ open, onClose,
             defaultCountry="UA"
             className={errors.phone ? 'PhoneInput error' : 'PhoneInput'}
             maxLength={20}
-            countrySelectComponent={MuiPhoneInput}
+            // countrySelectComponent={MuiPhoneInput}
           />
           <FormHelperText>{errors.phone}</FormHelperText>
         </FormControl>

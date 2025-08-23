@@ -30,11 +30,13 @@ export const getAllClubs = () => async (dispatch: AppDispatch) => {
 
 export const getClubById = (id:number) => async (dispatch: AppDispatch) => {
   try {
+    
     const response = await $api.get(`/clubs/${id}`, {
       headers: {
         Authorization: localStorage.getItem('token'),
       },
     })
+    console.log("response.data by id", response.data);
     dispatch(getCurrentClub(response.data))
   } catch (error) {
     let errorMessage = ''

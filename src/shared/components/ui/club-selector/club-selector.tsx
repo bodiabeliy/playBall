@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { MouseEvent } from 'react'
 import { Button, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
-import SportsTennisIcon from '@mui/icons-material/SportsTennis';
+// import SportsTennisIcon from '@mui/icons-material/SportsTennis';
 import { Add } from '@mui/icons-material'
 import ClubIcon from '../../../assets/icons/club.svg?react'
 import { useTranslation } from 'react-i18next'
@@ -13,10 +13,12 @@ import type { IClub } from '../../../../app/providers/types/club';
 
 interface ClubSelectorProps {
   clubs: IClub[]
+  selectedClub?: IClub
+  onClubSelect: (clinic: IClub) => void
   disabled?: boolean
 }
 
-export const ClubSelector = ({ clubs, disabled = false }: ClubSelectorProps) => {
+export const ClubSelector = ({ clubs, selectedClub, onClubSelect, disabled = false }: ClubSelectorProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -30,15 +32,18 @@ export const ClubSelector = ({ clubs, disabled = false }: ClubSelectorProps) => 
   const handleClose = () => setAnchorEl(null)
 
   
-  const handleClubSelect = (club: IClub) => {
-    setCurrentClubClub(club)
-    handleClose()
-  }
+
   const handleCreateClub = () => {
     handleClose()
     navigate(getCreateClubRoute())
     handleDrawerToggle()
   }
+
+  const handleClubSelect = useCallback((club: IClub) => {
+      onClubSelect(club)
+      setCurrentClubClub(club)
+      handleClose()
+  },[clubs])
 
   return (
     <>
@@ -61,7 +66,7 @@ export const ClubSelector = ({ clubs, disabled = false }: ClubSelectorProps) => 
         
         }}
         startIcon={<ClubIcon style={{ fontSize: 18, }} />}>
-        {currentClub?.name || ''}
+        {selectedClub?.name != '' ? selectedClub?.name : t('clinic-selector.create-clinic')}
       </Button>
       <Menu
         anchorEl={anchorEl}
@@ -83,15 +88,16 @@ export const ClubSelector = ({ clubs, disabled = false }: ClubSelectorProps) => 
             selected={currentClub?.id === Club.id}
             onClick={() => handleClubSelect(Club)}
             sx={{
-              bgcolor: currentClub?.id === Club.id ? '#F6F6F6' : 'transparent',
-              '&:hover': { bgcolor: '#F6F6F6' },
+              '&.Mui-selected': { backgroundColor: 'rgba(3, 76, 83, 0.5)' },
+              '&.Mui-selected:hover': { backgroundColor: 'rgba(3, 76, 83, 0.5)' },
+              '&:hover': { backgroundColor: 'rgba(3, 76, 83, 0.1)' },
               px: 2,
               py: 1.2,
               gap: 1,
             }}>
-            <ListItemIcon sx={{ minWidth: 32, }}>
+            {/* <ListItemIcon sx={{ minWidth: 32, }}>
               <SportsTennisIcon fontSize="small" />
-            </ListItemIcon>
+            </ListItemIcon> */}
             <ListItemText
               primary={
                 <Typography
@@ -111,7 +117,7 @@ export const ClubSelector = ({ clubs, disabled = false }: ClubSelectorProps) => 
             px: 2,
             py: 1.2,
             '&:hover': {
-              bgcolor: '#F6F6F6',
+              bgcolor: 'rgba(3, 76, 83, 1, 0.5)',
             },
           }}>
           <ListItemIcon sx={{ minWidth: 32,  }}>

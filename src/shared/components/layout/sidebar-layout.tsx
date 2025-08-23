@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+import { useCallback, useEffect, type ReactNode } from 'react'
 import { Box, Drawer, useMediaQuery, useTheme } from '@mui/material'
 import { Sidebar } from './sidebar'
 import { useSidebarLayoutContext } from '../../contexts/sidebar-layout-context'
@@ -7,8 +7,9 @@ import { Menu as MenuIcon } from '@mui/icons-material'
 import BurgerIcon from '../../assets/icons/burger.svg?react'
 import { ClubSelector } from '../ui/club-selector/club-selector'
 import { useAppDispatch, useAppSelector } from '../../../app/providers/store-helpers'
-import { clubsSelector } from '../../../app/providers/reducers/ClubSlice'
-import { getAllClubs } from '../../../app/services/ClubService'
+import { clubSelector, clubsSelector } from '../../../app/providers/reducers/ClubSlice'
+import { getAllClubs, getClubById } from '../../../app/services/ClubService'
+import type { IClub } from '../../../app/providers/types/club'
 
 interface SidebarLayoutProps {
   children: ReactNode
@@ -35,10 +36,19 @@ export function SidebarLayout({ children, title, subtitle }: SidebarLayoutProps)
 
   const dispatch = useAppDispatch()
   const clubsList = useAppSelector(clubsSelector)
+  const currentClub = useAppSelector(clubSelector)
 
   useEffect(() => {
     dispatch(getAllClubs())
   }, [])
+
+
+    const handleClinicSelect = useCallback(
+    (club: IClub) => {
+      dispatch(getClubById(club.id))
+    },
+    [clubsList, currentClub]
+  )
 
 
   return (
@@ -185,7 +195,7 @@ export function SidebarLayout({ children, title, subtitle }: SidebarLayoutProps)
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ClubSelector clubs={clubsList} />
+                <ClubSelector clubs={clubsList} selectedClub={currentClub} onClubSelect={handleClinicSelect} />
               </Box>
             </Toolbar>
           </AppBar>
