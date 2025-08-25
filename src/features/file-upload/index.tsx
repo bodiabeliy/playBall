@@ -1,7 +1,8 @@
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useRef, useState, useEffect } from 'react'
-import UploadFileIcon from '../../shared/assets/icons/upload-file.svg?react'
 import { Box, Typography } from '@mui/material'
+
+import UploadIcon from "../../shared/assets/icons/upload.svg?react"
 
 export interface FileUploadProps {
   onFileChange?: (files: File[] | null) => void
@@ -134,21 +135,19 @@ const FileUpload = ({
   return (
     <Box sx={{ mt: 2 }}>
       {type === 'big' ? (
-        <Box sx={{ mb: 2 }}>
-          {/* Big Type Layout for Banner (red border) */}
+        <Box sx={{ mb: 2,
+          border: '1px dashed rgba(21, 22, 24, 0.12)',
+          }}>
           <Box sx={{ 
             display: 'flex',
             flexDirection: 'column',
             gap: 2
           }}>
-              <Typography variant="caption" sx={{ color: '#ff0000', fontWeight: 'bold' }}>
-              {helperText || 'Banner'}
-            </Typography>            {files.length > 0 ? (
+
+            {files.length > 0 ? (
               <Box
                 sx={{
                   position: 'relative',
-                  border: '2px solid #ff0000',
-                  borderRadius: 2,
                   overflow: 'hidden',
                   height: '160px',
                   width: '100%',
@@ -221,8 +220,6 @@ const FileUpload = ({
             ) : (
               <Box
                 sx={{
-                  border: '2px solid #ff0000',
-                  borderRadius: 2,
                   padding: '60px 16px',
                   textAlign: 'center',
                   background: isDragging ? '#f5f7ff' : '#fff',
@@ -245,7 +242,7 @@ const FileUpload = ({
                 onDrop={handleDrop}
                 onClick={() => inputRef.current?.click()}
               >
-                <UploadFileIcon style={{ width: 32, height: 32 }} />
+                <UploadIcon style={{ width: 32, height: 32 }} />
                 <Typography variant="body2" sx={{ mt: 2 }}>
                   Upload {helperText}
                 </Typography>
@@ -287,8 +284,6 @@ const FileUpload = ({
                       width: 100,
                       height: 100,
                       position: 'relative',
-                      border: '2px solid #ff0000',
-                      borderRadius: 1,
                       overflow: 'hidden'
                     }}
                   >
@@ -380,13 +375,13 @@ const FileUpload = ({
               onDrop={handleDrop}
               onClick={() => inputRef.current?.click()}
             >
-              <Typography variant="caption" sx={{ color: '#ff0000', fontWeight: 'bold', mb: 1 }}>
-                {helperText || 'Club Image'}
-              </Typography>
-              <UploadFileIcon style={{ width: 24, height: 24 }} />
-              <Typography variant="body2" sx={{ mt: 1 }}>
+             <Box sx={{display:"flex", alignItems:"center"}}>
+                <UploadIcon style={{ width: 24, height: 24, margin:4 }} />
+               <Typography variant="caption" sx={{ fontWeight: 'bold'}}>
                 Upload {helperText}
               </Typography>
+             </Box>
+             
               <Typography variant="caption" color="rgba(21, 22, 24, 0.6)" sx={{ mt: 0.5 }}>
                 PDF, PNG or JPG up to 2MB
               </Typography>
@@ -398,13 +393,17 @@ const FileUpload = ({
         <Box>
           <Box
             sx={{
-              border: '1px dashed rgba(21, 22, 24, 0.12)',
-              borderRadius: 2,
-              padding: '24px 16px',
-              textAlign: 'center',
-              background: isDragging ? '#f5f7ff' : '#fff',
-              cursor: 'pointer',
-              transition: 'background 0.2s',
+                border: '1px dashed rgba(21, 22, 24, 0.12)',
+                borderRadius: 2,
+                padding: '12px',
+                textAlign: 'center',
+                background: isDragging ? '#f5f7ff' : '#fff',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
             onDragOver={(e) => {
               e.preventDefault();
@@ -417,10 +416,12 @@ const FileUpload = ({
             onDrop={handleDrop}
             onClick={() => inputRef.current?.click()}
           >
-            <UploadFileIcon />
-            <Typography>
-              Upload {helperText}
-            </Typography>
+           <Box sx={{display:"flex", alignItems:"center"}}>
+               <UploadIcon style={{ width: 24, height: 24, margin:4 }} />
+               <Typography variant="caption" sx={{ fontWeight: 'bold'}}>
+                Upload {helperText}
+              </Typography>
+            </Box>
             <Typography variant="body2" color="rgba(21, 22, 24, 0.6)" sx={{ mt: 1 }}>
               You can upload PDF, PNG or JPG up to 2MB
             </Typography>

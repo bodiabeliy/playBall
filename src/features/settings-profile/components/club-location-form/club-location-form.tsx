@@ -41,7 +41,7 @@ export function ClubLocationForm() {
             sx={{
               padding: 0,
             }}>
-            <Typography variant="h6">Contact info</Typography>
+            <Typography variant="h6">s info</Typography>
           </AccordionSummary>
       </Box>
        <form style={{ width: '100%', marginTop: '16px' }}>

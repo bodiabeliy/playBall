@@ -1,5 +1,5 @@
 import { TabPanel } from '../../../../shared/components/ui/tab-panel'
-import { ClubArenaForm, ClubLocationForm, ClubHourForm, ClubAmenitiesForm } from '../../../../features/settings-profile'
+import { ClubArenaForm, SecurityForm, CancellationPolicyForm, AccessControlForm, LightingManagementForm } from '../../../../features/settings-profile'
 
 
 interface SettingsContentProps {
@@ -13,13 +13,16 @@ export function SettingsContent({ activeTab }: SettingsContentProps) {
         <ClubArenaForm  />
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
-        <ClubLocationForm  />
+        <SecurityForm  />
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
-        <ClubHourForm  />
+        <CancellationPolicyForm  />
       </TabPanel>
       <TabPanel value={activeTab} index={3}>
-        <ClubAmenitiesForm  />
+        <AccessControlForm  />
+      </TabPanel>
+      <TabPanel value={activeTab} index={4}>
+        <LightingManagementForm  />
       </TabPanel>
     </>
   )

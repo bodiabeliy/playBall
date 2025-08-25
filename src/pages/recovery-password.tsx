@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { useMediaQuery } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../app/providers/store-helpers'
 import { useFormValidation } from '../shared/hooks/use-form-field'
-import type { IUserRecoveryPassword } from '../app/providers/types'
+import type { IUserRecoveryPassword } from '../app/providers/types/user'
 
 import { Typography, Button, InputAdornment, TextField, Box, useTheme, IconButton } from '@mui/material'
 import loginBg from '../shared/assets/images/login-bg.png'
