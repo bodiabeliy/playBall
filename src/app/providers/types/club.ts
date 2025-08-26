@@ -24,3 +24,13 @@ export interface IWorkingHours {
   start_time: Date,
   end_time: Date
 }
+
+
+export interface IClubSettings {
+  cancellation_enabled?: boolean,
+  cancellation_duration?: number,
+  light_prior_duration?: number,
+  light_after_duration?: number,
+  access_code_prior_duration?: number,
+  access_code_after_duration?: number
+}

@@ -1,22 +1,25 @@
-import { Box, FormControl, Typography, TextField, Button } from '@mui/material';
+import { Box, FormControl, IconButton, InputAdornment, TextField } from '@mui/material';
 import { useState } from 'react';
+import type { IProfile } from '../../../../app/providers/types/user';
+import ForgotPassword from '../../../../shared/assets/icons/forgot-password.svg?react'
+import { Visibility } from '@mui/icons-material';
 
-type SecurityFormData = {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-};
 
 type SectionProps = {
-  formData: SecurityFormData;
-  handleFieldChange: <T extends keyof SecurityFormData>(field: T, value: SecurityFormData[T]) => void;
+  formData: IProfile;
+  handleFieldChange: <T extends keyof IProfile>(field: T, value: IProfile[T]) => void;
 };
 
 export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) => {
   const [passwordVisible, setPasswordVisible] = useState({
-    newPassword: false,
-    confirmPassword: false
+    current_password: false,
+    new_password: false,
+    repeat_password: false
   });
+
+
+
+
   
   const togglePasswordVisibility = (field: keyof typeof passwordVisible) => {
     setPasswordVisible(prev => ({
@@ -33,34 +36,28 @@ export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) =
 
   return (
     <form style={{ width: '100%' }} onSubmit={handleSubmit}>
-      <Typography variant="h6" sx={{ mb: 1 }}>
-        Change Password
-      </Typography>
-      <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" sx={{ mb: 3 }}>
-        Your password must be at least 8 characters long and include a number or symbol
-      </Typography>
-      
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '360px' }}>
+    
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%'}}>
         <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-          <TextField
-            type={passwordVisible.newPassword ? 'text' : 'password'}
-            value={formData.newPassword}
-            onChange={(e) => handleFieldChange('newPassword', e.target.value)}
+           <TextField
+            // label="Введіть пароль"
+            variant="outlined"
             fullWidth
-            placeholder="Create Password"
+            placeholder='Create Password'
+            value={formData.new_password}
+            onChange={(event) => handleFieldChange('new_password', event.target.value)}
+          
+            type={passwordVisible.new_password ? 'text' : 'password'}
             InputProps={{
               endAdornment: (
-                <Box 
-                  component="span" 
-                  sx={{ 
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    color: 'rgba(21, 22, 24, 0.6)'
-                  }}
-                  onClick={() => togglePasswordVisibility('newPassword')}
-                >
-                  {passwordVisible.newPassword ? 'Hide' : 'Show'}
-                </Box>
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={passwordVisible.new_password ? 'hide the password' : 'display the password'}
+                    onClick={() => togglePasswordVisibility('new_password')}
+                    edge="end">
+                    {passwordVisible.new_password ? <ForgotPassword /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
               ),
             }}
           />
@@ -68,48 +65,28 @@ export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) =
         
         <FormControl fullWidth sx={{ borderRadius: '8px' }}>
           <TextField
-            type={passwordVisible.confirmPassword ? 'text' : 'password'}
-            value={formData.confirmPassword}
-            onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
+            // label="Введіть пароль"
+            variant="outlined"
             fullWidth
-            placeholder="Confirm Password"
+            placeholder='Confirm Password'
+            value={formData.repeat_password}
+            onChange={(event) => handleFieldChange('repeat_password', event.target.value)}
+          
+            type={passwordVisible.repeat_password ? 'text' : 'password'}
             InputProps={{
               endAdornment: (
-                <Box 
-                  component="span" 
-                  sx={{ 
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    color: 'rgba(21, 22, 24, 0.6)'
-                  }}
-                  onClick={() => togglePasswordVisibility('confirmPassword')}
-                >
-                  {passwordVisible.confirmPassword ? 'Hide' : 'Show'}
-                </Box>
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={passwordVisible.repeat_password ? 'hide the password' : 'display the password'}
+                    onClick={() => togglePasswordVisibility('repeat_password')}
+                    edge="end">
+                    {passwordVisible.repeat_password ? <ForgotPassword /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
               ),
             }}
           />
         </FormControl>
-
-        <Box sx={{ mt: 2 }}>
-          <Button 
-            variant="contained" 
-            type="submit"
-            sx={{
-              backgroundColor: '#034C53',
-              borderRadius: '8px',
-              textTransform: 'none',
-              padding: '10px 24px',
-              fontWeight: 500,
-              fontSize: '14px',
-              '&:hover': {
-                backgroundColor: '#023c42'
-              }
-            }}
-          >
-            Update
-          </Button>
-        </Box>
       </Box>
     </form>
   );

@@ -10,61 +10,103 @@ import {
   Select,
   MenuItem,
 } from '@mui/material'
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { UpdateSectionButton } from '../../update-section-button/update-section-button';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
+import type { IClubSettings } from '../../../../app/providers/types/club';
+import { getClubSettings, updateClubSettings } from '../../../../app/services/ClubService';
+import { useAppSelector, useAppDispatch } from '../../../../app/providers/store-helpers';
+import { clubSelector, clubSettingsSelector } from '../../../../app/providers/reducers/ClubSlice';
 // Define interface for section configuration
 interface SectionConfig {
   id: string;
   title: string;
   subTitle?: string,
   content: (props: {
-    formData: AccessControlData;
-    handleFieldChange: <T extends keyof AccessControlData>(field: T, value: AccessControlData[T]) => void;
+    formData: IClubSettings;
+    handleFieldChange: <T extends keyof IClubSettings>(field: T, value: IClubSettings[T]) => void;
   }) => ReactNode;
-}
-
-// Define the type for our form data
-interface AccessControlData {
-  minutesBeforeBooking: number;
-  minutesAfterBooking: number;
 }
 
 export function AccessControlForm() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const currentClub = useAppSelector(clubSelector);
+  const clubSettings = useAppSelector(clubSettingsSelector);
+  const dispatch = useAppDispatch();
   
+  // Initialize form data with default values
+  const [formData, setFormData] = useState<IClubSettings>({
+    access_code_prior_duration: 30,
+    access_code_after_duration: 30,
+  });
+
   // Track which accordion sections are expanded
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     accessControl: false,
   });
+  
+  // Fetch club settings when component mounts or club changes
+  useEffect(() => {
+    if (currentClub?.id) {
+      dispatch(getClubSettings(currentClub.id));
+    }
+  }, [currentClub?.id, dispatch]);
+  
+  // Update form data when club settings change in Redux store
+  useEffect(() => {
+    if (clubSettings) {
+      console.log('Updating access control form data with club settings:', clubSettings);
+      // Only update the formData if the relevant fields exist in clubSettings
+      const updatedFormData = { ...formData };
+      
+      if (clubSettings.access_code_prior_duration !== undefined) {
+        updatedFormData.access_code_prior_duration = clubSettings.access_code_prior_duration;
+      }
+      
+      if (clubSettings.access_code_after_duration !== undefined) {
+        updatedFormData.access_code_after_duration = clubSettings.access_code_after_duration;
+      }
+      
+      setFormData(updatedFormData);
+    }
+  }, [clubSettings]);
 
-  // Initialize form data
-  const [formData, setFormData] = useState<AccessControlData>({
-    minutesBeforeBooking: 30,
-    minutesAfterBooking: 30,
-  });
-
-  const handleFieldChange = <T extends keyof AccessControlData>(field: T, value: AccessControlData[T]) => {
+  const handleFieldChange = <T extends keyof IClubSettings>(field: T, value: IClubSettings[T]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const toggleSection = (sectionId: string) => {
+  const toggleSection = useCallback((sectionId: string) => {
+    // If the section is currently expanded and we're closing it, save the data
+    if (expandedSections[sectionId] && currentClub?.id) {
+      console.log("Saving access control data:", formData);
+      
+      // Only dispatch if we have values to update
+      if (formData && (formData.access_code_prior_duration !== undefined || formData.access_code_after_duration !== undefined)) {
+        dispatch(updateClubSettings(currentClub.id, formData));
+      }
+    }
+    
+    // Toggle the section
     setExpandedSections((prev) => ({
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
-  };
+  }, [currentClub, formData, expandedSections, dispatch]);
 
   // Define AccessControlSection component here
   const AccessControlSection = ({ formData, handleFieldChange }: {
-    formData: AccessControlData;
-    handleFieldChange: <T extends keyof AccessControlData>(field: T, value: AccessControlData[T]) => void;
+    formData: IClubSettings;
+    handleFieldChange: <T extends keyof IClubSettings>(field: T, value: IClubSettings[T]) => void;
   }) => {
+    // Ensure we have default values for form fields
+    const priorDuration = formData.access_code_prior_duration !== undefined ? formData.access_code_prior_duration : 30;
+    const afterDuration = formData.access_code_after_duration !== undefined ? formData.access_code_after_duration : 30;
+
     return (
       <Box>
         <Box sx={{ 
@@ -94,8 +136,8 @@ export function AccessControlForm() {
               </Typography>
               <FormControl fullWidth>
                 <Select
-                  value={formData.minutesBeforeBooking}
-                  onChange={(e) => handleFieldChange('minutesBeforeBooking', Number(e.target.value))}
+                  value={priorDuration}
+                  onChange={(e) => handleFieldChange('access_code_prior_duration', Number(e.target.value))}
                   displayEmpty
                   sx={{ 
                     borderRadius: '8px',
@@ -126,8 +168,8 @@ export function AccessControlForm() {
               </Typography>
               <FormControl fullWidth>
                 <Select
-                  value={formData.minutesAfterBooking}
-                  onChange={(e) => handleFieldChange('minutesAfterBooking', Number(e.target.value))}
+                  value={afterDuration}
+                  onChange={(e) => handleFieldChange('access_code_after_duration', Number(e.target.value))}
                   displayEmpty
                   sx={{ 
                     borderRadius: '8px',
@@ -211,9 +253,11 @@ export function AccessControlForm() {
           <Box>
             <AccordionSummary
               expandIcon={
-                <UpdateSectionButton 
+                <UpdateSectionButton<IClubSettings> 
                   onClick={() => toggleSection(section.id)} 
                   isAccordionCollapse={expandedSections[section.id]} 
+                  formData={formData}
+                  sectionId={section.id}
                 />
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior

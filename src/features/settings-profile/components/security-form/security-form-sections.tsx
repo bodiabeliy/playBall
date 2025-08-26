@@ -2,7 +2,6 @@ import { Box, FormControl, Typography, TextField, Button } from '@mui/material';
 import { useState } from 'react';
 
 type SecurityFormData = {
-  currentPassword: string;
   newPassword: string;
   confirmPassword: string;
 };
@@ -33,9 +32,6 @@ export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) =
 
   return (
     <form style={{ width: '100%' }} onSubmit={handleSubmit}>
-      <Typography variant="h6" sx={{ mb: 1 }}>
-        Change Password
-      </Typography>
       <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" sx={{ mb: 3 }}>
         Your password must be at least 8 characters long and include a number or symbol
       </Typography>

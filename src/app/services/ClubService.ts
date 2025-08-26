@@ -7,7 +7,8 @@ import {
   getCurrentUserNotification,
 } from '../providers/reducers/UserSlice'
 // import type { IClub,  } from '../providers/types/club'
-import { getClubs, getCurrentClub } from '../providers/reducers/ClubSlice'
+import { getClubs, getCurrentClub, getCurrentClubSettings } from '../providers/reducers/ClubSlice'
+import type { IClubSettings } from '../providers/types/club'
 
 
 
@@ -36,7 +37,6 @@ export const getClubById = (id:number) => async (dispatch: AppDispatch) => {
         Authorization: localStorage.getItem('token'),
       },
     })
-    console.log("response.data by id", response.data);
     dispatch(getCurrentClub(response.data))
   } catch (error) {
     let errorMessage = ''
@@ -75,6 +75,41 @@ export const createClub = () => async (dispatch: AppDispatch) => {
       errorMessage = error.response?.data?.message
       dispatch(getCurrentUserNotification(errorMessage))
     }
+  }
+}
+
+export const getClubSettings = (clubId:number) => async (dispatch: AppDispatch) => {
+  try {
+    const response = await $api.get(`/clubs/${clubId}/settings`)
+    console.log("response.data get club settings:", response.data);
+    
+    dispatch(getCurrentClubSettings(response.data))
+    return response.data;
+  } catch (error) {
+    let errorMessage = ''
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message
+      dispatch(getCurrentUserNotification(errorMessage))
+    }
+    throw error;
+  }
+}
+
+
+export const updateClubSettings = (clubId:number, updateSettings:IClubSettings) => async (dispatch: AppDispatch) => {
+  try {
+    console.log("Updating club settings with:", updateSettings);
+    const response = await $api.patch(`/clubs/${clubId}/settings`, updateSettings)
+    console.log("Update club settings response:", response.data);
+    dispatch(getCurrentClubSettings(response.data))
+    return response.data;
+  } catch (error) {
+    let errorMessage = ''
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message
+      dispatch(getCurrentUserNotification(errorMessage))
+    }
+    throw error;
   }
 }
 

@@ -12,22 +12,17 @@ import type { ReactNode } from 'react';
 import { UpdateSectionButton } from '../../update-section-button/update-section-button';
 // Import the section component from the same directory
 import { SecuritySection } from './security-section';
+import type { IProfile } from '../../../../app/providers/types/user';
 
 // Define interface for section configuration
 interface SectionConfig {
   id: string;
   title: string;
+  subTitle?: string;
   content: (props: {
-    formData: SecurityFormData;
-    handleFieldChange: <T extends keyof SecurityFormData>(field: T, value: SecurityFormData[T]) => void;
+    formData: IProfile;
+    handleFieldChange: <T extends keyof IProfile>(field: T, value: IProfile[T]) => void;
   }) => ReactNode;
-}
-
-// Define the type for our form data
-interface SecurityFormData {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
 }
 
 export function SecurityForm() {
@@ -39,32 +34,45 @@ export function SecurityForm() {
     security: false,
   });
 
-  // Initialize form data
-  const [formData, setFormData] = useState<SecurityFormData>({
-    currentPassword: '', // Kept for API compatibility but not used in UI
-    newPassword: '',
-    confirmPassword: '',
+  // Initialize form data with IProfile structure
+  const [formData, setFormData] = useState<IProfile>({
+    first_name: '',
+    last_name: '',
+    middle_name: '',
+    phone: '',
+    email: '',
+    current_password: '',
+    new_password: '',
+    repeat_password: '',
   });
 
-  const handleFieldChange = <T extends keyof SecurityFormData>(field: T, value: SecurityFormData[T]) => {
+  const handleFieldChange = <T extends keyof IProfile>(field: T, value: IProfile[T]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const toggleSection = (sectionId: string) => {
+  const toggleSection = (sectionId: string, data?: IProfile) => {
     setExpandedSections((prev) => ({
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
+    
+    // If data is provided (on save) and section is being closed, handle the update
+    if (data && expandedSections[sectionId]) {
+      console.log(`Saving security data for ${sectionId}:`, data);
+      // Here you would typically call an API to save the data
+      // For example: api.updateUserPassword(data);
+    }
   };
 
   // Define sections configuration
   const sections: SectionConfig[] = [
     {
       id: 'security',
-      title: 'Security & Password',
+      title: 'Change Password',
+      subTitle:!expandedSections.security ? 'To change your password, we’ll first send a confirmation link to your email.':"Your password must be at least 8 characters long and include a number or symbol",
       content: ({ formData, handleFieldChange }) => (
         <SecuritySection 
           formData={formData} 
@@ -103,9 +111,11 @@ export function SecurityForm() {
           <Box>
             <AccordionSummary
               expandIcon={
-                <UpdateSectionButton 
-                  onClick={() => toggleSection(section.id)} 
+                <UpdateSectionButton<IProfile> 
+                  onClick={(data) => toggleSection(section.id, data)} 
                   isAccordionCollapse={expandedSections[section.id]} 
+                  formData={formData}
+                  sectionId={section.id}
                 />
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior
@@ -117,7 +127,16 @@ export function SecurityForm() {
                 }
               }}
             >
-              <Typography variant="h6">{section.title}</Typography>
+              <Box sx={{display:"flex", flexDirection:"column"}}>
+                <Typography variant="h6">{section.title}</Typography>
+                {
+                  section?.subTitle && (
+                    <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" sx={{ mb: 3, maxWidth:"65%" }}>
+                      {section.subTitle}
+                    </Typography>
+                  )
+                }
+              </Box>
             </AccordionSummary>
           </Box>
           <Box sx={{ mt: expandedSections[section.id] ? 2 : 0 }}>

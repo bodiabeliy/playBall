@@ -10,10 +10,14 @@ import {
   Select,
   MenuItem,
 } from '@mui/material'
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { UpdateSectionButton } from '../../update-section-button/update-section-button';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
+import type { IClubSettings } from '../../../../app/providers/types/club';
+import { getClubSettings, updateClubSettings } from '../../../../app/services/ClubService';
+import { useAppSelector, useAppDispatch } from '../../../../app/providers/store-helpers';
+import { clubSelector, clubSettingsSelector } from '../../../../app/providers/reducers/ClubSlice';
 
 
 // Define interface for section configuration
@@ -22,51 +26,78 @@ interface SectionConfig {
   title: string;
   subTitle?: string,
   content: (props: {
-    formData: LightingManagementData;
-    handleFieldChange: <T extends keyof LightingManagementData>(field: T, value: LightingManagementData[T]) => void;
+    formData: IClubSettings;
+    handleFieldChange: <T extends keyof IClubSettings>(field: T, value: IClubSettings[T]) => void;
   }) => ReactNode;
-}
-
-// Define the type for our form data
-interface LightingManagementData {
-  minutesBefore: number;
-  minutesAfter: number;
 }
 
 export function LightingManagementForm() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const currentClub = useAppSelector(clubSelector);
+  const clubSettings = useAppSelector(clubSettingsSelector);
+  const dispatch = useAppDispatch();
   
+  // Initialize form data with default values
+  const [formData, setFormData] = useState<IClubSettings>({
+    light_prior_duration: 10,
+    light_after_duration: 10,
+  });
+
   // Track which accordion sections are expanded
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     lightingManagement: false,
   });
+  
+  // Fetch club settings when component mounts or club changes
+  useEffect(() => {
+    if (currentClub?.id) {
+      dispatch(getClubSettings(currentClub.id));
+    }
+  }, [currentClub?.id, dispatch]);
+  
+  // Update form data when club settings change in Redux store
+  useEffect(() => {
+    if (clubSettings) {
+      console.log('Updating lighting management form data with club settings:', clubSettings);
+      setFormData(clubSettings);
+    }
+  }, [clubSettings]);
 
-  // Initialize form data
-  const [formData, setFormData] = useState<LightingManagementData>({
-    minutesBefore: 10,
-    minutesAfter: 10,
-  });
-
-  const handleFieldChange = <T extends keyof LightingManagementData>(field: T, value: LightingManagementData[T]) => {
+  const handleFieldChange = <T extends keyof IClubSettings>(field: T, value: IClubSettings[T]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const toggleSection = (sectionId: string) => {
+  const toggleSection = useCallback((sectionId: string) => {
+    // If the section is currently expanded and we're closing it, save the data
+    if (expandedSections[sectionId] && currentClub?.id) {
+      console.log("Saving lighting management data:", formData);
+      
+      // Only dispatch if we have values to update
+      if (formData && (formData.light_prior_duration !== undefined || formData.light_after_duration !== undefined)) {
+        dispatch(updateClubSettings(currentClub.id, formData));
+      }
+    }
+    
+    // Toggle the section
     setExpandedSections((prev) => ({
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
-  };
+  }, [currentClub, formData, expandedSections, dispatch]);
 
   // Define LightingManagementSection component here
   const LightingManagementSection = ({ formData, handleFieldChange }: {
-    formData: LightingManagementData;
-    handleFieldChange: <T extends keyof LightingManagementData>(field: T, value: LightingManagementData[T]) => void;
+    formData: IClubSettings;
+    handleFieldChange: <T extends keyof IClubSettings>(field: T, value: IClubSettings[T]) => void;
   }) => {
+    // Ensure we have default values for form fields
+    const lightPriorDuration = formData.light_prior_duration !== undefined ? formData.light_prior_duration : 10;
+    const lightAfterDuration = formData.light_after_duration !== undefined ? formData.light_after_duration : 10;
+
     return (
       <Box>
         <Box sx={{ 
@@ -95,8 +126,8 @@ export function LightingManagementForm() {
               </Typography>
               <FormControl fullWidth>
                 <Select
-                  value={formData.minutesBefore}
-                  onChange={(e) => handleFieldChange('minutesBefore', Number(e.target.value))}
+                  value={lightPriorDuration}
+                  onChange={(e) => handleFieldChange('light_prior_duration', Number(e.target.value))}
                   displayEmpty
                   sx={{ 
                     borderRadius: '8px',
@@ -126,8 +157,8 @@ export function LightingManagementForm() {
               </Typography>
               <FormControl fullWidth>
                 <Select
-                  value={formData.minutesAfter}
-                  onChange={(e) => handleFieldChange('minutesAfter', Number(e.target.value))}
+                  value={lightAfterDuration}
+                  onChange={(e) => handleFieldChange('light_after_duration', Number(e.target.value))}
                   displayEmpty
                   sx={{ 
                     borderRadius: '8px',
@@ -210,9 +241,11 @@ export function LightingManagementForm() {
           <Box>
             <AccordionSummary
               expandIcon={
-                <UpdateSectionButton 
+                <UpdateSectionButton<IClubSettings>
                   onClick={() => toggleSection(section.id)} 
                   isAccordionCollapse={expandedSections[section.id]} 
+                  formData={formData}
+                  sectionId={section.id}
                 />
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior

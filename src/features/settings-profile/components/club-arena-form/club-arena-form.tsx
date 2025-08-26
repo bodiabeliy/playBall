@@ -217,9 +217,11 @@ export function ClubArenaForm() {
           <Box>
             <AccordionSummary
               expandIcon={
-                <UpdateSectionButton 
+                <UpdateSectionButton<IClub> 
                   onClick={() => toggleSection(section.id)} 
                   isAccordionCollapse={expandedSections[section.id]} 
+                  formData={formData}
+                  sectionId={section.id}
                 />
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior
