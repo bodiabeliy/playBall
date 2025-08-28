@@ -1,10 +1,13 @@
 import { Box, FormControl, Typography, TextField, InputAdornment, IconButton, Popover, MenuItem } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FileUpload from '../../../file-upload';
 import WebsiteIcon from "../../../../shared/assets/icons/website.svg?react";
 import InstagramIcon from "../../../../shared/assets/icons/instagram.svg?react";
 import FacebookIcon from "../../../../shared/assets/icons/facebook.svg?react";
 import type { IClub } from '../../../../app/providers/types/club';
+import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers';
+import { getAllClubStatistic } from '../../../../app/services/ClubService';
+import { clubStatisticSelector } from '../../../../app/providers/reducers/ClubSlice';
 
 type SectionProps = {
   formData: IClub;
@@ -22,6 +25,15 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
     { code: 'DE', dialCode: '+49', name: 'Germany' }
   ];
 
+  const dispatch = useAppDispatch()
+  const clubStatistic  =useAppSelector(clubStatisticSelector)
+
+
+  useEffect(() => {
+    dispatch(getAllClubStatistic(formData.id))
+  }, [])
+
+  
   // State for selected country
   const [selectedCountry, setSelectedCountry] = useState(
     // Set default based on phone value or default to Ukraine
@@ -77,7 +89,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
         />
       </FormControl>
     </Box>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+    <Box sx={{ display: 'flex', alignItems: "strech", gap: '16px', width: '100%' }}>
       <FormControl fullWidth sx={{ borderRadius: '8px' }}>
         <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
           Website
@@ -98,7 +110,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           }}
         />
       </FormControl>
-      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+      <FormControl fullWidth sx={{ borderRadius: '8px', }}>
         <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
           Club phone number
         </Typography>
@@ -221,6 +233,90 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
               </InputAdornment>
             ),
           }}
+        />
+      </FormControl>
+    </Box>
+     <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Indoor Padel courts
+        </Typography>
+        <TextField
+          disabled
+          value={clubStatistic.indoor_padel}
+          onChange={(e) => handleFieldChange('facebook', e.target.value)}
+          fullWidth
+          placeholder="Enter Facebook"
+          sx={{ mb: 2 }}
+        />
+      </FormControl>
+      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Outdoor Padel courts
+        </Typography>
+        <TextField
+          disabled
+          value={clubStatistic.indoor_padel}
+          onChange={(e) => handleFieldChange('instagram', e.target.value)}
+          fullWidth
+          placeholder=""
+          sx={{ mb: 2 }}
+        />
+      </FormControl>
+    </Box>
+     <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Indoor Tennis courts
+        </Typography>
+        <TextField
+          disabled
+          value={clubStatistic.indoor_tennis}
+          onChange={(e) => handleFieldChange('facebook', e.target.value)}
+          fullWidth
+          placeholder="Enter Facebook"
+          sx={{ mb: 2 }}
+        />
+      </FormControl>
+      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Outdoor Tennis courts
+        </Typography>
+        <TextField
+          disabled
+          value={clubStatistic.outdoor_tennis}
+          onChange={(e) => handleFieldChange('instagram', e.target.value)}
+          fullWidth
+          placeholder="Enter Instagram"
+          sx={{ mb: 2 }}
+        />
+      </FormControl>
+    </Box>
+     <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Indoor Pickleball courts
+        </Typography>
+        <TextField
+          disabled
+          value={clubStatistic.outdoor_tennis}
+          onChange={(e) => handleFieldChange('facebook', e.target.value)}
+          fullWidth
+          placeholder="Enter Facebook"
+          sx={{ mb: 2 }}
+        />
+      </FormControl>
+      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+          Outdoor Pickleball courts
+        </Typography>
+        <TextField
+          disabled
+          value={clubStatistic.outdoor_tennis}
+          onChange={(e) => handleFieldChange('instagram', e.target.value)}
+          fullWidth
+          placeholder="Enter Instagram"
+          sx={{ mb: 2 }}
         />
       </FormControl>
     </Box>

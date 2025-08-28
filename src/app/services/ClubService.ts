@@ -7,7 +7,7 @@ import {
   getCurrentUserNotification,
 } from '../providers/reducers/UserSlice'
 // import type { IClub,  } from '../providers/types/club'
-import { getClubs, getCurrentClub, getCurrentClubSettings } from '../providers/reducers/ClubSlice'
+import { getClubs, getClubStatistic, getCurrentClub, getCurrentClubSettings } from '../providers/reducers/ClubSlice'
 import type { IClub, IClubSettings } from '../providers/types/club'
 
 
@@ -56,6 +56,25 @@ export const getClub = () => async (dispatch: AppDispatch) => {
       },
     })
     dispatch(getCurrentClub(response.data))
+  } catch (error) {
+    let errorMessage = ''
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message
+      dispatch(getCurrentUserNotification(errorMessage))
+    }
+  }
+}
+
+export const getAllClubStatistic = (clubId:number) => async (dispatch: AppDispatch) => {
+  try {
+    const response = await $api.get(`/clubs/${clubId}/court-stats`, {
+      headers: {
+        Authorization: localStorage.getItem('token'),
+      },
+    })
+    dispatch(getClubStatistic(response.data))
+    console.log("response.data", response.data);
+    
   } catch (error) {
     let errorMessage = ''
     if (request.isAxiosError(error) && error.response) {
@@ -115,7 +134,6 @@ export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: 
 export const updateClubSettings = (clubId:number, updateSettings:IClubSettings) => async (dispatch: AppDispatch) => {
   try {
     const response = await $api.patch(`/clubs/${clubId}/settings`, updateSettings)
-    console.log("Update club settings response:", response.data);
     dispatch(getCurrentClubSettings(response.data))
     return response.data;
   } catch (error) {

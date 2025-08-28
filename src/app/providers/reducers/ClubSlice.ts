@@ -1,12 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type { IClub, IClubSettings } from '../types/club'
+import type { IClub, IClubSettings, IClubStatistic } from '../types/club'
 import type { RootState } from '../store'
 
 export interface clubState {
   club: IClub
   clubs:IClub[]
   clubSettings:IClubSettings
+  clubStatistic:IClubStatistic
   isLoading: boolean
   isError: boolean
   notificationMessage: string
@@ -27,6 +28,12 @@ const initialState: clubState = {
     access_code_prior_duration: 0,
     access_code_after_duration: 0
   },
+  clubStatistic:{
+    indoor_padel: 0,
+    outdoor_tennis: 0,
+    outdoor_padel: 0,
+    indoor_tennis: 0
+  },
   clubs:[],
   isLoading: false,
   isError: false,
@@ -45,6 +52,10 @@ export const clubState = createSlice({
       state.clubs = action.payload
     },
 
+    getClubStatistic: (state, action: PayloadAction<IClubStatistic>) => {
+      state.clubStatistic = action.payload
+    },
+
     getCurrentClubSettings: (state, action: PayloadAction<IClubSettings>) => {
       state.clubSettings = action.payload
     },
@@ -61,13 +72,16 @@ export const
   getClubs,
 
   getCurrentClubSettings,
-  updateCurrentClubSettings
+  updateCurrentClubSettings,
+
+  getClubStatistic
 } =
   clubState.actions
 
 export const clubSelector = (state: RootState) => state.ClubReducer.club
 export const clubsSelector = (state: RootState) => state.ClubReducer.clubs
 export const clubSettingsSelector = (state: RootState) => state.ClubReducer.clubSettings
+export const clubStatisticSelector = (state: RootState) => state.ClubReducer.clubStatistic
 
 
 export default clubState.reducer

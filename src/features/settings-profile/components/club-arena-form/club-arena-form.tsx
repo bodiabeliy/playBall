@@ -152,7 +152,7 @@ export function ClubArenaForm() {
   const sections: SectionConfig[] = [
     {
       id: 'contactInfo',
-      title: !expandedSections.contactInfo ? 'Contact Information' : 'Contact Info',
+      title: !expandedSections.contactInfo ? 'Contact Info' : 'Contact Info',
       subTitle: 'Update your club contact information including name, email, website and social media links',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <ContactInfoSection 

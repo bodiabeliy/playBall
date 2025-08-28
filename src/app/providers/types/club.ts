@@ -34,3 +34,10 @@ export interface IClubSettings {
   access_code_prior_duration?: number,
   access_code_after_duration?: number
 }
+
+export interface IClubStatistic{
+  indoor_padel: number,
+  outdoor_tennis: number,
+  outdoor_padel: number,
+  indoor_tennis: number
+}
