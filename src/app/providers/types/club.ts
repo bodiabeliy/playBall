@@ -15,22 +15,7 @@ export interface IClub {
   logo_image?: string,
   banner_image?: string,
   gallery?: string[],
-  working_hours?: IWorkingHours[],
-  security_settings?: {
-    cancellation_policy?: {
-      enabled: boolean,
-      time_limit: number,
-      penalty_percentage: number
-    },
-    lighting_control?: {
-      automatic: boolean,
-      turn_on_before: number
-    },
-    access_code?: {
-      enabled: boolean,
-      code: string
-    }
-  }
+  working_hours?: IWorkingHours[]
 }
 
 export interface IWorkingHours {

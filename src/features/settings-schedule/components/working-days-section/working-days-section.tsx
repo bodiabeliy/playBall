@@ -1,19 +1,19 @@
-import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { UniversalTimePicker } from '../../../../shared/components'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { uk } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
 import { useState } from 'react'
 import type { IClub, IWorkingHours } from '../../../../app/providers/types/club'
 
 const daysOfWeek = [
-  { key: 'mon', label: 'Пн', dayOfWeek: 1 },
-  { key: 'tue', label: 'Вт', dayOfWeek: 2 },
-  { key: 'wed', label: 'Ср', dayOfWeek: 3 },
-  { key: 'thu', label: 'Чт', dayOfWeek: 4 },
-  { key: 'fri', label: 'Пт', dayOfWeek: 5 },
-  { key: 'sat', label: 'Сб', dayOfWeek: 6 },
-  { key: 'sun', label: 'Нд', dayOfWeek: 0 },
+  { key: 'mon', label: 'Mon', dayOfWeek: 1, group: 'weekdays' },
+  { key: 'tue', label: 'Tue', dayOfWeek: 2, group: 'weekdays' },
+  { key: 'wed', label: 'Wed', dayOfWeek: 3, group: 'weekdays' },
+  { key: 'thu', label: 'Thu', dayOfWeek: 4, group: 'weekdays' },
+  { key: 'fri', label: 'Fri', dayOfWeek: 5, group: 'weekdays' },
+  { key: 'sat', label: 'Sat', dayOfWeek: 6, group: 'weekends' },
+  { key: 'sun', label: 'Sun', dayOfWeek: 0, group: 'weekends' },
 ]
 
 export type WorkingDay = {
@@ -77,99 +77,157 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
     updateWorkingHours(updated);
   };
 
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  // Group days by weekdays and weekends
+  const weekdays = workingDays.filter((_, idx) => daysOfWeek[idx].group === 'weekdays');
+  const weekends = workingDays.filter((_, idx) => daysOfWeek[idx].group === 'weekends');
+  
+  const renderDayRow = (day: WorkingDay) => {
+    const dayIndex = daysOfWeek.findIndex(d => d.key === day.key);
+    
+    return (
+      <Box key={day.key} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ width: '80px', display: 'flex', alignItems: 'center' }}>
+          <Typography sx={{ 
+            color: day.enabled ? '#034C53' : '#94A3B8',
+            fontSize: '14px', 
+            mr: 2
+          }}>
+            {daysOfWeek[dayIndex].label}
+          </Typography>
+          
+          {/* Toggle Switch */}
+          <Box 
+            sx={{ 
+              display: 'inline-flex',
+              width: 36,
+              height: 20,
+              position: 'relative',
+              cursor: 'pointer'
+            }}
+            onClick={() => handleToggle(dayIndex)}
+          >
+            <Box 
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                borderRadius: '34px',
+                backgroundColor: day.enabled ? '#034C53' : '#E5E5E5',
+                transition: 'background-color 0.2s ease'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                height: '16px',
+                width: '16px',
+                left: day.enabled ? '16px' : '4px',
+                top: '2px',
+                backgroundColor: 'white',
+                borderRadius: '50%',
+                transition: 'left 0.2s ease',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+              }}
+            />
+          </Box>
+        </Box>
+        
+        <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+          <Box sx={{ flexGrow: 1, mr: 2 }}>
+            <Typography sx={{ 
+              fontSize: '12px', 
+              color: '#64748B',
+              mb: 0.5
+            }}>
+              From
+            </Typography>
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
+              <UniversalTimePicker
+                value={day.start}
+                onChange={(e) => handleTimeChange(dayIndex, 'start', e)}
+                disabled={!day.enabled}
+                isIcon={true}
+                textFieldProps={{
+                  sx: {
+                    '& .MuiInputBase-root': {
+                      height: '40px',
+                      borderRadius: '4px',
+                      backgroundColor: day.enabled ? 'white' : '#F1F5F9',
+                    },
+                    width: '100%',
+                  },
+                }}
+              />
+            </LocalizationProvider>
+          </Box>
+          
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography sx={{ 
+              fontSize: '12px', 
+              color: '#64748B',
+              mb: 0.5
+            }}>
+              To
+            </Typography>
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
+              <UniversalTimePicker
+                value={day.end}
+                onChange={(e) => handleTimeChange(dayIndex, 'end', e)}
+                disabled={!day.enabled}
+                isIcon={true}
+                textFieldProps={{
+                  sx: {
+                    '& .MuiInputBase-root': {
+                      height: '40px',
+                      borderRadius: '4px',
+                      backgroundColor: day.enabled ? 'white' : '#F1F5F9',
+                    },
+                    width: '100%',
+                  },
+                }}
+              />
+            </LocalizationProvider>
+          </Box>
+        </Box>
+      </Box>
+    );
+  };
 
   return (
     <form style={{ width: '100%' }}>
-      <Box mb={3}>
-        <Box display="flex" flexDirection="column" gap={3}>
-          {workingDays.map((day, idx) => (
-            <Box key={day.key} display="flex" alignItems="center" gap={1}>
-              
-              <Box 
-                component="span"
-                sx={{ 
-                  display: 'inline-flex',
-                  width: 42,
-                  height: 24,
-                  position: 'relative',
-                  marginRight: 1
-                }}
-              >
-                <Box 
-                  component="span"
-                  sx={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '34px',
-                    backgroundColor: day.enabled ? '#034C53' : '#E5E5E5',
-                    transition: 'background-color 0.3s ease'
-                  }}
-                />
-                <Box
-                  component="span"
-                  onClick={() => handleToggle(idx)}
-                  sx={{
-                    position: 'absolute',
-                    cursor: 'pointer',
-                    width: '100%',
-                    height: '100%',
-                    opacity: 0,
-                    zIndex: 1
-                  }}
-                />
-                <Box
-                  component="span"
-                  sx={{
-                    position: 'absolute',
-                    height: '20px',
-                    width: '20px',
-                    left: day.enabled ? '18px' : '2px',
-                    bottom: '2px',
-                    backgroundColor: 'white',
-                    borderRadius: '50%',
-                    transition: 'left 0.3s ease'
-                  }}
-                />
-              </Box>
-              <Typography sx={{ width: isMobile ? 20 : 28 }}>{daysOfWeek[idx].label}</Typography>
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={uk}>
-                <UniversalTimePicker
-                  value={day.start}
-                  onChange={(e) => handleTimeChange(idx, 'start', e)}
-                  disabled={!day.enabled}
-                  isIcon={false}
-                  textFieldProps={{
-                    sx: {
-                      '& .MuiInputBase-root': {
-                        minHeight: isMobile ? 'auto' : 48,
-                        height: isMobile ? '40px' : 48,
-                      },
-                      width: 120,
-                    },
-                  }}
-                />
-                <Typography sx={{ mx: isMobile ? 0 : 1 }}>—</Typography>
-                <UniversalTimePicker
-                  value={day.end}
-                  onChange={(e) => handleTimeChange(idx, 'end', e)}
-                  disabled={!day.enabled}
-                  isIcon={false}
-                  textFieldProps={{
-                    sx: {
-                      '& .MuiInputBase-root': {
-                        minHeight: isMobile ? 'auto' : 48,
-                        height: isMobile ? '40px' : 48,
-                      },
-                      width: 120,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </Box>
-          ))}
+      {/* Weekdays Section */}
+      <Box mb={4}>
+        <Typography 
+          sx={{ 
+            fontSize: '16px', 
+            fontWeight: 500, 
+            color: '#0F172A',
+            mb: 2 
+          }}
+        >
+          Weekdays
+        </Typography>
+        
+        <Box>
+          {weekdays.map((day) => renderDayRow(day))}
+        </Box>
+      </Box>
+      
+      {/* Weekends Section */}
+      <Box>
+        <Typography 
+          sx={{ 
+            fontSize: '16px', 
+            fontWeight: 500, 
+            color: '#0F172A',
+            mb: 2 
+          }}
+        >
+          Weekends
+        </Typography>
+        
+        <Box>
+          {weekends.map((day) => renderDayRow(day))}
         </Box>
       </Box>
     </form>
