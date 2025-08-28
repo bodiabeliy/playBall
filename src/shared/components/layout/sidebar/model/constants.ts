@@ -48,50 +48,50 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
         id: 'activities',
         text: 'sidebar.activities',
         icon: ActivitiesIcon,
-        link: '/patients', //change
+        // link: '/patients', //change
       },
       {
         id: 'courts',
         text: 'sidebar.courts',
         icon: CourtIcon,
-        link: '/patients', //change
+        // link: '/patients', //change
       },
       {
         id: 'pricing',
         text: 'sidebar.pricing',
         icon: PricingIcon,
-        link: '/patients', //change
+        // link: '/patients', //change
       },
       {
         id: 'booking',
         text: 'sidebar.booking',
         icon: BookingIcon,
-        link: '/booking',
+        // link: '/booking',
       },
       {
         id: 'customers',
         text: 'sidebar.customers',
         icon: CustomersIcon,
-        link: '/customers', //change
+        // link: '/customers', //change
       },
 
       {
         id: 'chat',
         text: 'sidebar.chats',
         icon: ChatIcon,
-        link: '/chat', 
+        // link: '/chat', 
       },
       {
         id: 'wallets',
         text: 'sidebar.wallet-transactions',
         icon: WalletIcon,
-        link: '/patients', //change
+        // link: '/patients', //change
       },
       {
         id: 'payment',
         text: 'sidebar.payments',
         icon: PaymentIcon,
-        link: '/patients', //change
+        // link: '/patients', //change
       },
       {
         id: 'settings',
