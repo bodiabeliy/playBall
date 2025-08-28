@@ -146,3 +146,20 @@ export const resetPassword = (email: string, code: string, password: string) => 
     }
   }
 }
+
+
+export const changePassword = (oldPassword: string, newPassword: string) => async (dispatch: AppDispatch) => {
+  try {
+    await $api.post(`/club-panel/password/change`, { 
+      old_password:oldPassword,
+      new_password:newPassword
+    })
+    
+  } catch (error) {
+    let errorMessage = ''
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message
+      dispatch(getCurrentUserNotification(errorMessage))
+    }
+  }
+}

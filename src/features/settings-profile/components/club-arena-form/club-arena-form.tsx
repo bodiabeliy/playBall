@@ -8,11 +8,10 @@ import {
   Stack,
 } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { getAllClubs, getClubById } from '../../../../app/services/ClubService';
+import { getAllClubs, getClubById, updateClub } from '../../../../app/services/ClubService';
 import { clubSelector, clubsSelector } from '../../../../app/providers/reducers/ClubSlice';
-import { useFormValidation } from '../../../../shared/hooks/use-form-field';
 import type { IClub } from '../../../../app/providers/types/club';
 import { UpdateSectionButton } from '../../update-section-button/update-section-button';
 import { ContactInfoSection, LocationSection, AmenitiesSection } from './club-arena-form-sections';
@@ -22,6 +21,7 @@ import { WorkingDaysSection } from '../../../settings-schedule/components/workin
 interface SectionConfig {
   id: string;
   title: string;
+  subTitle?: string;
   content: (props: {
     formData: IClub;
     handleFieldChange: <T extends keyof IClub>(field: T, value: IClub[T]) => void;
@@ -36,6 +36,27 @@ export function ClubArenaForm() {
   const clubList = useAppSelector(clubsSelector);
   const currentClub = useAppSelector(clubSelector);
 
+  // Initialize form data with default values
+  const [formData, setFormData] = useState<IClub>({
+    id: 1,
+    name: '',
+    address: '',
+    city: '',
+    latitude: 1,
+    longitude: 1,
+    amenities: [],
+    phone: '',
+    email: '',
+    about: '',
+    website: '',
+    instagram: '',
+    facebook: '',
+    logo_image: '',
+    banner_image: '',
+    gallery: [],
+    working_hours: []
+  });
+
   // Track which accordion sections are expanded
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     contactInfo: false,
@@ -43,9 +64,9 @@ export function ClubArenaForm() {
     openHours: false,
     amenities: false,
     images: false,
-    // Add more sections as needed
   });
 
+  // Fetch clubs and club data
   useEffect(() => {
     dispatch(getAllClubs());
   }, [dispatch]);
@@ -56,37 +77,7 @@ export function ClubArenaForm() {
     }
   }, [clubList, dispatch]);
 
-  const validateSignUp = (data: IClub) => ({
-    id: '',
-    name: data.name ? '' : 'Name is required',
-    address: data.address ? '' : 'Address is required',
-    city: data.city ? '' : 'City is required',
-    // Add more validations as needed
-  });
-
-  const { formData, setFormData, handleFieldChange } = useFormValidation<IClub>(
-    {
-      id: 1,
-      name: '',
-      address: '',
-      city: '',
-      latitude: 1,
-      longitude: 1,
-      amenities: [],
-      phone: '',
-      email: '',
-      about: '',
-      website: '',
-      instagram: '',
-      facebook: "",
-      logo_image: "",
-      banner_image: "",
-      gallery: [],
-      working_hours: []
-    },
-    validateSignUp
-  );
-
+  // Update form data when club data changes in Redux store
   useEffect(() => {
     if (currentClub) {
       setFormData({
@@ -109,16 +100,34 @@ export function ClubArenaForm() {
         working_hours: currentClub.working_hours || []
       });
     }
-  }, [currentClub, setFormData]);
+  }, [currentClub]);
 
-  const toggleSection = (sectionId: string) => {
+  const handleFieldChange = useCallback(<T extends keyof IClub>(field: T, value: IClub[T]) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  const toggleSection = useCallback((sectionId: string) => {
+    // If the section is currently expanded and we're closing it, save the data
+    if (expandedSections[sectionId] && currentClub?.id) {
+      console.log(`Saving ${sectionId} data:`, formData);
+      
+      // Only dispatch if we have values to update
+      if (formData) {
+        dispatch(updateClub(currentClub.id, formData));
+      }
+    }
+    
+    // Toggle the section
     setExpandedSections((prev) => ({
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
-  };
+  }, [currentClub, formData, expandedSections, dispatch]);
 
-  const handleFileUpload = (field: keyof IClub, files: File[] | null) => {
+  const handleFileUpload = useCallback((field: keyof IClub, files: File[] | null) => {
     if (!files || files.length === 0) {
       // Clear the field if no files are provided
       if (field === 'gallery') {
@@ -137,13 +146,14 @@ export function ClubArenaForm() {
       // For single image fields, use the first file
       handleFieldChange(field, URL.createObjectURL(files[0]));
     }
-  };
+  }, [handleFieldChange]);
 
   // Define sections configuration
   const sections: SectionConfig[] = [
     {
       id: 'contactInfo',
-      title: 'Contact Info',
+      title: !expandedSections.contactInfo ? 'Contact Information' : 'Contact Info',
+      subTitle: 'Update your club contact information including name, email, website and social media links',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <ContactInfoSection 
           formData={formData} 
@@ -154,7 +164,8 @@ export function ClubArenaForm() {
     },
     {
       id: 'location',
-      title: 'Location',
+      title: !expandedSections.location ? 'Location' : 'Location',
+      subTitle: 'Specify your club\'s address and coordinates for clients to find you easily',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <LocationSection 
           formData={formData} 
@@ -165,7 +176,8 @@ export function ClubArenaForm() {
     },
     {
       id: 'openHours',
-      title: 'Opening Hours',
+      title: !expandedSections.openHours ? 'Opening Hours' : 'Opening Hours',
+      subTitle: 'Set your club\'s working hours so clients know when you\'re available',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <WorkingDaysSection 
           formData={formData} 
@@ -176,7 +188,8 @@ export function ClubArenaForm() {
     },
     {
       id: 'amenities',
-      title: 'Amenities',
+      title: !expandedSections.amenities ? 'Amenities' : 'Amenities',
+      subTitle: 'Add the facilities and services your club offers to attract more clients',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <AmenitiesSection 
           formData={formData} 
@@ -185,8 +198,6 @@ export function ClubArenaForm() {
         />
       ),
     },
-
-    // Add more sections as needed
   ];
 
   // Common accordion styles
@@ -233,7 +244,16 @@ export function ClubArenaForm() {
                 }
               }}
             >
-              <Typography variant="h6">{section.title}</Typography>
+              <Box sx={{display:"flex", flexDirection:"column"}}>
+                <Typography variant="h6">{section.title}</Typography>
+                {
+                  section?.subTitle && (
+                    <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" sx={{ mb: 3, maxWidth:"65%" }}>
+                      {section.subTitle}
+                    </Typography>
+                  )
+                }
+              </Box>
             </AccordionSummary>
           </Box>
           <Box sx={{ mt: expandedSections[section.id] ? 2 : 0 }}>

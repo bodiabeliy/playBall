@@ -1,8 +1,6 @@
-
-import { Box, FormControl, Typography, TextField, InputAdornment, IconButton } from '@mui/material';
+import { Box, FormControl, Typography, TextField, InputAdornment, IconButton, Popover, MenuItem } from '@mui/material';
+import { useState } from 'react';
 import FileUpload from '../../../file-upload';
-import PhoneInput from 'react-phone-number-input';
-import { MuiPhoneInput } from '../../../../shared/components/ui/mui-phone-input/mui-phone-input';
 import WebsiteIcon from "../../../../shared/assets/icons/website.svg?react";
 import InstagramIcon from "../../../../shared/assets/icons/instagram.svg?react";
 import FacebookIcon from "../../../../shared/assets/icons/facebook.svg?react";
@@ -14,7 +12,43 @@ type SectionProps = {
   handleFileUpload: (field: keyof IClub, files: File[] | null) => void;
 };
 
-export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUpload }: SectionProps) => (
+export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUpload }: SectionProps) => {
+  // List of countries with their codes and dial codes
+  const countries = [
+    { code: 'CZ', dialCode: '+420', name: 'Czech Republic' },
+    { code: 'UA', dialCode: '+380', name: 'Ukraine' },
+    { code: 'US', dialCode: '+1', name: 'United States' },
+    { code: 'GB', dialCode: '+44', name: 'United Kingdom' },
+    { code: 'DE', dialCode: '+49', name: 'Germany' }
+  ];
+
+  // State for selected country
+  const [selectedCountry, setSelectedCountry] = useState(
+    // Set default based on phone value or default to Ukraine
+    countries.find(c => formData.phone?.startsWith(c.dialCode)) || countries.find(c => c.code === 'UA') || countries[0]
+  );
+
+  // State for country selector popover
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleCountryClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCountryClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCountrySelect = (country: typeof selectedCountry) => {
+    setSelectedCountry(country);
+    // Update phone with new country code
+    const phoneNumber = formData.phone?.replace(/^\+\d+\s+/, '') || '';
+    handleFieldChange('phone', `${country.dialCode} ${phoneNumber}`);
+    handleCountryClose();
+  };
+
+  return (
   <form style={{ width: '100%' }}>
     <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
       <FormControl fullWidth sx={{ borderRadius: '8px' }}>
@@ -64,19 +98,88 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           }}
         />
       </FormControl>
-      <FormControl fullWidth sx={{ borderRadius: '8px', mt: 2 }}>
+      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
         <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
           Club phone number
         </Typography>
-        <PhoneInput
-          id="phone-input"
-          placeholder="Enter phone number"
-          value={formData.phone}
-          onChange={(value) => handleFieldChange('phone', value ?? '')}
-          defaultCountry="UA"
-          maxLength={9}
-          countrySelectComponent={(props) => <MuiPhoneInput {...props} />}
+        <TextField
+          fullWidth
+          placeholder="000 000 000"
+          value={formData.phone?.replace(/^\+\d+\s+/, '') || ''} 
+          onChange={(e) => {
+            handleFieldChange('phone', `${selectedCountry.dialCode} ${e.target.value}`);
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '8px',
+              paddingLeft: 0
+            }
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Box
+                  onClick={handleCountryClick}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    border: '1px solid #E5E5E5',
+                    borderRadius: '8px',
+                    marginRight: '12px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${selectedCountry.code}.svg`}
+                    alt={selectedCountry.name}
+                    sx={{ width: 24, height: 18 }}
+                  />
+                  <Typography sx={{ color: 'rgba(0, 0, 0, 0.87)' }}>{selectedCountry.dialCode}</Typography>
+                </Box>
+              </InputAdornment>
+            )
+          }}
         />
+        <Popover
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleCountryClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+        >
+          <Box sx={{ maxHeight: 300, overflow: 'auto', width: 250 }}>
+            {countries.map((country) => (
+              <MenuItem 
+                key={country.code} 
+                onClick={() => handleCountrySelect(country)}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px'
+                }}
+              >
+                <Box
+                  component="img"
+                  src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${country.code}.svg`}
+                  alt={country.name}
+                  sx={{ width: 24, height: 18 }}
+                />
+                <Typography sx={{ flex: 1 }}>{country.name}</Typography>
+                <Typography sx={{ color: 'rgba(0, 0, 0, 0.6)' }}>{country.dialCode}</Typography>
+              </MenuItem>
+            ))}
+          </Box>
+        </Popover>
       </FormControl>
     </Box>
     <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
@@ -175,95 +278,98 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
       </FormControl>
     </Box>
   </form>
-);
+  );
+};
 
-export const LocationSection = ({ formData, handleFieldChange }: SectionProps) => (
-  <form style={{ width: '100%' }}>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
-      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          State/Province
-        </Typography>
-        <TextField
-          value={formData.address}
-          onChange={(e) => handleFieldChange('address', e.target.value)}
-          fullWidth
-          placeholder="Enter address"
-          sx={{ mb: 2 }}
-        />
-      </FormControl>
-      
-      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          City
-        </Typography>
-        <TextField
-          value={formData.city}
-          onChange={(e) => handleFieldChange('city', e.target.value)}
-          fullWidth
-          placeholder="Enter city"
-          sx={{ mb: 2 }}
-        />
-      </FormControl>
-    </Box>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
-      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Street
-        </Typography>
-        <TextField
-          value={formData.latitude?.toString()}
-          onChange={(e) => handleFieldChange('latitude', parseFloat(e.target.value) || 0)}
-          fullWidth
-          type="number"
-          placeholder="Enter number of courts"
-          sx={{ mb: 2 }}
-        />
-      </FormControl>
-      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Postal Code
-        </Typography>
-        <TextField
-          value={formData.longitude?.toString()}
-          onChange={(e) => handleFieldChange('longitude', parseFloat(e.target.value) || 0)}
-          fullWidth
-          type="number"
-          placeholder="Enter number of courts"
-          sx={{ mb: 2 }}
-        />
-      </FormControl>
-    </Box>
-     <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
-      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Country
-        </Typography>
-        <TextField
-          value={formData.latitude?.toString()}
-          onChange={(e) => handleFieldChange('latitude', parseFloat(e.target.value) || 0)}
-          fullWidth
-          type="number"
-          placeholder="Enter number of courts"
-          sx={{ mb: 2 }}
-        />
-      </FormControl>
-      <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-        <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-          Timezone
-        </Typography>
-        <TextField
-          value={formData.longitude?.toString()}
-          onChange={(e) => handleFieldChange('longitude', parseFloat(e.target.value) || 0)}
-          fullWidth
-          type="number"
-          placeholder="Enter number of courts"
-          sx={{ mb: 2 }}
-        />
-      </FormControl>
-    </Box>
-  </form>
-);
+export const LocationSection = ({ formData, handleFieldChange }: SectionProps) => {
+  return (
+    <form style={{ width: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+            State/Province
+          </Typography>
+          <TextField
+            value={formData.address}
+            onChange={(e) => handleFieldChange('address', e.target.value)}
+            fullWidth
+            placeholder="Enter address"
+            sx={{ mb: 2 }}
+          />
+        </FormControl>
+        
+        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+            City
+          </Typography>
+          <TextField
+            value={formData.city}
+            onChange={(e) => handleFieldChange('city', e.target.value)}
+            fullWidth
+            placeholder="Enter city"
+            sx={{ mb: 2 }}
+          />
+        </FormControl>
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+            Street
+          </Typography>
+          <TextField
+            value={formData.latitude?.toString()}
+            onChange={(e) => handleFieldChange('latitude', parseFloat(e.target.value) || 0)}
+            fullWidth
+            type="number"
+            placeholder="Enter number of courts"
+            sx={{ mb: 2 }}
+          />
+        </FormControl>
+        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+            Postal Code
+          </Typography>
+          <TextField
+            value={formData.longitude?.toString()}
+            onChange={(e) => handleFieldChange('longitude', parseFloat(e.target.value) || 0)}
+            fullWidth
+            type="number"
+            placeholder="Enter number of courts"
+            sx={{ mb: 2 }}
+          />
+        </FormControl>
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+            Country
+          </Typography>
+          <TextField
+            value={formData.latitude?.toString()}
+            onChange={(e) => handleFieldChange('latitude', parseFloat(e.target.value) || 0)}
+            fullWidth
+            type="number"
+            placeholder="Enter number of courts"
+            sx={{ mb: 2 }}
+          />
+        </FormControl>
+        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
+            Timezone
+          </Typography>
+          <TextField
+            value={formData.longitude?.toString()}
+            onChange={(e) => handleFieldChange('longitude', parseFloat(e.target.value) || 0)}
+            fullWidth
+            type="number"
+            placeholder="Enter number of courts"
+            sx={{ mb: 2 }}
+          />
+        </FormControl>
+      </Box>
+    </form>
+  );
+};
 
 export const AmenitiesSection = ({ formData, handleFieldChange }: SectionProps) => {
   const amenities = [

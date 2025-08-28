@@ -42,12 +42,9 @@ import {
 import { Route, Routes } from 'react-router'
 import { CodeConfirmationPage } from '../../pages/code-confirmation'
 import { useSelector } from 'react-redux'
-import { isAuth, isUserAuthSelector } from './reducers/UserSlice'
-import { useEffect } from 'react'
-import { useAppDispatch } from './store-helpers'
 import PrivatePageWrapper from '../../shared/components/privatePage/RequireAuth'
-import { token } from '../../shared/utils/localStorage'
 import { RecoveryPasswordPage } from '../../pages/recovery-password'
+import { isUserAuthSelector } from './reducers/UserSlice'
 
 const unAuthorizedRoutes = [
   {
@@ -150,19 +147,12 @@ const authorizedRoutes = [
 export function RouteProvider() {
   const isAuthorization = useSelector(isUserAuthSelector)
 
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    if (token) {
-      dispatch(isAuth(true))
-    }
-  }, [dispatch, isAuthorization, token])
 
   // If not authorized and not already on login, redirect to login
 
   return (
     <Routes>
-      {isAuthorization || token
+      {isAuthorization
         ? authorizedRoutes.map((route) => <Route key={route.path} element={route.element} path={route.path} />)
         : unAuthorizedRoutes.map((route) => <Route key={route.path} element={route.element} path={route.path} />)}
     </Routes>

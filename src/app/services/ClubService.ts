@@ -8,7 +8,7 @@ import {
 } from '../providers/reducers/UserSlice'
 // import type { IClub,  } from '../providers/types/club'
 import { getClubs, getCurrentClub, getCurrentClubSettings } from '../providers/reducers/ClubSlice'
-import type { IClubSettings } from '../providers/types/club'
+import type { IClub, IClubSettings } from '../providers/types/club'
 
 
 
@@ -95,10 +95,25 @@ export const getClubSettings = (clubId:number) => async (dispatch: AppDispatch) 
   }
 }
 
+export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: AppDispatch) => {
+  try {
+    console.log("Updating club settings with:", updateClub);
+    const response = await $api.patch(`/clubs/${clubId}`, updateClub)
+    dispatch(getCurrentClub(response.data))
+    return response.data;
+  } catch (error) {
+    let errorMessage = ''
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message
+      dispatch(getCurrentUserNotification(errorMessage))
+    }
+    throw error;
+  }
+}
+
 
 export const updateClubSettings = (clubId:number, updateSettings:IClubSettings) => async (dispatch: AppDispatch) => {
   try {
-    console.log("Updating club settings with:", updateSettings);
     const response = await $api.patch(`/clubs/${clubId}/settings`, updateSettings)
     console.log("Update club settings response:", response.data);
     dispatch(getCurrentClubSettings(response.data))
