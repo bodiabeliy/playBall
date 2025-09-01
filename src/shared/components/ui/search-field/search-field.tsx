@@ -1,6 +1,7 @@
 import { TextField, InputAdornment } from '@mui/material'
 import type { SxProps } from '@mui/material'
 import { Search } from '@mui/icons-material'
+import { useLocation } from 'react-router'
 
 interface SearchFieldProps {
   value: string
@@ -14,14 +15,18 @@ interface SearchFieldProps {
 export function SearchField({
   value,
   onChange,
-  placeholder = 'Пошук',
+  placeholder = 'Search',
   fullWidth = false,
   isStartAdornment = true,
+
   sx,
 }: SearchFieldProps) {
+
+  const location = useLocation()
+  
   return (
     <TextField
-      placeholder={placeholder}
+      placeholder={placeholder +" " + location.pathname.split("/")[1]}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       variant="outlined"
@@ -43,7 +48,8 @@ export function SearchField({
           fontSize: '1rem',
           paddingRight: '12px',
           paddingLeft: '20px',
-          height: '40px',
+          height: '35px',
+
           '& input': {
             fontSize: '1rem',
             color: '#444',
@@ -70,7 +76,7 @@ export function SearchField({
         },
       }}
       sx={{
-        minWidth: { sm: '220px' },
+        width:240,
         borderRadius: '8px',
         background: '#fff',
         boxShadow: 'none',

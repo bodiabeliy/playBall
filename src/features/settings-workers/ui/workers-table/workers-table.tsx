@@ -14,20 +14,20 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import type { SelectChangeEvent } from '@mui/material'
 import { useState, useMemo } from 'react'
 import { PaginationFooter } from '../pagination-footer'
-import type { Worker } from '../../model'
+import type { ICourt, ICourtItem } from '../../../../app/providers/types/court'
 
 type SortField = 'name' | 'email' | 'branch' | 'role' | 'apiId'
 type SortDirection = 'asc' | 'desc'
 
-interface WorkersTableProps {
-  workers: Worker[]
+interface CourtsTableProps {
+  courts: ICourt
   totalRows: number
   page: number
   rowsPerPage: number
   onPageChange: (page: number) => void
   onRowsPerPageChange: (rowsPerPage: number) => void
-  onEdit?: (worker: Worker) => void
-  onDelete?: (worker: Worker) => void
+  onEdit?: (court: ICourtItem) => void
+  onDelete?: (court: ICourtItem) => void
 }
 
 const getRolePriority = (role: string): number => {
@@ -43,8 +43,8 @@ const getRolePriority = (role: string): number => {
   }
 }
 
-export function WorkersTable({
-  workers,
+export function CourtsTable({
+  courts,
   totalRows,
   page,
   rowsPerPage,
@@ -52,7 +52,7 @@ export function WorkersTable({
   onRowsPerPageChange,
   onEdit,
   onDelete,
-}: WorkersTableProps) {
+}: CourtsTableProps) {
   const [sortField, setSortField] = useState<SortField>('role')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
@@ -70,24 +70,28 @@ export function WorkersTable({
     setSortDirection(isAsc ? 'desc' : 'asc')
     setSortField(field)
   }
+  console.log("courts", courts);
+  
 
-  const sortedWorkers = useMemo(() => {
-    return [...workers].sort((a, b) => {
+  const sortedICourts = useMemo(() => {
+    const tableCourts = courts.items ?? []
+    
+    return [...tableCourts].sort((a, b) => {
       let comparison = 0
 
       if (sortField === 'role') {
-        const roleA = getRolePriority(a.role)
-        const roleB = getRolePriority(b.role)
-        comparison = roleA - roleB
+        // const roleA = getRolePriority(a.role)
+        // const roleB = getRolePriority(b.role)
+        // comparison = roleA - roleB
       } else {
-        const valueA = a[sortField].toLowerCase()
-        const valueB = b[sortField].toLowerCase()
-        comparison = valueA.localeCompare(valueB)
+        // const valueA = a[sortField].toLowerCase()
+        // const valueB = b[sortField].toLowerCase()
+        // comparison = valueA.localeCompare(valueB)
       }
 
       return sortDirection === 'desc' ? -comparison : comparison
     })
-  }, [workers, sortField, sortDirection])
+  }, [courts, sortField, sortDirection])
 
   return (
     <Box
@@ -116,14 +120,13 @@ export function WorkersTable({
           }}>
           <TableHead>
             <TableRow sx={{ background: '#f8f9fb' }}>
-              <TableCell sx={{ width: 8, p: 0, background: '#f8f9fb' }} />
               <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none', minWidth: 180, width: 220 }}>
                 <TableSortLabel
                   active={sortField === 'name'}
                   direction={sortField === 'name' ? sortDirection : 'asc'}
                   onClick={() => handleSort('name')}
                   sx={{ color: '#000' }}>
-                  ПІБ
+                  Court
                 </TableSortLabel>
               </TableCell>
               <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
@@ -132,7 +135,7 @@ export function WorkersTable({
                   direction={sortField === 'email' ? sortDirection : 'asc'}
                   onClick={() => handleSort('email')}
                   sx={{ color: '#000' }}>
-                  Email
+                  Sport
                 </TableSortLabel>
               </TableCell>
               <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
@@ -141,7 +144,7 @@ export function WorkersTable({
                   direction={sortField === 'branch' ? sortDirection : 'asc'}
                   onClick={() => handleSort('branch')}
                   sx={{ color: '#000' }}>
-                  Філія
+                  Court Type
                 </TableSortLabel>
               </TableCell>
               <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
@@ -150,7 +153,7 @@ export function WorkersTable({
                   direction={sortField === 'role' ? sortDirection : 'asc'}
                   onClick={() => handleSort('role')}
                   sx={{ color: '#000' }}>
-                  Роль
+                  Status
                 </TableSortLabel>
               </TableCell>
               <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
@@ -159,16 +162,16 @@ export function WorkersTable({
                   direction={sortField === 'apiId' ? sortDirection : 'asc'}
                   onClick={() => handleSort('apiId')}
                   sx={{ color: '#000' }}>
-                  ID для API
+                  Descriptions
                 </TableSortLabel>
               </TableCell>
-              <TableCell align="right" sx={{ background: '#f8f9fb', border: 'none' }}></TableCell>
+              <TableCell align="right" sx={{ background: '#f8f9fb', border: 'none' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedWorkers.map((worker, idx) => (
+            {sortedICourts.map((court, idx) => (
               <TableRow
-                key={worker.apiId}
+                key={court.id}
                 sx={{
                   background: idx % 2 === 0 ? '#fff' : '#f8f9fb',
                   '&:last-child td, &:last-child th': { border: 0 },
@@ -177,29 +180,23 @@ export function WorkersTable({
                   minHeight: 56,
                 }}>
                 <TableCell
-                  sx={{ p: 0, width: 8, background: 'transparent', border: 'none', height: '100%', minHeight: 56 }}>
-                  <Box
-                    sx={{ width: 4, height: '100%', minHeight: 56, borderRadius: '2px', background: worker.color }}
-                  />
-                </TableCell>
-                <TableCell
                   sx={{
                     border: 'none',
                     fontSize: 16,
                     minWidth: 250,
                     width: 300,
                   }}>
-                  {worker.name}
+                  {court.name}
                 </TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>{worker.email}</TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>{worker.branch}</TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>{worker.role}</TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>{worker.apiId}</TableCell>
+                <TableCell sx={{ border: 'none', fontSize: 16 }}>{court.name}</TableCell>
+                <TableCell sx={{ border: 'none', fontSize: 16 }}>{court.sport_type}</TableCell>
+                <TableCell sx={{ border: 'none', fontSize: 16 }}>{court.court_type}</TableCell>
+                <TableCell sx={{ border: 'none', fontSize: 16 }}>{court.is_active}</TableCell>
                 <TableCell align="right" sx={{ border: 'none', minWidth: 100, width: 100 }}>
-                  <IconButton size="small" sx={{ mr: 1 }} onClick={() => onEdit?.(worker)}>
+                  <IconButton size="small" sx={{ mr: 1 }} onClick={() => onEdit?.(court)}>
                     <EditIcon fontSize="small" />
                   </IconButton>
-                  <IconButton size="small" onClick={() => onDelete?.(worker)}>
+                  <IconButton size="small" onClick={() => onDelete?.(court)}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>

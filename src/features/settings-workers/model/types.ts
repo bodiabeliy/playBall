@@ -29,7 +29,7 @@ export interface Permission {
   values: boolean[]
 }
 
-export interface WorkersTableState {
+export interface CourtsTableState {
   page: number
   rowsPerPage: number
   searchQuery: string

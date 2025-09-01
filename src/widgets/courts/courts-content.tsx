@@ -14,12 +14,6 @@ export function CourtsContent({ activeTab }: CourtContentProps) {
       <TabPanel value={activeTab} index={0}>
         <CourtsManagment  />
       </TabPanel>
-      <TabPanel value={activeTab} index={1}>
-        <CourtsManagment  />
-      </TabPanel>
-      <TabPanel value={activeTab} index={2}>
-        <CourtsManagment  />
-      </TabPanel>
     </>
   )
 }

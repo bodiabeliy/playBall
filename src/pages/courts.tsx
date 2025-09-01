@@ -1,11 +1,10 @@
 import { useState } from 'react'
 
-import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 import { SidebarLayout } from '../shared'
 
 
 import { CourtsContent } from '../widgets/courts/courts-content'
-import { CourtsNavigation } from '../widgets/courts/courts-navigation'
 
 export default function CourtsPage() {
   const theme = useTheme()
@@ -13,12 +12,8 @@ export default function CourtsPage() {
   const isSmallDesktop = useMediaQuery(theme.breakpoints.down(2000))
 
 
-  const [activeTab, setActiveTab] = useState(0)
-  console.log("activeTab", activeTab);
+  const [activeTab] = useState(0)
   
-
-
-
   return (
     <SidebarLayout title="courts table">
       <Box
@@ -30,13 +25,8 @@ export default function CourtsPage() {
           p: isMobile ? 2 : 4,
           width: '100%',
         }}>
-        <Typography variant="h6" sx={{ fontWeight: 500 }}>
-          Courts
-        </Typography>
-        
          <Box
             sx={{ display: 'grid', gridTemplateColumns: isSmallDesktop ? '1fr' : '2fr 10fr', gap: '24px', mt: '16px' }}>
-            <CourtsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
             <CourtsContent activeTab={activeTab} />
           </Box>
       </Box>

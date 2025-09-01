@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import UserReducer from './reducers/UserSlice'
 import ClubReducer from './reducers/ClubSlice'
+import CourtReducer from './reducers/CourtSlice'
 
 
 const rootReducer = combineReducers({
   UserReducer,
-  ClubReducer
+  ClubReducer,
+  CourtReducer
 })
 
 export const store = () => {

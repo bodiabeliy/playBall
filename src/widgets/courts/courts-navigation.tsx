@@ -21,6 +21,10 @@ export function CourtsNavigation({ activeTab, onTabChange }: CourtsNavigationPro
       variant="scrollable"
       orientation={!isTablet ? 'horizontal' : 'vertical'}
       sx={{
+        borderRadius: '10px',
+        border: '1px solid #DFDFDF',
+        fontWeight: 500,
+        minHeight: '30px',
         '& .MuiTabs-flexContainer': {
           flexDirection: !isTablet ? 'row' : 'column',
           justifyContent: 'flex-start',
@@ -34,19 +38,17 @@ export function CourtsNavigation({ activeTab, onTabChange }: CourtsNavigationPro
         <Tab
           key={label}
           sx={{
-            minHeight: '30px',
-            borderRadius: '8px',
-            fontWeight: 500,
-            fontSize: '16px',
+            minHeight: '32px',
+            height: '30px',
+            padding: '0 16px',
             color: '#DFDFDF',
             background: 'transparent',
             transition: 'background 0.2s',
             '&.Mui-selected': {
               color: '#fff',
               background: '#034C53',
-              borderRadius: '8px',
+              borderRadius: '10px',
             },
-            border: '1px solid #DFDFDF',
           }}
           label={<TabLabel label={label} />}
         />

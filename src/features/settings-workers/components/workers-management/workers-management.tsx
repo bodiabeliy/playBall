@@ -3,11 +3,10 @@ import { Box, Tabs, Tab, IconButton, Typography, Link as MuiLink, useMediaQuery,
 import PlusIcon from '../../../../shared/assets/icons/plus.svg?react'
 import InfoIcon from '../../../../shared/assets/icons/info.svg?react'
 import { SearchField, PrimaryButton, InfoDialog } from '../../../../shared/components'
-import { WorkersTable, PermissionsTable, RoleDialog, EditWorkerForm } from '../../ui'
+import {  PermissionsTable, RoleDialog, EditWorkerForm } from '../../ui'
 import { PaginationFooter } from '../../ui/pagination-footer'
-import type { Worker, WorkerFormData, Role, Brance } from '../../model'
+import type { Worker, Role, Brance } from '../../model'
 import { PERMISSIONS, TAB_LABELS } from '../../model'
-import { WorkersApi } from '../../api'
 import { BrancesTable } from '../../ui/brances-table'
 import { BranchesApi } from '../../api/branches-api'
 import { AddBranchDialog } from '../../ui/add-branch'
@@ -23,10 +22,8 @@ export function WorkersManagement() {
 
   const [roles, setRoles] = useState<Role[]>([{ value: 'Лікар' }, { value: '' }])
 
-  const [workers, setWorkers] = useState<Worker[]>([])
-  const [totalRows, setTotalRows] = useState(0)
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [page,] = useState(0)
+  const [rowsPerPage,] = useState(10)
 
   const [brances, setBrances] = useState<Brance[]>([])
   const [totalBrancesRows, setTotalBrancesRows] = useState(0)
@@ -38,13 +35,7 @@ export function WorkersManagement() {
 
   useEffect(() => {
     const loadWorkers = async () => {
-      try {
-        const response = await WorkersApi.getWorkers(page, rowsPerPage, searchQuery)
-        setWorkers(response.workers)
-        setTotalRows(response.total)
-      } catch (error) {
-        console.error('Failed to load workers:', error)
-      }
+   
     }
 
     loadWorkers()
@@ -70,33 +61,8 @@ export function WorkersManagement() {
     console.log('Add worker clicked')
   }
 
-  const handleEditWorker = (worker: Worker) => {
-    setEditingWorker(worker)
-  }
-
-  const handleDeleteWorker = async (worker: Worker) => {
-    try {
-      await WorkersApi.deleteWorker(worker.apiId)
-      const response = await WorkersApi.getWorkers(page, rowsPerPage, searchQuery)
-      setWorkers(response.workers)
-      setTotalRows(response.total)
-    } catch (error) {
-      console.error('Failed to delete worker:', error)
-    }
-  }
-
-  const handleSaveWorker = async (data: WorkerFormData) => {
-    if (!editingWorker) return
-
-    try {
-      await WorkersApi.updateWorker({ ...data, apiId: editingWorker.apiId })
-      setEditingWorker(null)
-      const response = await WorkersApi.getWorkers(page, rowsPerPage, searchQuery)
-      setWorkers(response.workers)
-      setTotalRows(response.total)
-    } catch (error) {
-      console.error('Failed to update worker:', error)
-    }
+  const handleSaveWorker = async () => {
+   
   }
 
   const handleSaveRoles = () => {
@@ -168,16 +134,7 @@ export function WorkersManagement() {
                 Додати
               </PrimaryButton>
             </Box>
-            <WorkersTable
-              workers={workers}
-              totalRows={totalRows}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={setPage}
-              onRowsPerPageChange={setRowsPerPage}
-              onEdit={handleEditWorker}
-              onDelete={handleDeleteWorker}
-            />
+        
           </Box>
         )}
         {activeTab === 1 && (

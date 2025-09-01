@@ -1,29 +1,34 @@
 import { useState, useEffect } from 'react'
-import { Box, Tabs, Tab, IconButton, Typography, Link as MuiLink, useMediaQuery, useTheme } from '@mui/material'
+import { Box, IconButton, Typography, Link as MuiLink, useMediaQuery, useTheme } from '@mui/material'
 import PlusIcon from '../../../../shared/assets/icons/plus.svg?react'
 import InfoIcon from '../../../../shared/assets/icons/info.svg?react'
 import { SearchField, PrimaryButton, InfoDialog } from '../../../../shared/components'
-import { WorkersTable, PermissionsTable, RoleDialog, EditWorkerForm } from '../../ui'
+import { CourtsTable, PermissionsTable, RoleDialog, EditWorkerForm } from '../../ui'
 import { PaginationFooter } from '../../ui/pagination-footer'
-import type { Worker, WorkerFormData, Role, Brance } from '../../model'
-import { PERMISSIONS, TAB_LABELS } from '../../model'
-import { WorkersApi } from '../../api'
+import type { Role, Brance } from '../../model'
+import { PERMISSIONS } from '../../model'
 import { BrancesTable } from '../../ui/brances-table'
 import { BranchesApi } from '../../api/branches-api'
 import { AddBranchDialog } from '../../ui/add-branch'
 import { BackBtn } from '../../../back-btn'
+import { CourtsNavigation } from '../../../../widgets/courts/courts-navigation'
+import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
+import { clubSelector } from '../../../../app/providers/reducers/ClubSlice'
+import { getAllCourts } from '../../../../app/services/CourtService'
+import { courtSelector, courtsSelector } from '../../../../app/providers/reducers/CourtSlice'
+import type { ICourt, ICourtItem } from '../../../../app/providers/types/court'
 
 export function CourtsManagment() {
   const [activeTab, setActiveTab] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
-  const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
+  const [editingCourt, setEditingCourt] = useState<ICourtItem | null>(null)
   const [openInfo, setOpenInfo] = useState(false)
   const [openRoleDialog, setOpenRoleDialog] = useState(false)
   const [openAddBranchDialog, setOpenAddBranchDialog] = useState(false)
 
   const [roles, setRoles] = useState<Role[]>([{ value: 'Лікар' }, { value: '' }])
 
-  const [workers, setWorkers] = useState<Worker[]>([])
+  const [courts, setCourts] = useState<ICourt[]>([])
   const [totalRows, setTotalRows] = useState(0)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -36,19 +41,22 @@ export function CourtsManagment() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
-  useEffect(() => {
-    const loadWorkers = async () => {
-      try {
-        const response = await WorkersApi.getWorkers(page, rowsPerPage, searchQuery)
-        setWorkers(response.workers)
-        setTotalRows(response.total)
-      } catch (error) {
-        console.error('Failed to load workers:', error)
-      }
-    }
+  const dispatch = useAppDispatch()
 
-    loadWorkers()
+  const courtList = useAppSelector(courtsSelector)
+  
+  
+  const currentClub = useAppSelector(clubSelector)
+
+  useEffect(() => {
+    dispatch(getAllCourts(currentClub.id))
   }, [page, rowsPerPage, searchQuery])
+
+  useEffect(() => {
+    dispatch(getAllCourts(currentClub.id))
+  }, [dispatch, currentClub])
+
+  
 
   useEffect(() => {
     const loadBrances = async () => {
@@ -64,39 +72,20 @@ export function CourtsManagment() {
     loadBrances()
   }, [brancesPage, brancesRowsPerPage, searchQuery])
 
-  const handleBackToWorkers = () => setEditingWorker(null)
+  const handleBackToCourts = () => setEditingCourt(null)
 
-  const handleAddWorker = () => {
-    console.log('Add worker clicked')
+  const handleEditCourt = (court: ICourtItem) => {
+    setEditingCourt(court)
   }
 
-  const handleEditWorker = (worker: Worker) => {
-    setEditingWorker(worker)
+  const handleDeleteCourt = async () => {
+   
   }
 
-  const handleDeleteWorker = async (worker: Worker) => {
-    try {
-      await WorkersApi.deleteWorker(worker.apiId)
-      const response = await WorkersApi.getWorkers(page, rowsPerPage, searchQuery)
-      setWorkers(response.workers)
-      setTotalRows(response.total)
-    } catch (error) {
-      console.error('Failed to delete worker:', error)
-    }
-  }
+  const handleSaveCourt = async () => {
+    if (!editingCourt) return
 
-  const handleSaveWorker = async (data: WorkerFormData) => {
-    if (!editingWorker) return
-
-    try {
-      await WorkersApi.updateWorker({ ...data, apiId: editingWorker.apiId })
-      setEditingWorker(null)
-      const response = await WorkersApi.getWorkers(page, rowsPerPage, searchQuery)
-      setWorkers(response.workers)
-      setTotalRows(response.total)
-    } catch (error) {
-      console.error('Failed to update worker:', error)
-    }
+   
   }
 
   const handleSaveRoles = () => {
@@ -113,34 +102,30 @@ export function CourtsManagment() {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: isMobile || editingWorker ? 'space-between' : 'end',
+          justifyContent: isMobile || editingCourt ? 'space-between' : 'end',
           px: isMobile ? 2 : 0,
         }}>
-        {editingWorker ? <BackBtn handleBack={handleBackToWorkers} /> : null}
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          sx={{
-            '& .MuiTabs-indicator': {
-              backgroundColor: '#0029d9',
-            },
-            '&.Mui-selected': {
-              color: '#0029d9',
-            },
-          }}>
-          {TAB_LABELS.map((label) => (
-            <Tab
-              key={label}
-              sx={{
-                '&.Mui-selected': {
-                  color: '#0029d9',
-                },
-                textTransform: 'none',
-              }}
-              label={label}
-            />
-          ))}
-        </Tabs>
+        {editingCourt ? <BackBtn handleBack={handleBackToCourts} /> : null}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Box sx={{ display: 'flex' }}>
+            <Typography variant="h6" sx={{ fontWeight: 500, mr: 4 }}>
+              Courts
+            </Typography>
+            <CourtsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+          </Box>
+         <Box>
+           <SearchField value={searchQuery} onChange={setSearchQuery} fullWidth={false} />
+           <PrimaryButton
+            startIcon={<PlusIcon />}
+            sx={{
+              padding: '4px 16px',
+              fontSize: 13,
+            }}
+            onClick={() => setOpenAddBranchDialog(true)}>
+            New Court
+          </PrimaryButton>
+         </Box>
+        </Box>
       </Box>
       <Box
         sx={{
@@ -155,28 +140,16 @@ export function CourtsManagment() {
           position: 'relative',
         }}>
         {activeTab === 0 && (
-          <Box sx={{ display: editingWorker ? 'none' : 'block' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: isMobile ? 'flex-end' : 'space-between',
-                alignItems: 'center',
-                p: isMobile ? 1 : 3,
-              }}>
-              {!isMobile ? <SearchField value={searchQuery} onChange={setSearchQuery} fullWidth={false} /> : null}
-              <PrimaryButton startIcon={<PlusIcon />} onClick={handleAddWorker}>
-                Додати
-              </PrimaryButton>
-            </Box>
-            <WorkersTable
-              workers={workers}
+          <Box sx={{ display: editingCourt ? 'none' : 'block' }}>
+            <CourtsTable
+              courts={courtList}
               totalRows={totalRows}
               page={page}
               rowsPerPage={rowsPerPage}
               onPageChange={setPage}
               onRowsPerPageChange={setRowsPerPage}
-              onEdit={handleEditWorker}
-              onDelete={handleDeleteWorker}
+              onEdit={handleEditCourt}
+              onDelete={handleDeleteCourt}
             />
           </Box>
         )}
@@ -193,15 +166,6 @@ export function CourtsManagment() {
               <IconButton onClick={() => setOpenInfo(true)}>
                 <InfoIcon style={{ color: '#000', fillOpacity: 0.56 }} />
               </IconButton>
-              <PrimaryButton
-                startIcon={<PlusIcon />}
-                sx={{
-                  padding: '4px 16px',
-                  fontSize: 13,
-                }}
-                onClick={() => setOpenRoleDialog(true)}>
-                ДОДАТИ РОЛЬ
-              </PrimaryButton>
             </Box>
             <PermissionsTable permissions={PERMISSIONS} />
             <Box sx={{ mt: 'auto' }}>
@@ -226,15 +190,6 @@ export function CourtsManagment() {
                 mb: isMobile ? 0 : 2,
                 p: isMobile ? 1 : 3,
               }}>
-              <PrimaryButton
-                startIcon={<PlusIcon />}
-                sx={{
-                  padding: '4px 16px',
-                  fontSize: 13,
-                }}
-                onClick={() => setOpenAddBranchDialog(true)}>
-                ДОДАТИ ФІЛІЮ
-              </PrimaryButton>
             </Box>
             <BrancesTable
               brances={brances}
@@ -246,9 +201,9 @@ export function CourtsManagment() {
             />
           </Box>
         )}
-        {editingWorker && (
+        {editingCourt && (
           <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-            <EditWorkerForm worker={editingWorker} onCancel={handleBackToWorkers} onSave={handleSaveWorker} />
+            {/* <EditWorkerForm worker={editingCourt} onCancel={handleBackToCourts} onSave={handleSaveCourt} /> */}
           </Box>
         )}
       </Box>

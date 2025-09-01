@@ -1,1 +1,1 @@
-export { WorkersTable } from './workers-table'
+export { CourtsTable } from './workers-table'
