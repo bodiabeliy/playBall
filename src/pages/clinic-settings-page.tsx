@@ -27,7 +27,7 @@ export function ClubSettingsPage() {
         </>
       ) : (
         <Box
-          sx={{ display: 'grid', gridTemplateColumns: isSmallDesktop ? '1fr' : '2fr 10fr', gap: '24px', mt: '16px' }}>
+          sx={{ gridTemplateColumns: isSmallDesktop ? '1fr' : '2fr 10fr', gap: '24px', mt: '16px' }}>
           <SettingsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
           <SettingsContent activeTab={activeTab} />
         </Box>

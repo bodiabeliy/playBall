@@ -2,7 +2,6 @@ import { SchedulePage } from '../../pages/schedule'
 import { SignUpPage } from '../../pages/sign-up'
 import { LoginPage } from '../../pages/login'
 import { ForgotPasswordPage } from '../../pages/forgot-password'
-import { ClubSettingsPage } from '../../widgets'
 import { LostConsultationPage } from '../../pages/lost-consultation'
 
 import { LeadsPage } from '../../pages/customers/customers'
@@ -25,7 +24,6 @@ import {
   getBookingeRoute,
   getSettingsRoute,
   getSignUpRoute,
-  getClubSettingsRoute,
   getLostConsultationRoute,
   getOverdueServicesRoute,
   getPatientsRoute,
@@ -38,6 +36,7 @@ import {
   getFinancialManagementRoute,
   getConfirmationPage,
   getRecoveryPasswordRoute,
+  getCourtsRoute,
 } from '../../shared/types/routes'
 import { Route, Routes } from 'react-router'
 import { CodeConfirmationPage } from '../../pages/code-confirmation'
@@ -45,6 +44,7 @@ import { useSelector } from 'react-redux'
 import PrivatePageWrapper from '../../shared/components/privatePage/RequireAuth'
 import { RecoveryPasswordPage } from '../../pages/recovery-password'
 import { isUserAuthSelector } from './reducers/UserSlice'
+import CourtsPage from '../../pages/courts'
 
 const unAuthorizedRoutes = [
   {
@@ -60,11 +60,7 @@ const unAuthorizedRoutes = [
     path: getLoginRoute(),
   },
   {
-    element: (
-      <PrivatePageWrapper>
-        <DesktopPage />
-      </PrivatePageWrapper>
-    ),
+    element: <DesktopPage />,
     path: getHomeRoute(),
   },
   {
@@ -78,7 +74,7 @@ const unAuthorizedRoutes = [
   {
     element: (
       <PrivatePageWrapper>
-        <LoginPage />
+        <DesktopPage />
       </PrivatePageWrapper>
     ),
     path: '*',
@@ -98,9 +94,9 @@ const authorizedRoutes = [
     element: <SettingsPage />,
     path: getSettingsRoute(),
   },
-  {
-    element: <ClubSettingsPage />,
-    path: getClubSettingsRoute(),
+    {
+    element: <CourtsPage />,
+    path: getCourtsRoute(),
   },
   {
     element: <LostConsultationPage />,

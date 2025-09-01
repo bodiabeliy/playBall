@@ -1,14 +1,12 @@
 import request from 'axios'
-
 import $api from './api/index'
-
 import type { AppDispatch } from '../providers/store'
 import {
   getCurrentUserNotification,
 } from '../providers/reducers/UserSlice'
-// import type { IClub,  } from '../providers/types/club'
 import { getClubs, getClubStatistic, getCurrentClub, getCurrentClubSettings } from '../providers/reducers/ClubSlice'
 import type { IClub, IClubSettings } from '../providers/types/club'
+import { compressImage, uploadClubGallery } from './FileService'
 
 
 
@@ -125,6 +123,71 @@ export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: 
     if (request.isAxiosError(error) && error.response) {
       errorMessage = error.response?.data?.message
       dispatch(getCurrentUserNotification(errorMessage))
+    }
+    throw error;
+  }
+}
+
+/**
+ * Upload club logo or banner through your API
+ * @param clubId - ID of the club
+ * @param field - Field name (logo_image or banner_image)
+ * @param file - File to upload
+ * @returns Updated club data
+ */
+export const uploadClubSingleImage = (clubId: number, field: 'logo_image' | 'banner_image', file: File) => async (dispatch: AppDispatch) => {
+  try {
+    // First compress the image
+    const compressedFile = await compressImage(file);
+    
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('file', compressedFile);
+    
+    // Upload the image through your API
+    const response = await $api.post(`/clubs/${clubId}/upload/${field}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': localStorage.getItem('token'),
+      }
+    });
+    
+    // Update club in Redux store
+    dispatch(getCurrentClub(response.data));
+    return response.data;
+  } catch (error) {
+    let errorMessage = '';
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message;
+      dispatch(getCurrentUserNotification(errorMessage));
+    }
+    throw error;
+  }
+}
+
+/**
+ * Upload multiple images to club gallery through Directus
+ * @param clubId - ID of the club
+ * @param files - Array of files to upload
+ * @returns Array of file IDs
+ */
+export const uploadClubGalleryImages = (clubId: number, files: File[]) => async (dispatch: AppDispatch) => {
+  try {
+    // Upload files to Directus and link them to the club
+    const fileIds = await uploadClubGallery(clubId, files);
+    
+    // Fetch updated club data to refresh the gallery
+    dispatch(getClubById(clubId));
+    
+    return fileIds;
+  } catch (error) {
+    let errorMessage = '';
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message;
+      dispatch(getCurrentUserNotification(errorMessage));
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+      dispatch(getCurrentUserNotification(errorMessage));
     }
     throw error;
   }

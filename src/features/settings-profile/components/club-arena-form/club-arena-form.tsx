@@ -153,7 +153,7 @@ export function ClubArenaForm() {
     {
       id: 'contactInfo',
       title: !expandedSections.contactInfo ? 'Contact Info' : 'Contact Info',
-      subTitle: 'Update your club contact information including name, email, website and social media links',
+      // subTitle: 'Update your club contact information including name, email, website and social media links',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <ContactInfoSection 
           formData={formData} 
@@ -165,7 +165,7 @@ export function ClubArenaForm() {
     {
       id: 'location',
       title: !expandedSections.location ? 'Location' : 'Location',
-      subTitle: 'Specify your club\'s address and coordinates for clients to find you easily',
+      // subTitle: 'Specify your club\'s address and coordinates for clients to find you easily',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <LocationSection 
           formData={formData} 
@@ -177,7 +177,7 @@ export function ClubArenaForm() {
     {
       id: 'openHours',
       title: !expandedSections.openHours ? 'Opening Hours' : 'Opening Hours',
-      subTitle: 'Set your club\'s working hours so clients know when you\'re available',
+      // subTitle: 'Set your club\'s working hours so clients know when you\'re available',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <WorkingDaysSection 
           formData={formData} 
@@ -189,7 +189,7 @@ export function ClubArenaForm() {
     {
       id: 'amenities',
       title: !expandedSections.amenities ? 'Amenities' : 'Amenities',
-      subTitle: 'Add the facilities and services your club offers to attract more clients',
+      // subTitle: 'Add the facilities and services your club offers to attract more clients',
       content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <AmenitiesSection 
           formData={formData} 

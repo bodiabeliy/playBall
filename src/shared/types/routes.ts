@@ -8,6 +8,8 @@ const ROUTES = {
   RECOVERY_PASSWORD: '/recovery-password',
   SETTINGS: '/settings',
   CLUB_SETTINGS: '/club-settings',
+  COURTS:'/courts',
+
   PATIENTS: '/patients',
   PATIENT_DETAILS: '/patients/:id',
   PATIENT_EDIT: '/patients/:id/edit',
@@ -30,6 +32,9 @@ export const getBookingeRoute = () => ROUTES.BOOKING
 export const getForgotPasswordRoute = () => ROUTES.FORGOT_PASSWORD
 export const getRecoveryPasswordRoute = () => ROUTES.RECOVERY_PASSWORD
 export const getSettingsRoute = () => ROUTES.SETTINGS
+export const getCourtsRoute = () => ROUTES.COURTS
+
+
 export const getClubSettingsRoute = () => ROUTES.CLUB_SETTINGS
 export const getPatientsRoute = () => ROUTES.PATIENTS
 export const getPatientDetailsRoute = (id: string) => ROUTES.PATIENT_DETAILS.replace(':id', id)

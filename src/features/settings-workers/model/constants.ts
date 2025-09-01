@@ -80,7 +80,7 @@ export const COLOR_OPTIONS = [
   { value: '#ff9800', label: 'Оранжевий' },
 ]
 
-export const TAB_LABELS = ['Працівники', 'Ролі', 'Філії']
+export const TAB_LABELS = ['Padel', 'Tennis', 'Pickleball']
 
 export const MOCK_BRANCES: Brance[] = [
   {

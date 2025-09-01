@@ -1,6 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useRef, useState, useEffect } from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, CircularProgress } from '@mui/material'
 
 import UploadIcon from "../../shared/assets/icons/upload.svg?react"
 
@@ -9,13 +9,17 @@ export interface FileUploadProps {
   helperText?: string
   type?: 'default' | 'small' | 'big'
   maxFiles?: number
+  isLoading?: boolean
+  multiple?: boolean
 }
 
 const FileUpload = ({ 
   onFileChange, 
   helperText = 'files', 
   type = 'default',
-  maxFiles = 10
+  maxFiles = 10,
+  isLoading = false,
+  multiple = false
 }: FileUploadProps) => {
   const [files, setFiles] = useState<File[]>([])
   const [progress, setProgress] = useState<{ [key: string]: number }>({})
@@ -223,31 +227,45 @@ const FileUpload = ({
                   padding: '60px 16px',
                   textAlign: 'center',
                   background: isDragging ? '#f5f7ff' : '#fff',
-                  cursor: 'pointer',
+                  cursor: isLoading ? 'default' : 'pointer',
                   transition: 'background 0.2s',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  height: '160px'
+                  height: '160px',
+                  opacity: isLoading ? 0.7 : 1,
+                  pointerEvents: isLoading ? 'none' : 'auto'
                 }}
                 onDragOver={(e) => {
+                  if (isLoading) return;
                   e.preventDefault();
                   setIsDragging(true);
                 }}
                 onDragLeave={(e) => {
+                  if (isLoading) return;
                   e.preventDefault();
                   setIsDragging(false);
                 }}
-                onDrop={handleDrop}
-                onClick={() => inputRef.current?.click()}
+                onDrop={(e) => {
+                  if (isLoading) return;
+                  handleDrop(e);
+                }}
+                onClick={() => {
+                  if (isLoading) return;
+                  inputRef.current?.click();
+                }}
               >
-                <UploadIcon style={{ width: 32, height: 32 }} />
+                {isLoading ? (
+                  <CircularProgress size={32} />
+                ) : (
+                  <UploadIcon style={{ width: 32, height: 32 }} />
+                )}
                 <Typography variant="body2" sx={{ mt: 2 }}>
-                  Upload {helperText}
+                  {isLoading ? 'Uploading...' : `Upload ${helperText}`}
                 </Typography>
                 <Typography variant="caption" color="rgba(21, 22, 24, 0.6)" sx={{ mt: 0.5 }}>
-                  PNG or JPG up to 2MB
+                  PNG, JPG, WebP, HEIC up to 2MB
                 </Typography>
               </Box>
             )}
@@ -357,33 +375,47 @@ const FileUpload = ({
                 padding: '12px',
                 textAlign: 'center',
                 background: isDragging ? '#f5f7ff' : '#fff',
-                cursor: 'pointer',
+                cursor: isLoading ? 'default' : 'pointer',
                 transition: 'background 0.2s',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                opacity: isLoading ? 0.7 : 1,
+                pointerEvents: isLoading ? 'none' : 'auto'
               }}
               onDragOver={(e) => {
+                if (isLoading) return;
                 e.preventDefault();
                 setIsDragging(true);
               }}
               onDragLeave={(e) => {
+                if (isLoading) return;
                 e.preventDefault();
                 setIsDragging(false);
               }}
-              onDrop={handleDrop}
-              onClick={() => inputRef.current?.click()}
+              onDrop={(e) => {
+                if (isLoading) return;
+                handleDrop(e);
+              }}
+              onClick={() => {
+                if (isLoading) return;
+                inputRef.current?.click();
+              }}
             >
              <Box sx={{display:"flex", alignItems:"center"}}>
-                <UploadIcon style={{ width: 24, height: 24, margin:4 }} />
+                {isLoading ? (
+                  <CircularProgress size={24} sx={{ margin: 1 }} />
+                ) : (
+                  <UploadIcon style={{ width: 24, height: 24, margin:4 }} />
+                )}
                <Typography variant="caption" sx={{ fontWeight: 'bold'}}>
-                Upload {helperText}
+                {isLoading ? 'Uploading...' : `Upload ${helperText}`}
               </Typography>
              </Box>
              
               <Typography variant="caption" color="rgba(21, 22, 24, 0.6)" sx={{ mt: 0.5 }}>
-                PDF, PNG or JPG up to 2MB
+                PNG, JPG, WebP, HEIC up to 2MB
               </Typography>
             </Box>
           </Box>
@@ -398,32 +430,46 @@ const FileUpload = ({
                 padding: '12px',
                 textAlign: 'center',
                 background: isDragging ? '#f5f7ff' : '#fff',
-                cursor: 'pointer',
+                cursor: isLoading ? 'default' : 'pointer',
                 transition: 'background 0.2s',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                opacity: isLoading ? 0.7 : 1,
+                pointerEvents: isLoading ? 'none' : 'auto'
             }}
             onDragOver={(e) => {
+              if (isLoading) return;
               e.preventDefault();
               setIsDragging(true);
             }}
             onDragLeave={(e) => {
+              if (isLoading) return;
               e.preventDefault();
               setIsDragging(false);
             }}
-            onDrop={handleDrop}
-            onClick={() => inputRef.current?.click()}
+            onDrop={(e) => {
+              if (isLoading) return;
+              handleDrop(e);
+            }}
+            onClick={() => {
+              if (isLoading) return;
+              inputRef.current?.click();
+            }}
           >
            <Box sx={{display:"flex", alignItems:"center"}}>
-               <UploadIcon style={{ width: 24, height: 24, margin:4 }} />
+               {isLoading ? (
+                 <CircularProgress size={24} sx={{ margin: 1 }} />
+               ) : (
+                 <UploadIcon style={{ width: 24, height: 24, margin:4 }} />
+               )}
                <Typography variant="caption" sx={{ fontWeight: 'bold'}}>
-                Upload {helperText}
+                {isLoading ? 'Uploading...' : `Upload ${helperText}`}
               </Typography>
             </Box>
             <Typography variant="body2" color="rgba(21, 22, 24, 0.6)" sx={{ mt: 1 }}>
-              You can upload PDF, PNG or JPG up to 2MB
+              You can upload PNG, JPG, WebP, HEIC up to 2MB
             </Typography>
           </Box>
 
@@ -490,10 +536,11 @@ const FileUpload = ({
       <input
         ref={inputRef}
         type="file"
-        accept=".svg,.png,.jpg,.jpeg"
-        multiple={type !== 'big'} // Only allow multiple for non-big type
+        accept=".svg,.png,.jpg,.jpeg,.webp,.heic,.heif"
+        multiple={(type !== 'big') && multiple} // Allow multiple based on props and non-big type
         style={{ display: 'none' }}
         onChange={handleInputChange}
+        disabled={isLoading}
       />
     </Box>
   )

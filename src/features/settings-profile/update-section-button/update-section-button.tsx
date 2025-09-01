@@ -62,6 +62,7 @@ export function UpdateSectionButton<T>({
       startIcon={!isAccordionCollapse && <EditButtonIcon />}
       onClick={handleClick}
       sx={{
+        textTransform:"capitalize",
         background: !isAccordionCollapse ? "rgba(223, 223, 223, 1)" : "#034C53",
         color: !isAccordionCollapse ? "black" : "white",
         transform: !isAccordionCollapse ? "rotate(0deg)" : "rotate(180deg)",

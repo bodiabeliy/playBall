@@ -54,7 +54,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
         id: 'courts',
         text: 'sidebar.courts',
         icon: CourtIcon,
-        // link: '/patients', //change
+        link: '/courts', 
       },
       {
         id: 'pricing',

@@ -13,7 +13,6 @@
     "prepare": "husky install",
     "pre-commit": "lint-staged"
   },
-
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -23,6 +22,7 @@
     "@react-input/mask": "^2.0.4",
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.10.0",
+    "browser-image-compression": "^2.0.2",
     "date-fns": "^2.30.0",
     "i18next": "^25.2.1",
     "i18next-http-backend": "^3.0.2",

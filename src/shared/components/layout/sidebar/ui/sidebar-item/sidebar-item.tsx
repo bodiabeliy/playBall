@@ -56,8 +56,8 @@ export function SidebarItemComponent({
       onClick()
     }
      if (item.isAction) {
-       navigate('/')
-       dispatch(logout())
+      dispatch(logout())
+      navigate('/login', { replace: true })
     }
 
   }

@@ -102,10 +102,14 @@ export function WorkersTable({
         justifyContent: 'space-between',
         height: '100%',
       }}>
-      <TableContainer sx={{ boxShadow: 'none', borderRadius: 0 }}>
+      <TableContainer sx={{
+        boxShadow: 'none', borderRadius: 0 
+        }}
+      >
         <Table
           sx={{
-            minWidth: { xs: '100%', sm: 650 },
+            minWidth: 1200,
+            overflow:"scroll",
             borderCollapse: 'separate',
             borderSpacing: 0,
             tableLayout: 'auto',
