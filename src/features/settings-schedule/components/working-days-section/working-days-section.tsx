@@ -1,10 +1,14 @@
-import { Box, Typography } from '@mui/material'
-import { UniversalTimePicker } from '../../../../shared/components'
-import { LocalizationProvider } from '@mui/x-date-pickers'
+import { Box, Typography, Switch, Button } from '@mui/material'
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { enUS } from 'date-fns/locale'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import type { IClub, IWorkingHours } from '../../../../app/providers/types/club'
+import type { IOpenHour } from '../../../../app/providers/types/hours'
+import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
+import { updateOpenHours } from '../../../../app/services/ClubService'
+import { clubSelector } from '../../../../app/providers/reducers/ClubSlice'
 
 const daysOfWeek = [
   { key: 'mon', label: 'Mon', dayOfWeek: 1, group: 'weekdays' },
@@ -13,7 +17,7 @@ const daysOfWeek = [
   { key: 'thu', label: 'Thu', dayOfWeek: 4, group: 'weekdays' },
   { key: 'fri', label: 'Fri', dayOfWeek: 5, group: 'weekdays' },
   { key: 'sat', label: 'Sat', dayOfWeek: 6, group: 'weekends' },
-  { key: 'sun', label: 'Sun', dayOfWeek: 0, group: 'weekends' },
+  { key: 'sun', label: 'Sun', dayOfWeek: 7, group: 'weekends' },
 ]
 
 export type WorkingDay = {
@@ -30,32 +34,61 @@ type SectionProps = {
 };
 
 export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps) => {
+  const dispatch = useAppDispatch()
+  const currentClub = useAppSelector(clubSelector)
+
   // Convert working_hours from IClub to WorkingDay format if available
   const getInitialWorkingDays = (): WorkingDay[] => {
+    // Default time values for each day (ensuring start < end)
+    const getDefaultTimes = (dayKey: string) => {
+      switch (dayKey) {
+        case 'mon':
+          return { start: new Date('2024-01-01T08:00:00.000Z'), end: new Date('2024-01-01T18:00:00.000Z') };
+        case 'tue':
+          return { start: new Date('2024-01-01T08:30:00.000Z'), end: new Date('2024-01-01T19:00:00.000Z') };
+        case 'wed':
+          return { start: new Date('2024-01-01T09:00:00.000Z'), end: new Date('2024-01-01T17:30:00.000Z') };
+        case 'thu':
+          return { start: new Date('2024-01-01T08:00:00.000Z'), end: new Date('2024-01-01T20:00:00.000Z') };
+        case 'fri':
+          return { start: new Date('2024-01-01T07:30:00.000Z'), end: new Date('2024-01-01T18:30:00.000Z') };
+        case 'sat':
+          return { start: new Date('2024-01-01T10:00:00.000Z'), end: new Date('2024-01-01T16:00:00.000Z') };
+        case 'sun':
+          return { start: new Date('2024-01-01T10:30:00.000Z'), end: new Date('2024-01-01T17:00:00.000Z') };
+        default:
+          return { start: new Date('2024-01-01T09:00:00.000Z'), end: new Date('2024-01-01T17:00:00.000Z') };
+      }
+    };
+
     if (formData.working_hours && formData.working_hours.length > 0) {
       return daysOfWeek.map(day => {
         const workingHour = formData.working_hours?.find(wh => wh.day_of_week === day.dayOfWeek);
+        const defaultTimes = getDefaultTimes(day.key);
         return {
           key: day.key,
-          enabled: workingHour ? workingHour.is_active : day.key !== 'sat' && day.key !== 'sun',
-          start: workingHour ? new Date(workingHour.start_time) : null,
-          end: workingHour ? new Date(workingHour.end_time) : null
+          enabled: workingHour ? workingHour.is_active : day.key !== 'sat', // Sunday is enabled by default, only Saturday is disabled
+          start: workingHour ? new Date(workingHour.start_time) : defaultTimes.start,
+          end: workingHour ? new Date(workingHour.end_time) : defaultTimes.end
         };
       });
     } else {
-      return daysOfWeek.map(day => ({
-        key: day.key,
-        enabled: day.key !== 'sat' && day.key !== 'sun',
-        start: null,
-        end: null,
-      }));
+      return daysOfWeek.map(day => {
+        const defaultTimes = getDefaultTimes(day.key);
+        return {
+          key: day.key,
+          enabled: day.key !== 'sat', // Sunday is enabled by default, only Saturday is disabled
+          start: defaultTimes.start,
+          end: defaultTimes.end,
+        };
+      });
     }
   };
 
   const [workingDays, setWorkingDaysState] = useState<WorkingDay[]>(getInitialWorkingDays());
 
   // Update IClub's working_hours whenever workingDays changes
-  const updateWorkingHours = (days: WorkingDay[]) => {
+  const updateWorkingHours = useCallback((days: WorkingDay[]) => {
     const workingHours: IWorkingHours[] = days.map((day, index) => ({
       day_of_week: daysOfWeek[index].dayOfWeek,
       is_active: day.enabled,
@@ -63,6 +96,37 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
       end_time: day.end || new Date()
     }));
     handleFieldChange('working_hours', workingHours);
+  }, [handleFieldChange]);
+
+  const handleSaveWorkingHours = async () => {
+    if (currentClub?.id) {
+      const formatTime = (date: Date | null): string => {
+        if (!date) return '09:00:00';
+        
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = '00'; // Always use 00 for seconds
+        
+        return `${hours}:${minutes}:${seconds}`;
+      };
+
+      const openHoursData: IOpenHour = {
+        working_hours: workingDays.map((day, index) => ({
+          day_of_week: daysOfWeek[index].dayOfWeek,
+          is_active: day.enabled,
+          start_time: formatTime(day.start),
+          end_time: formatTime(day.end)
+        }))
+      };
+      
+      console.log('Sending working hours data:', openHoursData);
+      
+      try {
+        await dispatch(updateOpenHours(currentClub.id, openHoursData));
+      } catch (error) {
+        console.error('Failed to update working hours:', error);
+      }
+    }
   };
 
   const handleToggle = (idx: number) => {
@@ -85,104 +149,215 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
     const dayIndex = daysOfWeek.findIndex(d => d.key === day.key);
     
     return (
-      <Box key={day.key} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ width: '80px', display: 'flex', alignItems: 'center' }}>
+      <Box key={day.key} sx={{ 
+        display: 'flex', 
+        alignItems: 'flex-start', 
+        mb: 3,
+        minHeight: '68px'
+      }}>
+        {/* Day label and toggle */}
+        <Box sx={{ 
+          width: '72px', 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          mr: 3,
+          pt: 0.5
+        }}>
           <Typography sx={{ 
-            color: day.enabled ? '#034C53' : '#94A3B8',
-            fontSize: '14px', 
-            mr: 2
+            color: '#64748B',
+            fontSize: '14px',
+            fontWeight: 500,
+            mb: 1.5,
+            lineHeight: 1.2
           }}>
             {daysOfWeek[dayIndex].label}
           </Typography>
           
-          {/* Toggle Switch */}
-          <Box 
-            sx={{ 
-              display: 'inline-flex',
-              width: 36,
-              height: 20,
-              position: 'relative',
-              cursor: 'pointer'
+          {/* Material UI Switch */}
+          <Switch
+            checked={day.enabled}
+            onChange={() => handleToggle(dayIndex)}
+            size="medium"
+            sx={{
+              width: 44,
+              height: 24,
+              padding: 0,
+              '& .MuiSwitch-switchBase': {
+                padding: 0,
+                margin: '2px',
+                transitionDuration: '300ms',
+                color: '#ffffff',
+                '&.Mui-checked': {
+                  transform: 'translateX(20px)',
+                  color: '#ffffff',
+                  '& + .MuiSwitch-track': {
+                    backgroundColor: '#0F766E',
+                    opacity: 1,
+                    border: 0,
+                  },
+                  '&.Mui-disabled + .MuiSwitch-track': {
+                    opacity: 0.5,
+                  },
+                },
+                '&.Mui-focusVisible .MuiSwitch-thumb': {
+                  color: '#0F766E',
+                  border: '6px solid #fff',
+                },
+                '&.Mui-disabled .MuiSwitch-thumb': {
+                  color: '#f5f5f5',
+                },
+                '&.Mui-disabled + .MuiSwitch-track': {
+                  opacity: 0.3,
+                },
+              },
+              '& .MuiSwitch-thumb': {
+                boxSizing: 'border-box',
+                width: 20,
+                height: 20,
+                boxShadow: '0 2px 4px 0 rgba(0,35,11,0.2)',
+              },
+              '& .MuiSwitch-track': {
+                borderRadius: 24 / 2,
+                backgroundColor: '#CBD5E1',
+                opacity: 1,
+                transition: 'background-color 300ms',
+              },
             }}
-            onClick={() => handleToggle(dayIndex)}
-          >
-            <Box 
-              sx={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                borderRadius: '34px',
-                backgroundColor: day.enabled ? '#034C53' : '#E5E5E5',
-                transition: 'background-color 0.2s ease'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                height: '16px',
-                width: '16px',
-                left: day.enabled ? '16px' : '4px',
-                top: '2px',
-                backgroundColor: 'white',
-                borderRadius: '50%',
-                transition: 'left 0.2s ease',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
-              }}
-            />
-          </Box>
+          />
         </Box>
         
-        <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center' }}>
-          <Box sx={{ flexGrow: 1, mr: 2 }}>
+        {/* Time inputs */}
+        <Box sx={{ 
+          display: 'flex', 
+          flex: 1, 
+          gap: 3,
+          alignItems: 'flex-start'
+        }}>
+          {/* From time */}
+          <Box sx={{ flex: 1 }}>
             <Typography sx={{ 
-              fontSize: '12px', 
+              fontSize: '13px', 
               color: '#64748B',
-              mb: 0.5
+              fontWeight: 500,
+              mb: 1,
+              lineHeight: 1.2
             }}>
               From
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
-              <UniversalTimePicker
+              <TimePicker
                 value={day.start}
-                onChange={(e) => handleTimeChange(dayIndex, 'start', e)}
+                onChange={(newValue) => handleTimeChange(dayIndex, 'start', newValue)}
                 disabled={!day.enabled}
-                isIcon={true}
-                textFieldProps={{
-                  sx: {
-                    '& .MuiInputBase-root': {
-                      height: '40px',
-                      borderRadius: '4px',
-                      backgroundColor: day.enabled ? 'white' : '#F1F5F9',
+                format="HH:mm"
+                ampm={false}
+                slots={{
+                  openPickerIcon: AccessTimeIcon,
+                }}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    fullWidth: true,
+                    sx: {
+                      '& .MuiInputBase-root': {
+                        height: '44px',
+                        borderRadius: '8px',
+                        backgroundColor: day.enabled ? '#ffffff' : '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        color: day.enabled ? '#1E293B' : '#94A3B8',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          borderColor: day.enabled ? '#CBD5E1' : '#E2E8F0',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: day.enabled ? '#0F766E' : '#E2E8F0',
+                          boxShadow: day.enabled ? '0 0 0 3px rgba(15, 118, 110, 0.1)' : 'none',
+                        },
+                        '& .MuiInputBase-input': {
+                          padding: '10px 14px',
+                          fontFamily: 'inherit',
+                          '&::placeholder': {
+                            color: '#94A3B8',
+                            opacity: 1,
+                          },
+                        },
+                      },
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                      },
+                      '& .MuiInputAdornment-root': {
+                        color: day.enabled ? '#64748B' : '#CBD5E1',
+                        marginRight: '8px',
+                      },
                     },
-                    width: '100%',
                   },
                 }}
               />
             </LocalizationProvider>
           </Box>
           
-          <Box sx={{ flexGrow: 1 }}>
+          {/* To time */}
+          <Box sx={{ flex: 1 }}>
             <Typography sx={{ 
-              fontSize: '12px', 
+              fontSize: '13px', 
               color: '#64748B',
-              mb: 0.5
+              fontWeight: 500,
+              mb: 1,
+              lineHeight: 1.2
             }}>
               To
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
-              <UniversalTimePicker
+              <TimePicker
                 value={day.end}
-                onChange={(e) => handleTimeChange(dayIndex, 'end', e)}
+                onChange={(newValue) => handleTimeChange(dayIndex, 'end', newValue)}
                 disabled={!day.enabled}
-                isIcon={true}
-                textFieldProps={{
-                  sx: {
-                    '& .MuiInputBase-root': {
-                      height: '40px',
-                      borderRadius: '4px',
-                      backgroundColor: day.enabled ? 'white' : '#F1F5F9',
+                format="HH:mm"
+                ampm={false}
+                slots={{
+                  openPickerIcon: AccessTimeIcon,
+                }}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    fullWidth: true,
+                    sx: {
+                      '& .MuiInputBase-root': {
+                        height: '44px',
+                        borderRadius: '8px',
+                        backgroundColor: day.enabled ? '#ffffff' : '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        color: day.enabled ? '#1E293B' : '#94A3B8',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          borderColor: day.enabled ? '#CBD5E1' : '#E2E8F0',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: day.enabled ? '#0F766E' : '#E2E8F0',
+                          boxShadow: day.enabled ? '0 0 0 3px rgba(15, 118, 110, 0.1)' : 'none',
+                        },
+                        '& .MuiInputBase-input': {
+                          padding: '10px 14px',
+                          fontFamily: 'inherit',
+                          '&::placeholder': {
+                            color: '#94A3B8',
+                            opacity: 1,
+                          },
+                        },
+                      },
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                      },
+                      '& .MuiInputAdornment-root': {
+                        color: day.enabled ? '#64748B' : '#CBD5E1',
+                        marginRight: '8px',
+                      },
                     },
-                    width: '100%',
                   },
                 }}
               />
@@ -194,15 +369,51 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
   };
 
   return (
-    <form style={{ width: '100%' }}>
+    <Box sx={{ width: '100%', p: 0, position: 'relative' }}>
+      {/* Update Button */}
+      <Box sx={{ 
+        position: 'absolute', 
+        top: -8, 
+        right: 0,
+        zIndex: 1
+      }}>
+        <Button
+          variant="contained"
+          onClick={handleSaveWorkingHours}
+          sx={{
+            backgroundColor: '#0F766E',
+            color: 'white',
+            fontSize: '14px',
+            fontWeight: 600,
+            textTransform: 'none',
+            borderRadius: '8px',
+            padding: '10px 20px',
+            minWidth: '84px',
+            height: '40px',
+            boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            border: 'none',
+            '&:hover': {
+              backgroundColor: '#0D6F66',
+              boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.1)',
+            },
+            '&:active': {
+              backgroundColor: '#0B5D57',
+            },
+          }}
+        >
+          Update
+        </Button>
+      </Box>
+
       {/* Weekdays Section */}
-      <Box mb={4}>
+      <Box sx={{ mb: 5, pt: 2 }}>
         <Typography 
           sx={{ 
             fontSize: '16px', 
-            fontWeight: 500, 
-            color: '#0F172A',
-            mb: 2 
+            fontWeight: 600, 
+            color: '#64748B',
+            mb: 3,
+            letterSpacing: '0.01em'
           }}
         >
           Weekdays
@@ -218,9 +429,10 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         <Typography 
           sx={{ 
             fontSize: '16px', 
-            fontWeight: 500, 
-            color: '#0F172A',
-            mb: 2 
+            fontWeight: 600, 
+            color: '#64748B',
+            mb: 3,
+            letterSpacing: '0.01em'
           }}
         >
           Weekends
@@ -230,6 +442,6 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
           {weekends.map((day) => renderDayRow(day))}
         </Box>
       </Box>
-    </form>
+    </Box>
   )
 }

@@ -7,6 +7,7 @@ import {
 import { getClubs, getClubStatistic, getCurrentClub, getCurrentClubSettings } from '../providers/reducers/ClubSlice'
 import type { IClub, IClubSettings } from '../providers/types/club'
 import { compressImage, uploadClubGallery } from './FileService'
+import type { IOpenHour } from '../providers/types/hours'
 
 
 
@@ -127,6 +128,29 @@ export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: 
     throw error;
   }
 }
+
+export const updateOpenHours = (clubId:number, updateHours:IOpenHour) => async (dispatch: AppDispatch) => {
+  try {
+    console.log("Updating working hours with:", updateHours);
+    const response = await $api.put(`/clubs/${clubId}/working-hours`, updateHours)
+    dispatch(getCurrentClub(response.data))
+    return response.data;
+  } catch (error) {
+    let errorMessage = ''
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message
+      console.error('Working hours update error:', error.response.data);
+      dispatch(getCurrentUserNotification(errorMessage))
+    }
+    throw error;
+  }
+}
+
+
+
+
+
+
 
 /**
  * Upload club logo or banner through your API
