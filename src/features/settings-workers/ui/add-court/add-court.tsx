@@ -140,7 +140,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
             </Typography>
             <FormControl fullWidth size="small">
               <Select
-                value={currentSportType}
+                value={formData.sport_type}
                 onChange={(e) => handleFieldChange('sport_type', e.target.value)}
                 displayEmpty
                 sx={{
