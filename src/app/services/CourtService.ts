@@ -4,7 +4,6 @@ import type { AppDispatch } from '../providers/store'
 import {
   getCurrentUserNotification,
 } from '../providers/reducers/UserSlice'
-import type { IClub, } from '../providers/types/club'
 import { getCourts, getCurrentCourt } from '../providers/reducers/CourtSlice'
 import type { ICourt } from '../providers/types/court'
 
@@ -72,10 +71,9 @@ export const createCourt = (clubId:number, createdCourt:ICourt) => async (dispat
 }
 
 
-
-export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: AppDispatch) => {
+export const updateCourt = (courtId:number, updatedCourt:ICourt) => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.patch(`/clubs/${clubId}`, updateClub)
+    const response = await $api.put(`/courts/${courtId}`, updatedCourt)
     dispatch(getCurrentCourt(response.data))
     return response.data;
   } catch (error) {
@@ -88,10 +86,9 @@ export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: 
   }
 }
 
-export const updateCourt = (courtId:number, updatedCourt:ICourt) => async (dispatch: AppDispatch) => {
+export const deleteCourt = (clubId:number, courtId:number) => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.put(`/courts/${courtId}`, updatedCourt)
-    dispatch(getCurrentCourt(response.data))
+    const response = await $api.delete(`/courts/${courtId}?club_id=${clubId}`)
     return response.data;
   } catch (error) {
     let errorMessage = ''

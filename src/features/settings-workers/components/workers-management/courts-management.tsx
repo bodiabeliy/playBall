@@ -8,6 +8,7 @@ import { type Role, type Brance, TAB_LABELS } from '../../model'
 
 import { BranchesApi } from '../../api/branches-api'
 import { AddCourtDialog } from '../../ui/add-court'
+import { RemoveCourtDialog } from '../../ui/remove-court'
 import { BackBtn } from '../../../back-btn'
 import { CourtsNavigation } from '../../../../widgets/courts/courts-navigation'
 import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
@@ -24,9 +25,11 @@ export function CourtsManagment() {
   const [activeTab, setActiveTab] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [editingCourt, setEditingCourt] = useState<ICourt | null>(null)
+  const [deletingCourt, setDeletingCourt] = useState<ICourt | null>(null)
   const [openInfo, setOpenInfo] = useState(false)
   const [openRoleDialog, setOpenRoleDialog] = useState(false)
   const [openAddCourtDialog, setOpenAddCourtDialog] = useState(false)
+  const [openRemoveCourtDialog, setOpenRemoveCourtDialog] = useState(false)
 
   const [roles, setRoles] = useState<Role[]>([{ value: 'Лікар' }, { value: '' }])
 
@@ -96,31 +99,64 @@ export function CourtsManagment() {
 
   const handleBackToCourts = () => setEditingCourt(null)
 
-  const handleEditCourt = (updatedCourt: ICourt) => {
+  const handleCreateCourt = async(updatedCourt: ICourt) => {
     if (updatedCourt.id && currentClub?.id) {
-      dispatch(updateCourt(updatedCourt.id, updatedCourt))
-        .then(() => {
-          // Refresh courts list after successful update
-          dispatch(getAllCourts(
-            currentClub.id, 
-            page + 1, 
-            rowsPerPage, 
-            searchQuery.toLowerCase(),
-            currentSportType.toLowerCase(),
-            '', 
-            sortBy,
-            sortOrder
-          ));
-        })
-        .catch(error => {
-          console.error('Failed to update court:', error);
-        });
+      await dispatch(updateCourt(updatedCourt.id, updatedCourt))
+      await dispatch(getAllCourts(
+        currentClub.id, 
+        page + 1, 
+        rowsPerPage, 
+        searchQuery.toLowerCase(),
+        currentSportType.toLowerCase(),
+        '', 
+        sortBy,
+        sortOrder
+      ));
+       
     }
   }
 
+  const handleEditCourt = async(updatedCourt: ICourt) => {
+    if (updatedCourt.id && currentClub?.id) {
+      await dispatch(updateCourt(updatedCourt.id, updatedCourt))
+      await dispatch(getAllCourts(
+        currentClub.id, 
+        page + 1, 
+        rowsPerPage, 
+        searchQuery.toLowerCase(),
+        currentSportType.toLowerCase(),
+        '', 
+        sortBy,
+        sortOrder
+      ));
+       
+    }
+  }
   const handleDeleteCourt = async (court: ICourt) => {
-    console.log('Delete court:', court);
-    // Implement delete functionality here
+    setDeletingCourt(court);
+    setOpenRemoveCourtDialog(true);
+  }
+  
+  const handleConfirmDelete = async () => {
+    // Refresh the courts list after successful deletion
+    if (currentClub && currentClub.id) {
+      try {
+        // Re-fetch courts after deletion
+        await dispatch(getAllCourts(
+          currentClub.id, 
+          page + 1, 
+          rowsPerPage, 
+          searchQuery.toLowerCase(),
+          currentSportType.toLowerCase(), 
+          '', 
+          sortBy,
+          sortOrder
+        ));
+      } finally {
+        // Close the dialog
+        setOpenRemoveCourtDialog(false);
+      }
+    }
   }
 
   const handleSaveRoles = () => {
@@ -193,6 +229,7 @@ export function CourtsManagment() {
             rowsPerPage={rowsPerPage}
             onPageChange={setPage}
             onRowsPerPageChange={setRowsPerPage}
+            onCreate={handleEditCourt}
             onEdit={handleEditCourt}
             onDelete={handleDeleteCourt}
             activeTab={activeTab}
@@ -272,6 +309,13 @@ export function CourtsManagment() {
         open={openAddCourtDialog}
         onClose={() => setOpenAddCourtDialog(false)}
         onSave={handleSaveBranch}
+      />
+      
+      <RemoveCourtDialog
+        open={openRemoveCourtDialog}
+        onClose={() => setOpenRemoveCourtDialog(false)}
+        onDelete={handleConfirmDelete}
+        court={deletingCourt}
       />
     </>
   )

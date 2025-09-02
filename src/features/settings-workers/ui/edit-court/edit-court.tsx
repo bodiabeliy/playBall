@@ -43,7 +43,7 @@ export function EditCourtDialog({ open, onClose, onSave, court }: EditCourtDialo
 
   const handleSave = () => {
     onSave(courtData)
-    onClose()
+    // onClose()
   }
 
   return (
