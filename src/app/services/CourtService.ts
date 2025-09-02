@@ -10,17 +10,30 @@ import { getCourts, getCurrentCourt } from '../providers/reducers/CourtSlice'
 
 
 
-export const getAllCourts = (clubId:number) => async (dispatch: AppDispatch) => {
+export const getAllCourts = (clubId: number, page: number = 1, size: number = 50, search: string = '', sport_type: string = '', court_type: string = '', sort_by: string = 'name', sort_order: string = 'asc') => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.get(`/courts?club_id=${clubId}&sort_order=asc&page=1&size=50`, {
-    })
-    dispatch(getCourts(response.data))
+    const params = new URLSearchParams({
+      club_id: String(clubId),
+      page: String(page),
+      size: String(size),
+      sort_order
+    });
+    
+    if (search) params.append('search', search);
+    if (sport_type) params.append('sport_type', sport_type);
+    if (court_type) params.append('court_type', court_type);
+    if (sort_by) params.append('sort_by', sort_by);
+    
+    const response = await $api.get(`/courts?${params.toString()}`);
+    dispatch(getCourts(response.data));
+    return response.data;
   } catch (error) {
-    let errorMessage = ''
+    let errorMessage = '';
     if (request.isAxiosError(error) && error.response) {
-      errorMessage = error.response?.data?.message
-      dispatch(getCurrentUserNotification(errorMessage))
+      errorMessage = error.response?.data?.message;
+      dispatch(getCurrentUserNotification(errorMessage));
     }
+    throw error;
   }
 }
 

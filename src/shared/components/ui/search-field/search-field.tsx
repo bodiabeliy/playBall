@@ -1,7 +1,7 @@
 import { TextField, InputAdornment } from '@mui/material'
 import type { SxProps } from '@mui/material'
-import { Search } from '@mui/icons-material'
-import { useLocation } from 'react-router'
+import { Search, Close } from '@mui/icons-material'
+import { useState, useEffect } from 'react'
 
 interface SearchFieldProps {
   value: string
@@ -18,17 +18,33 @@ export function SearchField({
   placeholder = 'Search',
   fullWidth = false,
   isStartAdornment = true,
-
   sx,
 }: SearchFieldProps) {
-
-  const location = useLocation()
+  const [localValue, setLocalValue] = useState(value)
+  
+  // Update local value when prop value changes
+  useEffect(() => {
+    setLocalValue(value)
+  }, [value])
+  
+  // Handle input change with immediate feedback
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    setLocalValue(newValue)
+    onChange(newValue)
+  }
+  
+  // Clear search function
+  const handleClearSearch = () => {
+    setLocalValue('')
+    onChange('')
+  }
   
   return (
     <TextField
-      placeholder={placeholder +" " + location.pathname.split("/")[1]}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      value={localValue}
+      onChange={handleInputChange}
       variant="outlined"
       fullWidth={fullWidth}
       InputProps={{
@@ -37,7 +53,14 @@ export function SearchField({
             <Search sx={{ fontSize: 24, color: '#6e6e6e' }} />
           </InputAdornment>
         ) : null,
-        endAdornment: !isStartAdornment ? (
+        endAdornment: localValue ? (
+          <InputAdornment position="end">
+            <Close 
+              sx={{ fontSize: 18, color: '#6e6e6e', cursor: 'pointer' }}
+              onClick={handleClearSearch}
+            />
+          </InputAdornment>
+        ) : !isStartAdornment ? (
           <InputAdornment position="end">
             <Search sx={{ fontSize: 24, color: '#6e6e6e' }} />
           </InputAdornment>
@@ -58,14 +81,16 @@ export function SearchField({
           '& fieldset': {
             borderColor: '#bbb',
             borderWidth: '1px',
+            transition: 'border-color 0.2s ease-in-out',
           },
           '&:hover fieldset': {
             borderColor: '#bbb',
           },
           '&.Mui-focused fieldset': {
-            borderColor: '#bbb',
+            borderWidth: '1.5px',
           },
           boxShadow: 'none',
+          transition: 'box-shadow 0.2s ease-in-out',
         },
       }}
       inputProps={{
@@ -76,7 +101,7 @@ export function SearchField({
         },
       }}
       sx={{
-        width:240,
+        width: 240,
         borderRadius: '8px',
         background: '#fff',
         boxShadow: 'none',
@@ -86,14 +111,15 @@ export function SearchField({
           boxShadow: 'none',
         },
         '& .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#bbb',
+          borderColor:'#bbb',
           borderWidth: '1px',
+          transition: 'border-color 0.2s ease-in-out',
         },
         '&:hover .MuiOutlinedInput-notchedOutline': {
           borderColor: '#bbb',
         },
         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#bbb',
+          borderWidth: '1.5px',
         },
         ...sx,
       }}

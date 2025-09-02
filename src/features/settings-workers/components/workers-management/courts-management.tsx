@@ -1,45 +1,84 @@
 import { useState, useEffect } from 'react'
-import { Box, Tabs, Tab, IconButton, Typography, Link as MuiLink, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Typography, Link as MuiLink, useMediaQuery, useTheme } from '@mui/material'
 import PlusIcon from '../../../../shared/assets/icons/plus.svg?react'
 import InfoIcon from '../../../../shared/assets/icons/info.svg?react'
 import { SearchField, PrimaryButton, InfoDialog } from '../../../../shared/components'
-import {  PermissionsTable, RoleDialog, EditWorkerForm } from '../../ui'
-import { PaginationFooter } from '../../ui/pagination-footer'
-import type { Worker, Role, Brance } from '../../model'
-import { PERMISSIONS, TAB_LABELS } from '../../model'
-import { BrancesTable } from '../../ui/brances-table'
+import { CourtsTable, RoleDialog } from '../../ui'
+import { type Role, type Brance, TAB_LABELS } from '../../model'
+
 import { BranchesApi } from '../../api/branches-api'
 import { AddBranchDialog } from '../../ui/add-branch'
 import { BackBtn } from '../../../back-btn'
+import { CourtsNavigation } from '../../../../widgets/courts/courts-navigation'
+import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
+import { clubSelector } from '../../../../app/providers/reducers/ClubSlice'
+import { getAllCourts } from '../../../../app/services/CourtService'
+import { 
+  courtsSelector, 
+  setLoading,
+  loadingSelector
+} from '../../../../app/providers/reducers/CourtSlice'
+import type { ICourt } from '../../../../app/providers/types/court'
 
-export function WorkersManagement() {
+export function CourtsManagment() {
   const [activeTab, setActiveTab] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
-  const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
+  const [editingCourt, setEditingCourt] = useState<ICourt | null>(null)
   const [openInfo, setOpenInfo] = useState(false)
   const [openRoleDialog, setOpenRoleDialog] = useState(false)
   const [openAddBranchDialog, setOpenAddBranchDialog] = useState(false)
 
   const [roles, setRoles] = useState<Role[]>([{ value: 'Лікар' }, { value: '' }])
 
-  const [page,] = useState(0)
-  const [rowsPerPage,] = useState(10)
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [sortBy] = useState('name')
+  const [sortOrder] = useState('asc')
 
-  const [brances, setBrances] = useState<Brance[]>([])
-  const [totalBrancesRows, setTotalBrancesRows] = useState(0)
-  const [brancesPage, setBrancesPage] = useState(0)
-  const [brancesRowsPerPage, setBrancesRowsPerPage] = useState(10)
+  const [, setBrances] = useState<Brance[]>([])
+  const [, setTotalBrancesRows] = useState(0)
+  const [brancesPage] = useState(0)
+  const [brancesRowsPerPage] = useState(10)
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
-  useEffect(() => {
-    const loadWorkers = async () => {
-   
-    }
+  const dispatch = useAppDispatch()
 
-    loadWorkers()
-  }, [page, rowsPerPage, searchQuery])
+  const courtList = useAppSelector(courtsSelector)
+  const currentClub = useAppSelector(clubSelector)
+  const isLoading = useAppSelector(loadingSelector)
+
+  const currentSportType = TAB_LABELS[activeTab];
+
+  // Handler for search input with debounce
+  useEffect(() => {    
+    const delaySearch = setTimeout(() => {
+      if (currentClub && currentClub.id) {
+        dispatch(setLoading(true));
+        dispatch(getAllCourts(
+          currentClub.id, 
+          page + 1, 
+          rowsPerPage, 
+          searchQuery.toLowerCase(), // Ensure search is lowercase for consistency
+          currentSportType.toLowerCase(), // Pass the sport type based on active tab
+          '', 
+          sortBy,
+          sortOrder
+        ))
+          .then((response) => {
+            console.log(`Received ${response?.items?.length || 0} courts from API out of ${response?.total || 0} total`);
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+      }
+    }, 300); // Reduce debounce time for more responsive search
+
+    return () => clearTimeout(delaySearch);
+  }, [page, rowsPerPage, searchQuery, activeTab, currentSportType, sortBy, sortOrder, dispatch, currentClub]);
+
+  
 
   useEffect(() => {
     const loadBrances = async () => {
@@ -55,14 +94,15 @@ export function WorkersManagement() {
     loadBrances()
   }, [brancesPage, brancesRowsPerPage, searchQuery])
 
-  const handleBackToWorkers = () => setEditingWorker(null)
+  const handleBackToCourts = () => setEditingCourt(null)
 
-  const handleAddWorker = () => {
-    console.log('Add worker clicked')
+  const handleEditCourt = (court: ICourt) => {
+    setEditingCourt(court)
   }
 
-  const handleSaveWorker = async () => {
-   
+  const handleDeleteCourt = async (court: ICourt) => {
+    console.log('Delete court:', court);
+    // Implement delete functionality here
   }
 
   const handleSaveRoles = () => {
@@ -79,34 +119,41 @@ export function WorkersManagement() {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: isMobile || editingWorker ? 'space-between' : 'end',
+          justifyContent: isMobile || editingCourt ? 'space-between' : 'end',
           px: isMobile ? 2 : 0,
         }}>
-        {editingWorker ? <BackBtn handleBack={handleBackToWorkers} /> : null}
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          sx={{
-            '& .MuiTabs-indicator': {
-              backgroundColor: '#0029d9',
-            },
-            '&.Mui-selected': {
-              color: '#0029d9',
-            },
-          }}>
-          {TAB_LABELS.map((label) => (
-            <Tab
-              key={label}
-              sx={{
-                '&.Mui-selected': {
-                  color: '#0029d9',
-                },
-                textTransform: 'none',
-              }}
-              label={label}
-            />
-          ))}
-        </Tabs>
+        {editingCourt ? <BackBtn handleBack={handleBackToCourts} /> : null}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Box sx={{ display: 'flex' }}>
+            <Typography variant="h6" sx={{ fontWeight: 500, mr: 4 }}>
+              Courts
+            </Typography>
+            <CourtsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+          </Box>
+         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+           <SearchField 
+              value={searchQuery} 
+              onChange={(value) => {
+                // Set the search query directly
+                setSearchQuery(value);
+                // Reset to first page when searching
+                setPage(0);
+              }} 
+              fullWidth={false} 
+              placeholder="Search courts..."
+           />
+           <PrimaryButton
+            startIcon={<PlusIcon />}
+            sx={{
+              padding: '4px 16px',
+              fontSize: 13,
+              height: '30px',
+            }}
+            onClick={() => setOpenAddBranchDialog(true)}>
+            New Court
+          </PrimaryButton>
+         </Box>
+        </Box>
       </Box>
       <Box
         sx={{
@@ -120,92 +167,25 @@ export function WorkersManagement() {
           mt: isMobile ? 0 : 2,
           position: 'relative',
         }}>
-        {activeTab === 0 && (
-          <Box sx={{ display: editingWorker ? 'none' : 'block' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: isMobile ? 'flex-end' : 'space-between',
-                alignItems: 'center',
-                p: isMobile ? 1 : 3,
-              }}>
-              {!isMobile ? <SearchField value={searchQuery} onChange={setSearchQuery} fullWidth={false} /> : null}
-              <PrimaryButton startIcon={<PlusIcon />} onClick={handleAddWorker}>
-                Додати
-              </PrimaryButton>
-            </Box>
+        <Box sx={{ display: editingCourt ? 'none' : 'block' }}>
+          <CourtsTable
+            courts={courtList}
+            totalRows={courtList?.total || 0}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={setRowsPerPage}
+            onEdit={handleEditCourt}
+            onDelete={handleDeleteCourt}
+            activeTab={activeTab}
+            searchQuery={searchQuery}
+            isLoading={isLoading}
+          />
+        </Box>
         
-          </Box>
-        )}
-        {activeTab === 1 && (
-          <Box sx={{ height: '100%' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                mb: isMobile ? 0 : 2,
-                p: isMobile ? 1 : 3,
-              }}>
-              <IconButton onClick={() => setOpenInfo(true)}>
-                <InfoIcon style={{ color: '#000', fillOpacity: 0.56 }} />
-              </IconButton>
-              <PrimaryButton
-                startIcon={<PlusIcon />}
-                sx={{
-                  padding: '4px 16px',
-                  fontSize: 13,
-                }}
-                onClick={() => setOpenRoleDialog(true)}>
-                ДОДАТИ РОЛЬ
-              </PrimaryButton>
-            </Box>
-            <PermissionsTable permissions={PERMISSIONS} />
-            <Box sx={{ mt: 'auto' }}>
-              <PaginationFooter
-                count={10}
-                page={1}
-                onPageChange={() => {}}
-                rowsPerPage={10}
-                onRowsPerPageChange={() => {}}
-                totalRows={100}
-              />
-            </Box>
-          </Box>
-        )}
-        {activeTab === 2 && (
-          <Box sx={{ height: '100%' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                mb: isMobile ? 0 : 2,
-                p: isMobile ? 1 : 3,
-              }}>
-              <PrimaryButton
-                startIcon={<PlusIcon />}
-                sx={{
-                  padding: '4px 16px',
-                  fontSize: 13,
-                }}
-                onClick={() => setOpenAddBranchDialog(true)}>
-                ДОДАТИ ФІЛІЮ
-              </PrimaryButton>
-            </Box>
-            <BrancesTable
-              brances={brances}
-              totalRows={totalBrancesRows}
-              page={brancesPage}
-              rowsPerPage={brancesRowsPerPage}
-              onPageChange={setBrancesPage}
-              onRowsPerPageChange={setBrancesRowsPerPage}
-            />
-          </Box>
-        )}
-        {editingWorker && (
+        {editingCourt && (
           <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-            <EditWorkerForm worker={editingWorker} onCancel={handleBackToWorkers} onSave={handleSaveWorker} />
+            {/* <EditWorkerForm worker={editingCourt} onCancel={handleBackToCourts} onSave={handleSaveCourt} /> */}
           </Box>
         )}
       </Box>

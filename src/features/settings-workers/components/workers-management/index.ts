@@ -1,2 +1,1 @@
-export { WorkersManagement } from './workers-management'
-export { CourtsManagment } from './courts-managment'
+export { CourtsManagment } from './courts-management'
