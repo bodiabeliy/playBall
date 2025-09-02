@@ -9,6 +9,7 @@ import {
 } from '../providers/reducers/UserSlice'
 import type { AppDispatch } from '../providers/store'
 import type { IUser, IUserDto } from '../providers/types/user'
+import { clearTokens } from '../../shared/utils/tokenUtils'
 
 import { CONFIRMATION_TYPES } from './api/constants'
 
@@ -51,14 +52,16 @@ export const logout = () => async (dispatch: AppDispatch) => {
   try {
     await $api.post(`/club-panel/auth/sign-out`)
     dispatch(isAuth(false))
-    localStorage.removeItem('token')
-    localStorage.removeItem('refresh')
+    clearTokens()
   } catch (error) {
     let errorMessage = ''
     if (request.isAxiosError(error) && error.response) {
       errorMessage = error.response?.data?.message
       dispatch(getCurrentUserNotification(errorMessage))
     }
+    // Even if logout API fails, clear local tokens
+    clearTokens()
+    dispatch(isAuth(false))
   }
 }
 
@@ -78,17 +81,48 @@ export const getUser = () => async (dispatch: AppDispatch) => {
     }
   }
 }
-// not realize yet
-export const refreshCurrentToken = () => async () => {
+// Refresh token function
+export const refreshCurrentToken = () => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.get(`/club-panel/auth/token/refresh`, 
-    { withCredentials: true })
-    console.log('response check', response)
+    const refreshToken = localStorage.getItem('refresh')
+    
+    if (!refreshToken) {
+      throw new Error('No refresh token available')
+    }
 
-    console.log('response.data', response.data)
-    localStorage.setItem('token', response.data.token)
+    const response = await $api.post(`/api/v1/club-panel/auth/token/refresh`, {
+      refresh_token: refreshToken
+    })
+    
+    console.log('Token refresh response:', response.data)
+
+    if (response.data?.access_token) {
+      localStorage.setItem('token', response.data.access_token)
+      
+      // Update refresh token if provided
+      if (response.data?.refresh_token) {
+        localStorage.setItem('refresh', response.data.refresh_token)
+      }
+      
+      dispatch(isAuth(true))
+      return { success: true }
+    } else {
+      throw new Error('No access token in response')
+    }
   } catch (error) {
-    throw Error(`heppend error by getting user!  ${error}`)
+    console.error('Token refresh failed:', error)
+    
+    // Clear tokens and logout user
+    clearTokens()
+    dispatch(isAuth(false))
+    
+    let errorMessage = 'Token refresh failed'
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message || errorMessage
+    }
+    dispatch(getCurrentUserNotification(errorMessage))
+    
+    return { success: false, error: errorMessage }
   }
 }
 

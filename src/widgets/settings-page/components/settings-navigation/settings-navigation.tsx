@@ -17,9 +17,9 @@ export function SettingsNavigation({ activeTab, onTabChange }: SettingsNavigatio
       onChange={(_, newValue) => {
         onTabChange(newValue)
       }}
-      variant="scrollable"
       orientation={!isTablet ? 'horizontal' : 'vertical'}
       sx={{
+        color:"#888888",
         '& .MuiTabs-flexContainer': {
           flexDirection: !isTablet ? 'row' : 'column',
           justifyContent: 'space-around',

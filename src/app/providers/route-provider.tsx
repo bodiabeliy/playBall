@@ -47,7 +47,7 @@ import { isAuth, isUserAuthSelector } from './reducers/UserSlice'
 import CourtsPage from '../../pages/courts'
 import { useEffect } from 'react'
 import { useAppDispatch } from './store-helpers'
-import { token } from '../../shared/utils/localStorage'
+import { areTokensValid, clearTokens } from '../../shared/utils/tokenUtils'
 
 const unAuthorizedRoutes = [
   {
@@ -146,17 +146,36 @@ const authorizedRoutes = [
 export function RouteProvider() {
   const isAuthorization = useSelector(isUserAuthSelector)
   const dispatch = useAppDispatch()
-  // If not authorized and not already on login, redirect to login
 
   console.log('isAuthorization', isAuthorization)
 
   useEffect(() => {
-    if (token) {
+    const { isValid, hasRefreshToken } = areTokensValid()
+    
+    if (isValid && hasRefreshToken) {
       dispatch(isAuth(true))
+    } else {
+      // Clear invalid tokens and logout
+      clearTokens()
+      dispatch(isAuth(false))
     }
-  }, [token, dispatch])
+  }, [dispatch])
 
-  // If not authorized and not already on login, redirect to login
+  // Handle logout when tokens are cleared from other tabs
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if ((e.key === 'token' || e.key === 'refresh') && !e.newValue) {
+        // Token was removed, check if we still have valid tokens
+        const { isValid } = areTokensValid()
+        if (!isValid) {
+          dispatch(isAuth(false))
+        }
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [dispatch])
 
   return (
     <Routes>

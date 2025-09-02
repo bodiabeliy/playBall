@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { clearTokens } from '../../../shared/utils/tokenUtils'
 
 const $api = axios.create({
   baseURL: process.env.VITE_API_URL,
@@ -26,17 +27,34 @@ $api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
+      const refreshToken = localStorage.getItem('refresh')
+      
+      if (!refreshToken) {
+        // No refresh token available, logout user
+        clearTokens()
+        window.location.href = '/login'
+        return Promise.reject(error)
+      }
+
       try {
-        // Try to refresh the token
+        // Try to refresh the token using the correct endpoint and payload
         const refreshResponse = await axios.post(
-          `${process.env.VITE_API_URL}/auth/token/refresh`,
-          {},
-          { withCredentials: true } // Important for sending cookies
+          `${process.env.VITE_API_URL}/api/v1/club-panel/auth/token/refresh`,
+          { refresh_token: refreshToken },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': '*/*'
+            }
+          }
         )
 
         if (refreshResponse.data?.access_token) {
-          // Store the new access token
+          // Store the new tokens
           localStorage.setItem('token', refreshResponse.data.access_token)
+          if (refreshResponse.data?.refresh_token) {
+            localStorage.setItem('refresh', refreshResponse.data.refresh_token)
+          }
 
           // Update the Authorization header for the original request
           originalRequest.headers.Authorization = `Bearer ${refreshResponse.data.access_token}`
@@ -46,6 +64,15 @@ $api.interceptors.response.use(
         }
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError)
+        
+        // Clear tokens and redirect to login
+        clearTokens()
+        
+        // Dispatch logout action if we have access to store
+        // For now, force redirect to login
+        window.location.href = '/login'
+        
+        return Promise.reject(refreshError)
       }
     }
 
