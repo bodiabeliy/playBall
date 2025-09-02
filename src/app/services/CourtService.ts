@@ -4,6 +4,7 @@ import type { AppDispatch } from '../providers/store'
 import {
   getCurrentUserNotification,
 } from '../providers/reducers/UserSlice'
+import type { IClub, } from '../providers/types/club'
 import { getCourts, getCurrentCourt } from '../providers/reducers/CourtSlice'
 import type { ICourt } from '../providers/types/court'
 
@@ -72,9 +73,24 @@ export const createCourt = (clubId:number, createdCourt:ICourt) => async (dispat
 
 
 
-export const updateCourt = (courtId:number, updateCourt:ICourt) => async (dispatch: AppDispatch) => {
+export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.patch(`/courts/${courtId}`, updateCourt)
+    const response = await $api.patch(`/clubs/${clubId}`, updateClub)
+    dispatch(getCurrentCourt(response.data))
+    return response.data;
+  } catch (error) {
+    let errorMessage = ''
+    if (request.isAxiosError(error) && error.response) {
+      errorMessage = error.response?.data?.message
+      dispatch(getCurrentUserNotification(errorMessage))
+    }
+    throw error;
+  }
+}
+
+export const updateCourt = (courtId:number, updatedCourt:ICourt) => async (dispatch: AppDispatch) => {
+  try {
+    const response = await $api.put(`/courts/${courtId}`, updatedCourt)
     dispatch(getCurrentCourt(response.data))
     return response.data;
   } catch (error) {

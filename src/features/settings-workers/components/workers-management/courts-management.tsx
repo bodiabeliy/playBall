@@ -12,7 +12,7 @@ import { BackBtn } from '../../../back-btn'
 import { CourtsNavigation } from '../../../../widgets/courts/courts-navigation'
 import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
 import { clubSelector } from '../../../../app/providers/reducers/ClubSlice'
-import { getAllCourts } from '../../../../app/services/CourtService'
+import { getAllCourts, updateCourt } from '../../../../app/services/CourtService'
 import { 
   courtsSelector, 
   setLoading,
@@ -96,8 +96,26 @@ export function CourtsManagment() {
 
   const handleBackToCourts = () => setEditingCourt(null)
 
-  const handleEditCourt = (court: ICourt) => {
-    setEditingCourt(court)
+  const handleEditCourt = (updatedCourt: ICourt) => {
+    if (updatedCourt.id && currentClub?.id) {
+      dispatch(updateCourt(updatedCourt.id, updatedCourt))
+        .then(() => {
+          // Refresh courts list after successful update
+          dispatch(getAllCourts(
+            currentClub.id, 
+            page + 1, 
+            rowsPerPage, 
+            searchQuery.toLowerCase(),
+            currentSportType.toLowerCase(),
+            '', 
+            sortBy,
+            sortOrder
+          ));
+        })
+        .catch(error => {
+          console.error('Failed to update court:', error);
+        });
+    }
   }
 
   const handleDeleteCourt = async (court: ICourt) => {

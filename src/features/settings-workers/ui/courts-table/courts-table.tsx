@@ -14,6 +14,7 @@ import type { SelectChangeEvent } from '@mui/material'
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { PaginationFooter } from '../pagination-footer'
 import type { ICourt } from '../../../../app/providers/types/court'
+import { EditCourtDialog } from '../edit-court/edit-court'
 
 import EditIcon from "../../../../shared/assets/icons/edit.svg?react"
 import TrashIcon from "../../../../shared/assets/icons/trash.svg?react"
@@ -70,6 +71,8 @@ export function CourtsTable({
     actions: 120
   })
   const [resizing, setResizing] = useState<{column: string; startX: number} | null>(null)
+  const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false)
+  const [selectedCourt, setSelectedCourt] = useState<ICourt | null>(null)
 
   // Map activeTab to sport type for filtering
   const sportTypeMap = ['padel', 'tennis', 'pickleball'];
@@ -456,8 +459,17 @@ export function CourtsTable({
                     width: `${columnWidths.actions}px`,
                     maxWidth: `${columnWidths.actions}px`,
                   }}>
-                  <IconButton size="small" sx={{ mr: 1 }} onClick={() => onEdit?.(court)}>
-                    <EditIcon  />
+                  <IconButton 
+                    size="small" 
+                    sx={{ 
+                      mr: 1 
+                    }} 
+                    onClick={() => {
+                      setSelectedCourt(court);
+                      setEditDialogOpen(true);
+                    }}
+                  >
+                    <EditIcon />
                   </IconButton>
                   <IconButton size="small" onClick={() => onDelete?.(court)}>
                     <TrashIcon />
@@ -499,6 +511,19 @@ export function CourtsTable({
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         totalRows={totalRows}
+      />
+      
+      {/* Edit Court Dialog */}
+      <EditCourtDialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        onSave={(updatedCourt) => {
+          if (onEdit && selectedCourt) {
+            onEdit(updatedCourt);
+          }
+          setEditDialogOpen(false);
+        }}
+        court={selectedCourt}
       />
     </Box>
   )
