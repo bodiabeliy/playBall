@@ -18,6 +18,7 @@ import { EditCourtDialog } from '../edit-court/edit-court'
 
 import EditIcon from "../../../../shared/assets/icons/edit.svg?react"
 import TrashIcon from "../../../../shared/assets/icons/trash.svg?react"
+import { TAB_LABELS } from '../../model'
 
 
 type SortField = 'name' | 'sport_type' | 'court_type' | 'is_active' | 'description'
@@ -74,9 +75,8 @@ export function CourtsTable({
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false)
   const [selectedCourt, setSelectedCourt] = useState<ICourt | null>(null)
 
-  // Map activeTab to sport type for filtering
-  const sportTypeMap = ['padel', 'tennis', 'pickleball'];
-  const currentSportType = sportTypeMap[activeTab];
+  const currentSportType = TAB_LABELS[activeTab];
+  
 
   const handleChangePage = (_event: React.ChangeEvent<unknown>, value: number) => {
     onPageChange(value - 1)

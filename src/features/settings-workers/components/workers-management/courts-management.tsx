@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Box, Typography, Link as MuiLink, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
 import PlusIcon from '../../../../shared/assets/icons/plus.svg?react'
-import InfoIcon from '../../../../shared/assets/icons/info.svg?react'
-import { SearchField, PrimaryButton, InfoDialog } from '../../../../shared/components'
-import { CourtsTable, RoleDialog } from '../../ui'
-import { type Role, type Brance, TAB_LABELS } from '../../model'
+import { SearchField, PrimaryButton } from '../../../../shared/components'
+import { CourtsTable } from '../../ui'
+import { type Brance, TAB_LABELS } from '../../model'
 
 import { BranchesApi } from '../../api/branches-api'
 import { AddCourtDialog } from '../../ui/add-court'
@@ -26,12 +25,10 @@ export function CourtsManagment() {
   const [searchQuery, setSearchQuery] = useState('')
   const [editingCourt, setEditingCourt] = useState<ICourt | null>(null)
   const [deletingCourt, setDeletingCourt] = useState<ICourt | null>(null)
-  const [openInfo, setOpenInfo] = useState(false)
-  const [openRoleDialog, setOpenRoleDialog] = useState(false)
+
   const [openAddCourtDialog, setOpenAddCourtDialog] = useState(false)
   const [openRemoveCourtDialog, setOpenRemoveCourtDialog] = useState(false)
 
-  const [roles, setRoles] = useState<Role[]>([{ value: 'Лікар' }, { value: '' }])
 
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -144,10 +141,6 @@ export function CourtsManagment() {
     }
   }
 
-  const handleSaveRoles = () => {
-    console.log('Saving roles:', roles)
-  }
-
   const handleSaveBranch = async () => {
     console.log('Saving branch')
     // Refresh the courts list after adding a new court
@@ -245,68 +238,9 @@ export function CourtsManagment() {
           </Box>
         )}
       </Box>
-      <InfoDialog
-        open={openInfo}
-        onClose={() => setOpenInfo(false)}
-        title="Доступи"
-        icon={<InfoIcon style={{ color: '#3b5efb' }} />}>
-        <Typography sx={{ mb: 2 }}>
-          <b>Звіт Налаштування ЗП</b> це інтерактивний звіт, який дає можливість встановити (або змінити вже існуючі)
-          параметри нарахування заробітної плати.
-        </Typography>
-        <Typography sx={{ mb: 1 }}>Таблиця цього звіту містить такі параметри для кожного працівника:</Typography>
-        <ul style={{ margin: 0, paddingLeft: 24, marginBottom: 16 }}>
-          <li>
-            <Typography component="span">
-              <b>Ставка</b> – сума щомісячного окладу.
-            </Typography>
-          </li>
-          <li>
-            <Typography component="span">
-              <b>Погодинна ставка та Погодинна ставка 2</b> – сума погодинної ставки.
-            </Typography>
-          </li>
-          <li>
-            <Typography component="span">
-              <b>Податки</b> – відсоток оподаткування від заробітної плати.
-            </Typography>
-          </li>
-          <li>
-            <Typography component="span">
-              <b>Трекер</b> – дозволяє увімкнути або вимкнути трекер робочого часу. Детальніше з цією функцією можна
-              ознайомитись у розділі довідки{' '}
-              <MuiLink href="#" color="primary" underline="hover">
-                Трекер робочого часу
-              </MuiLink>
-              .
-            </Typography>
-          </li>
-          <li>
-            <Typography component="span">
-              <b>Виконує роботи</b> – активація автоматичного розрахунку заробітної плати працівника у разі якщо він
-              отримує відсоток або фіксовану ставку від виконаних ним робіт.
-            </Typography>
-          </li>
-        </ul>
-        <Typography sx={{ mb: 1 }}>
-          <b>Коефіцієнт заробітної плати</b> – дозволяє встановити відсоткову або фіксовану ставку від виконаних робіт
-          для кожного спеціаліста. При цьому у кожного лікаря можуть бути різні ставки (або ставки будуть взагалі
-          відсутні) залежно від виду послуг та умов співпраці клініки з лікарем. Детальніше з цією функцією можна
-          ознайомитись у розділі довідки{' '}
-          <MuiLink href="#" color="primary" underline="hover">
-            Коефіцієнти заробітної плати
-          </MuiLink>
-          .
-        </Typography>
-      </InfoDialog>
-      <RoleDialog
-        open={openRoleDialog}
-        onClose={() => setOpenRoleDialog(false)}
-        roles={roles}
-        onRolesChange={setRoles}
-        onSave={handleSaveRoles}
-      />
+     
       <AddCourtDialog
+        currentSportType={currentSportType}
         open={openAddCourtDialog}
         onClose={() => setOpenAddCourtDialog(false)}
         onSave={handleSaveBranch}

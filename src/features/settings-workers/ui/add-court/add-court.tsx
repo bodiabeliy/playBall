@@ -22,15 +22,16 @@ interface AddCourtDialogProps {
   open: boolean
   onClose: () => void
   onSave: () => void
+  currentSportType:string
 }
 
-export function AddCourtDialog({ open, onClose, onSave }: AddCourtDialogProps) {
+export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddCourtDialogProps) {
   const dispatch = useAppDispatch()
   const currentClub = useAppSelector(clubSelector)
   
   const [formData, setFormData] = useState<ICourt>({
     name: '',
-    sport_type: 'padel',
+    sport_type: '',
     court_type: '',
     category: '',
     description: '',
@@ -139,7 +140,7 @@ export function AddCourtDialog({ open, onClose, onSave }: AddCourtDialogProps) {
             </Typography>
             <FormControl fullWidth size="small">
               <Select
-                value={formData.sport_type}
+                value={currentSportType}
                 onChange={(e) => handleFieldChange('sport_type', e.target.value)}
                 displayEmpty
                 sx={{
@@ -170,12 +171,12 @@ export function AddCourtDialog({ open, onClose, onSave }: AddCourtDialogProps) {
               >
                 <MenuItem value="indoor">Indoor</MenuItem>
                 <MenuItem value="outdoor">Outdoor</MenuItem>
-                {formData.sport_type === 'tennis' && <MenuItem value="covered">Covered</MenuItem>}
+                {currentSportType === 'tennis' && <MenuItem value="covered">Covered</MenuItem>}
               </Select>
             </FormControl>
           </Box>
           
-          {formData.sport_type === 'padel' && (
+          {currentSportType === 'Padel' && (
             <Box sx={{ mb: 1 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
                 Size
