@@ -164,7 +164,7 @@ export function CourtsManagment() {
             '0 2px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 12px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.05)',
           background: '#fff',
           borderRadius: '16px',
-          mt: isMobile ? 0 : 2,
+          mt: isMobile ? 0 : 3,
           position: 'relative',
         }}>
         <Box sx={{ display: editingCourt ? 'none' : 'block' }}>

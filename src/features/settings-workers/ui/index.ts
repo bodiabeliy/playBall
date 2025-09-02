@@ -1,4 +1,4 @@
-export * from './workers-table/workers-table'
+export * from './courts-table'
 export * from './permissions-table'
 export * from './role-dialog'
 export * from './edit-worker-form'

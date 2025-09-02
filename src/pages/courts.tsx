@@ -19,7 +19,7 @@ export default function CourtsPage() {
       <Box
         sx={{
           mx: 'auto',
-          mt: isMobile ? 2 : 4,
+          // mt: isMobile ? 2 : 4,
           bgcolor: 'white',
           borderRadius: 3,
           p: isMobile ? 2 : 4,

@@ -10,12 +10,14 @@ import {
   TableSortLabel,
   CircularProgress,
 } from '@mui/material'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
 import type { SelectChangeEvent } from '@mui/material'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { PaginationFooter } from '../pagination-footer'
 import type { ICourt } from '../../../../app/providers/types/court'
+
+import EditIcon from "../../../../shared/assets/icons/edit.svg?react"
+import TrashIcon from "../../../../shared/assets/icons/trash.svg?react"
+
 
 type SortField = 'name' | 'sport_type' | 'court_type' | 'is_active' | 'description'
 type SortDirection = 'asc' | 'desc'
@@ -57,6 +59,17 @@ export function CourtsTable({
 }: CourtsTableProps) {
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+  
+  // State for column resizing
+  const [columnWidths, setColumnWidths] = useState({
+    name: 100,
+    sport_type: 120,
+    court_type: 120,
+    status: 120,
+    description: 200,
+    actions: 120
+  })
+  const [resizing, setResizing] = useState<{column: string; startX: number} | null>(null)
 
   // Map activeTab to sport type for filtering
   const sportTypeMap = ['padel', 'tennis', 'pickleball'];
@@ -76,7 +89,55 @@ export function CourtsTable({
     setSortDirection(isAsc ? 'desc' : 'asc')
     setSortField(field)
   }
+  
+  // Column resize handlers
+  const handleResizeStart = (column: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setResizing({
+      column,
+      startX: e.clientX
+    });
+  };
+  
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!resizing) return;
+    
+    const difference = e.clientX - resizing.startX;
+    const newWidth = Math.max(100, columnWidths[resizing.column as keyof typeof columnWidths] + difference);
+    
+    setColumnWidths(prev => ({
+      ...prev,
+      [resizing.column]: newWidth
+    }));
+    
+    setResizing({
+      ...resizing,
+      startX: e.clientX
+    });
+  }, [resizing, columnWidths]);
+  
+  const handleResizeEnd = useCallback(() => {
+    setResizing(null);
+    document.removeEventListener('mousemove', handleResizeMove);
+    document.removeEventListener('mouseup', handleResizeEnd);
+    document.body.style.userSelect = '';
+  }, [handleResizeMove]);
 
+  // Add and remove event listeners
+  useEffect(() => {
+    if (resizing) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      document.body.style.userSelect = 'none';
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleResizeMove);
+      document.removeEventListener('mouseup', handleResizeEnd);
+      document.body.style.userSelect = '';
+    };
+  }, [resizing, handleResizeMove, handleResizeEnd]);
+  
   const sortedICourts = useMemo(() => {
     // Check if courts and courts.items exist and courts.items is an array
     if (!courts || !courts.items || !Array.isArray(courts.items)) {
@@ -109,7 +170,38 @@ export function CourtsTable({
       
       return sortDirection === 'desc' ? -comparison : comparison;
     });
-  }, [courts, sortField, sortDirection, currentSportType, searchQuery])
+  }, [courts, sortField, sortDirection, currentSportType, searchQuery]);
+
+  // Create a resizer component for reuse
+  const ColumnResizer = ({ column }: { column: string }) => (
+    <Box
+      sx={{
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        height: '100%',
+        width: '8px',
+        cursor: 'col-resize',
+        zIndex: 1,
+        opacity: 0, 
+        '&:hover': {
+          opacity: 0.3,
+        },
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: '50%',
+          right: '2px',
+          transform: 'translateY(-50%)',
+          height: '24px',
+          width: '2px',
+          backgroundColor: '#6e6e6e',
+          opacity: resizing?.column === column ? 1 : 0.3,
+        }
+      }}
+      onMouseDown={(e) => handleResizeStart(column, e)}
+    />
+  );
 
   return (
     <Box
@@ -124,39 +216,76 @@ export function CourtsTable({
         justifyContent: 'space-between',
         height: '100%',
       }}>
-      <TableContainer sx={{
-        boxShadow: 'none', borderRadius: 0 
+      <TableContainer 
+        sx={{
+          boxShadow: 'none', 
+          borderRadius: 0,
+          position: 'relative',
+          cursor: resizing ? 'col-resize' : 'default'
         }}
       >
         <Table
           sx={{
             minWidth: 1200,
-            overflow:"scroll",
+            overflow: "scroll",
             borderCollapse: 'separate',
             borderSpacing: 0,
-            tableLayout: 'auto',
+            tableLayout: 'fixed', // Changed from 'auto' to 'fixed' for resizable columns
           }}>
           <TableHead>
             <TableRow sx={{ background: '#f8f9fb' }}>
-              <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none', minWidth: 180, width: 220 }}>
+              <TableCell 
+                align="left"
+                sx={{ 
+                  fontSize: 14, 
+                  background: '#f8f9fb', 
+                  border: 'none', 
+                  position: 'relative',
+                  minWidth: 160, 
+                  width: `${columnWidths.name}px`,
+                  transition: resizing ? 'none' : 'width 0.2s ease',
+                }}
+              >
                 <TableSortLabel
                   active={sortField === 'name'}
                   direction={sortField === 'name' ? sortDirection : 'asc'}
                   onClick={() => handleSort('name')}
                   sx={{ color: '#000' }}>
-                  Court Name
+                  Court
                 </TableSortLabel>
+                <ColumnResizer column="name" />
               </TableCell>
-              <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
+              <TableCell 
+                align="center"
+                sx={{ 
+                  fontSize: 14, 
+                  background: '#f8f9fb', 
+                  border: 'none',
+                  position: 'relative',
+                  width: `${columnWidths.sport_type}px`,
+                  transition: resizing ? 'none' : 'width 0.2s ease',
+                }}
+              >
                 <TableSortLabel
                   active={sortField === 'sport_type'}
                   direction={sortField === 'sport_type' ? sortDirection : 'asc'}
                   onClick={() => handleSort('sport_type')}
                   sx={{ color: '#000' }}>
-                  Sport Type
+                  Sport
                 </TableSortLabel>
+                <ColumnResizer column="sport_type" />
               </TableCell>
-              <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
+              <TableCell 
+                align="center"
+                sx={{ 
+                  fontSize: 14, 
+                  background: '#f8f9fb', 
+                  border: 'none',
+                  position: 'relative',
+                  width: `${columnWidths.court_type}px`,
+                  transition: resizing ? 'none' : 'width 0.2s ease',
+                }}
+              >
                 <TableSortLabel
                   active={sortField === 'court_type'}
                   direction={sortField === 'court_type' ? sortDirection : 'asc'}
@@ -164,8 +293,19 @@ export function CourtsTable({
                   sx={{ color: '#000' }}>
                   Court Type
                 </TableSortLabel>
+                <ColumnResizer column="court_type" />
               </TableCell>
-              <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
+              <TableCell 
+                align="center"
+                sx={{ 
+                  fontSize: 14, 
+                  background: '#f8f9fb', 
+                  border: 'none',
+                  position: 'relative',
+                  width: `${columnWidths.status}px`,
+                  transition: resizing ? 'none' : 'width 0.2s ease',
+                }}
+              >
                 <TableSortLabel
                   active={sortField === 'is_active'}
                   direction={sortField === 'is_active' ? sortDirection : 'asc'}
@@ -173,8 +313,19 @@ export function CourtsTable({
                   sx={{ color: '#000' }}>
                   Status
                 </TableSortLabel>
+                <ColumnResizer column="status" />
               </TableCell>
-              <TableCell sx={{ fontSize: 14, background: '#f8f9fb', border: 'none' }}>
+              <TableCell 
+                sx={{ 
+                  fontSize: 14, 
+                  background: '#f8f9fb', 
+                  border: 'none',
+                  position: 'relative',
+                  minWidth:800,
+                  width: `${columnWidths.description}px`,
+                  transition: resizing ? 'none' : 'width 0.2s ease',
+                }}
+              >
                 <TableSortLabel
                   active={sortField === 'description'}
                   direction={sortField === 'description' ? sortDirection : 'asc'}
@@ -182,8 +333,19 @@ export function CourtsTable({
                   sx={{ color: '#000' }}>
                   Description
                 </TableSortLabel>
+                <ColumnResizer column="description" />
               </TableCell>
-              <TableCell align="right" sx={{ background: '#f8f9fb', border: 'none' }}>Actions</TableCell>
+              <TableCell 
+                align="center" 
+                sx={{ 
+                  fontSize: 14,
+                  background: '#f8f9fb', 
+                  border: 'none',
+                  width: `${columnWidths.actions}px`,
+                }}
+              >
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -191,7 +353,7 @@ export function CourtsTable({
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 2 }}>
-                    <CircularProgress size={32} sx={{ color: '#3b5efb' }} />
+                    <CircularProgress size={32} sx={{ color: '#034C53' }} />
                     <Box sx={{ ml: 2, fontSize: 16, color: '#666' }}>Loading courts...</Box>
                   </Box>
                 </TableCell>
@@ -212,57 +374,93 @@ export function CourtsTable({
                     fontSize: 16,
                     minWidth: 180,
                     fontWeight: 500,
+                    width: `${columnWidths.name}px`,
+                    maxWidth: `${columnWidths.name}px`,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}>
-                  {court.name || 'N/A'}
+                  {court.name}
                 </TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>
+                <TableCell 
+                  align="center"
+                  sx={{ 
+                    border: 'none', 
+                    fontSize: 16,
+                    width: `${columnWidths.sport_type}px`,
+                    maxWidth: `${columnWidths.sport_type}px`,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                  {court.sport_type}
+                </TableCell>
+                <TableCell 
+                  align="center"
+                  sx={{ 
+                    border: 'none', 
+                    fontSize: 16,
+                    width: `${columnWidths.court_type}px`,
+                    maxWidth: `${columnWidths.court_type}px`,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                  {court.court_type}
+                </TableCell>
+                <TableCell 
+                  align="center"
+                  sx={{ 
+                    border: 'none', 
+                    fontSize: 16,
+                    width: `${columnWidths.status}px`,
+                    maxWidth: `${columnWidths.status}px`,
+                  }}>
                   <Box
                     component="span"
                     sx={{
                       display: 'inline-block',
                       padding: '4px 12px',
-                      borderRadius: '6px',
+                      borderRadius: '12px',
                       fontSize: '14px',
-                      fontWeight: 500,
-                      backgroundColor: 
-                        court.sport_type?.toLowerCase() === 'padel' ? '#E6F0F2' : 
-                        court.sport_type?.toLowerCase() === 'tennis' ? '#F2EDE6' : 
-                        court.sport_type?.toLowerCase() === 'pickleball' ? '#E6F2E9' : '#f0f0f0',
-                      color: 
-                        court.sport_type?.toLowerCase() === 'padel' ? '#034C53' : 
-                        court.sport_type?.toLowerCase() === 'tennis' ? '#734C09' : 
-                        court.sport_type?.toLowerCase() === 'pickleball' ? '#097331' : '#333',
-                    }}>
-                    {court.sport_type || 'N/A'}
-                  </Box>
-                </TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>
-                  {court.court_type || 'N/A'}
-                </TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>
-                  <Box
-                    component="span"
-                    sx={{
-                      display: 'inline-block',
-                      padding: '4px 12px',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      backgroundColor: court.is_active ? '#E6F2E9' : '#F9E3E3',
-                      color: court.is_active ? '#097331' : '#B30000',
+                      backgroundColor: court.is_active ? '#034C53' : '#DFDFDF',
+                      color: court.is_active ? 'white' : 'black',
                     }}>
                     {court.is_active ? 'Active' : 'Inactive'}
                   </Box>
                 </TableCell>
-                <TableCell sx={{ border: 'none', fontSize: 16 }}>
-                  {court.description || 'N/A'}
+                <TableCell sx={{ 
+                  border: 'none', 
+                  fontSize: 16,
+                  width: `${columnWidths.description}px`,
+                  maxWidth: `${columnWidths.description}px`,
+                  padding: '16px',
+                  verticalAlign: 'top',
+                }}>
+                  <Box sx={{ 
+                    padding: court.description?.length > 30 ? '8px' : '0',
+                    borderRadius: '4px',
+                    wordWrap: 'break-word',
+                    whiteSpace: 'normal',
+                    lineHeight: 1.5,
+                    minHeight: '24px',
+                  }}>
+                    {court.description || ''}
+                  </Box>
                 </TableCell>
-                <TableCell align="right" sx={{ border: 'none', minWidth: 100, width: 100 }}>
+                <TableCell 
+                  align="center" 
+                  sx={{ 
+                    border: 'none', 
+                    minWidth: `${columnWidths.actions}px`, 
+                    width: `${columnWidths.actions}px`,
+                    maxWidth: `${columnWidths.actions}px`,
+                  }}>
                   <IconButton size="small" sx={{ mr: 1 }} onClick={() => onEdit?.(court)}>
-                    <EditIcon fontSize="small" />
+                    <EditIcon  />
                   </IconButton>
                   <IconButton size="small" onClick={() => onDelete?.(court)}>
-                    <DeleteIcon fontSize="small" />
+                    <TrashIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>
