@@ -32,6 +32,7 @@ export function AddCourtDialog({ open, onClose, onSave }: AddCourtDialogProps) {
     name: '',
     sport_type: 'padel',
     court_type: '',
+    category: '',
     description: '',
     is_active: true,
   })
@@ -57,6 +58,7 @@ export function AddCourtDialog({ open, onClose, onSave }: AddCourtDialogProps) {
           name: '',
           sport_type: 'padel',
           court_type: '',
+          category: '',
           description: '',
           is_active: true,
         })
@@ -168,31 +170,35 @@ export function AddCourtDialog({ open, onClose, onSave }: AddCourtDialogProps) {
               >
                 <MenuItem value="indoor">Indoor</MenuItem>
                 <MenuItem value="outdoor">Outdoor</MenuItem>
-                <MenuItem value="covered">Covered</MenuItem>
+                {formData.sport_type === 'tennis' && <MenuItem value="covered">Covered</MenuItem>}
               </Select>
             </FormControl>
           </Box>
           
-          <Box sx={{ mb: 1 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
-              Size
-            </Typography>
-            <FormControl fullWidth size="small">
-              <Select
-                value={formData.category || ''}
-                onChange={(e) => handleFieldChange('category', e.target.value)}
-                displayEmpty
-                sx={{
-                  borderRadius: '8px',
-                  backgroundColor: '#fff',
-                }}
-              >
-                <MenuItem value="single">Single</MenuItem>
-                <MenuItem value="double">Double</MenuItem>
-                <MenuItem value="multi">Multi-court</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+          {formData.sport_type === 'padel' && (
+            <Box sx={{ mb: 1 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
+                Size
+              </Typography>
+              <FormControl fullWidth size="small">
+                <Select
+                  value={formData.category || ''}
+                  onChange={(e) => handleFieldChange('category', e.target.value)}
+                  displayEmpty
+                  sx={{
+                    borderRadius: '8px',
+                    backgroundColor: '#fff',
+                  }}
+                >
+                  <MenuItem value="single">Single</MenuItem>
+                  <MenuItem value="double">Double</MenuItem>
+                  <MenuItem value="multi">Multi-court</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+          
+         
           
           <Box sx={{ mb: 1 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>

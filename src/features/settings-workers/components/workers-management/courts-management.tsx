@@ -99,22 +99,7 @@ export function CourtsManagment() {
 
   const handleBackToCourts = () => setEditingCourt(null)
 
-  const handleCreateCourt = async(updatedCourt: ICourt) => {
-    if (updatedCourt.id && currentClub?.id) {
-      await dispatch(updateCourt(updatedCourt.id, updatedCourt))
-      await dispatch(getAllCourts(
-        currentClub.id, 
-        page + 1, 
-        rowsPerPage, 
-        searchQuery.toLowerCase(),
-        currentSportType.toLowerCase(),
-        '', 
-        sortBy,
-        sortOrder
-      ));
-       
-    }
-  }
+
 
   const handleEditCourt = async(updatedCourt: ICourt) => {
     if (updatedCourt.id && currentClub?.id) {
@@ -163,9 +148,26 @@ export function CourtsManagment() {
     console.log('Saving roles:', roles)
   }
 
-  const handleSaveBranch = () => {
+  const handleSaveBranch = async () => {
     console.log('Saving branch')
-    setOpenAddCourtDialog(false)
+    // Refresh the courts list after adding a new court
+    if (currentClub && currentClub.id) {
+      try {
+        // Re-fetch courts
+        await dispatch(getAllCourts(
+          currentClub.id, 
+          page + 1, 
+          rowsPerPage, 
+          searchQuery.toLowerCase(),
+          currentSportType.toLowerCase(), 
+          '', 
+          sortBy,
+          sortOrder
+        ));
+      } finally {
+        setOpenAddCourtDialog(false);
+      }
+    }
   }
 
   return (
@@ -229,7 +231,6 @@ export function CourtsManagment() {
             rowsPerPage={rowsPerPage}
             onPageChange={setPage}
             onRowsPerPageChange={setRowsPerPage}
-            onCreate={handleEditCourt}
             onEdit={handleEditCourt}
             onDelete={handleDeleteCourt}
             activeTab={activeTab}

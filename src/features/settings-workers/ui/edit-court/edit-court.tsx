@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Dialog, DialogContent, Box, Typography, TextField, Button, FormControl, Select, MenuItem, InputLabel, FormControlLabel, Checkbox } from '@mui/material'
 import type { ICourt } from '../../../../app/providers/types/court'
+import CloseIcon from '@mui/icons-material/Close'
 
 interface EditCourtDialogProps {
   open: boolean
@@ -59,17 +60,20 @@ export function EditCourtDialog({ open, onClose, onSave, court }: EditCourtDialo
         <Typography variant="h6" sx={{ fontWeight: 500, flex: 1, fontSize: 20 }}>
           Edit Court
         </Typography>
-        <Box 
+        <Button 
           onClick={onClose}
           sx={{ 
-            cursor: 'pointer',
-            fontSize: 24,
-            fontWeight: 300,
-            color: '#999'
+            minWidth: 'auto', 
+            p: 0.5,
+            color: '#666',
+            '&:hover': {
+              background: 'transparent',
+              color: '#000'
+            }
           }}
         >
-          ×
-        </Box>
+          <CloseIcon />
+        </Button>
       </Box>
       
       {/* Form Content */}
@@ -109,21 +113,26 @@ export function EditCourtDialog({ open, onClose, onSave, court }: EditCourtDialo
             >
               <MenuItem value="indoor">Indoor</MenuItem>
               <MenuItem value="outdoor">Outdoor</MenuItem>
+              {courtData.sport_type === 'tennis' && <MenuItem value="covered">Covered</MenuItem>}
             </Select>
           </FormControl>
           
-          <FormControl fullWidth>
-            <InputLabel>Size</InputLabel>
-            <Select
-              value={courtData.category || ''}
-              label="Size"
-              onChange={(e) => handleFieldChange('category', e.target.value)}
-              sx={{ borderRadius: '8px' }}
-            >
-              <MenuItem value="single">Single</MenuItem>
-              <MenuItem value="double">Double</MenuItem>
-            </Select>
-          </FormControl>
+          {courtData.sport_type === 'padel' && (
+            <FormControl fullWidth>
+              <InputLabel>Size</InputLabel>
+              <Select
+                value={courtData.category || ''}
+                label="Size"
+                onChange={(e) => handleFieldChange('category', e.target.value)}
+                sx={{ borderRadius: '8px' }}
+              >
+                <MenuItem value="single">Single</MenuItem>
+                <MenuItem value="double">Double</MenuItem>
+                <MenuItem value="multi">Multi-court</MenuItem>
+              </Select>
+            </FormControl>
+          )}
+          
           
           <TextField 
             label="Description (optional)" 
