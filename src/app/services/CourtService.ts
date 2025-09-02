@@ -4,8 +4,8 @@ import type { AppDispatch } from '../providers/store'
 import {
   getCurrentUserNotification,
 } from '../providers/reducers/UserSlice'
-import type { IClub, } from '../providers/types/club'
 import { getCourts, getCurrentCourt } from '../providers/reducers/CourtSlice'
+import type { ICourt } from '../providers/types/court'
 
 
 
@@ -57,9 +57,9 @@ export const getCourtById = (id:number) => async (dispatch: AppDispatch) => {
 
 
 
-export const createClub = () => async (dispatch: AppDispatch) => {
+export const createCourt = (clubId:number, createdCourt:ICourt) => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.post(`/clubs`, )
+    const response = await $api.post(`/courts?club_id=${clubId}`, createdCourt)
     dispatch(getCurrentCourt(response.data))
   } catch (error) {
     let errorMessage = ''
@@ -72,9 +72,9 @@ export const createClub = () => async (dispatch: AppDispatch) => {
 
 
 
-export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: AppDispatch) => {
+export const updateCourt = (courtId:number, updateCourt:ICourt) => async (dispatch: AppDispatch) => {
   try {
-    const response = await $api.patch(`/clubs/${clubId}`, updateClub)
+    const response = await $api.patch(`/courts/${courtId}`, updateCourt)
     dispatch(getCurrentCourt(response.data))
     return response.data;
   } catch (error) {

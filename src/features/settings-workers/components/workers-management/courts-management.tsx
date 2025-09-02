@@ -7,7 +7,7 @@ import { CourtsTable, RoleDialog } from '../../ui'
 import { type Role, type Brance, TAB_LABELS } from '../../model'
 
 import { BranchesApi } from '../../api/branches-api'
-import { AddBranchDialog } from '../../ui/add-branch'
+import { AddCourtDialog } from '../../ui/add-court'
 import { BackBtn } from '../../../back-btn'
 import { CourtsNavigation } from '../../../../widgets/courts/courts-navigation'
 import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
@@ -26,7 +26,7 @@ export function CourtsManagment() {
   const [editingCourt, setEditingCourt] = useState<ICourt | null>(null)
   const [openInfo, setOpenInfo] = useState(false)
   const [openRoleDialog, setOpenRoleDialog] = useState(false)
-  const [openAddBranchDialog, setOpenAddBranchDialog] = useState(false)
+  const [openAddCourtDialog, setOpenAddCourtDialog] = useState(false)
 
   const [roles, setRoles] = useState<Role[]>([{ value: 'Лікар' }, { value: '' }])
 
@@ -111,7 +111,7 @@ export function CourtsManagment() {
 
   const handleSaveBranch = () => {
     console.log('Saving branch')
-    setOpenAddBranchDialog(false)
+    setOpenAddCourtDialog(false)
   }
 
   return (
@@ -149,7 +149,7 @@ export function CourtsManagment() {
               fontSize: 13,
               height: '30px',
             }}
-            onClick={() => setOpenAddBranchDialog(true)}>
+            onClick={() => setOpenAddCourtDialog(true)}>
             New Court
           </PrimaryButton>
          </Box>
@@ -250,9 +250,9 @@ export function CourtsManagment() {
         onRolesChange={setRoles}
         onSave={handleSaveRoles}
       />
-      <AddBranchDialog
-        open={openAddBranchDialog}
-        onClose={() => setOpenAddBranchDialog(false)}
+      <AddCourtDialog
+        open={openAddCourtDialog}
+        onClose={() => setOpenAddCourtDialog(false)}
         onSave={handleSaveBranch}
       />
     </>

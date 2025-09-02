@@ -1,12 +1,12 @@
 export interface ICourt {
-    id: number;
+    id?: number;
     name: string;
     sport_type: string;
     court_type: string;
     description: string;
     category?: string;
     is_active: boolean;
-    club_id: number;
+    club_id?: number;
 }
 
 export interface CourtsResponse {
