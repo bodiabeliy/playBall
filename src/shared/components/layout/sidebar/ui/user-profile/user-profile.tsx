@@ -1,8 +1,6 @@
-import { useEffect } from 'react'
 
 import { Box, Typography } from '@mui/material'
-import { getUser } from '../../../../../../app/services/UserService'
-import { useAppDispatch, useAppSelector } from '../../../../../../app/providers/store-helpers'
+import {  useAppSelector } from '../../../../../../app/providers/store-helpers'
 import { userSelector } from '../../../../../../app/providers/reducers/UserSlice'
 
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
@@ -14,13 +12,7 @@ interface UserProfileProps {
 }
 
 export function UserProfileComponent({ isCollapsed, onSettingsClick }: UserProfileProps) {
-  const dispatch = useAppDispatch()
   const currentUser = useAppSelector(userSelector)
-
-  useEffect(() => {
-    dispatch(getUser())
-  }, [])
-
 
   return (
     <Box

@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { SidebarLayout } from '../shared'
 
-import { getUser } from '../app/services/UserService'
-import { useAppDispatch } from '../app/providers/store-helpers'
 
 import { SettingsNavigation } from '../widgets/settings-page/components/settings-navigation'
 import { SettingsContent } from '../widgets/settings-page/components/settings-content'
@@ -15,14 +13,11 @@ export default function SettingsPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const isSmallDesktop = useMediaQuery(theme.breakpoints.down(2000))
 
-  const dispatch = useAppDispatch()
 
   const [activeTab, setActiveTab] = useState(0)
   const [activeTabMobile, setActiveTabMobile] = useState<number | null>(null)
 
-  useEffect(() => {
-    dispatch(getUser())
-  }, [])
+
 
   return (
     <SidebarLayout title="club settings">
