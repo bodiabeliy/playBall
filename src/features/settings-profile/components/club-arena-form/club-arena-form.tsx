@@ -11,8 +11,10 @@ import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { getAllClubs, getClubById, updateClub } from '../../../../app/services/ClubService';
+import { updateOpenHours } from '../../../../app/services/ClubService';
 import { clubSelector, clubsSelector } from '../../../../app/providers/reducers/ClubSlice';
 import type { IClub } from '../../../../app/providers/types/club';
+import type { IOpenHour } from '../../../../app/providers/types/hours';
 import { UpdateSectionButton } from '../../update-section-button/update-section-button';
 import { ContactInfoSection, LocationSection, AmenitiesSection } from './club-arena-form-sections';
 import { WorkingDaysSection } from '../../../settings-schedule/components/working-days-section/working-days-section';
@@ -114,9 +116,37 @@ export function ClubArenaForm() {
     if (expandedSections[sectionId] && currentClub?.id) {
       console.log(`Saving ${sectionId} data:`, formData);
       
-      // Only dispatch if we have values to update
-      if (formData) {
-        dispatch(updateClub(currentClub.id, formData));
+      // Handle working hours section specially
+      if (sectionId === 'openHours') {
+        // Format working hours for API
+        const formatTime = (date: Date | null): string => {
+          if (!date) return '09:00:00';
+          
+          const hours = date.getHours().toString().padStart(2, '0');
+          const minutes = date.getMinutes().toString().padStart(2, '0');
+          const seconds = '00';
+          
+          return `${hours}:${minutes}:${seconds}`;
+        };
+
+        if (formData.working_hours && formData.working_hours.length > 0) {
+          const openHoursData: IOpenHour = {
+            working_hours: formData.working_hours.map((wh) => ({
+              day_of_week: wh.day_of_week,
+              is_active: wh.is_active,
+              start_time: formatTime(wh.start_time instanceof Date ? wh.start_time : new Date(wh.start_time)),
+              end_time: formatTime(wh.end_time instanceof Date ? wh.end_time : new Date(wh.end_time))
+            }))
+          };
+          
+          console.log('Saving working hours data:', openHoursData);
+          dispatch(updateOpenHours(currentClub.id, openHoursData));
+        }
+      } else {
+        // For other sections, use regular updateClub
+        if (formData) {
+          dispatch(updateClub(currentClub.id, formData));
+        }
       }
     }
     
@@ -178,11 +208,10 @@ export function ClubArenaForm() {
       id: 'openHours',
       title: !expandedSections.openHours ? 'Opening Hours' : 'Opening Hours',
       // subTitle: 'Set your club\'s working hours so clients know when you\'re available',
-      content: ({ formData, handleFieldChange, handleFileUpload }) => (
+      content: ({ formData, handleFieldChange }) => (
         <WorkingDaysSection 
           formData={formData} 
-          handleFieldChange={handleFieldChange} 
-          handleFileUpload={handleFileUpload}
+          handleFieldChange={handleFieldChange}
         />
       ),
     },

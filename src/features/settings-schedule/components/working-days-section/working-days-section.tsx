@@ -1,14 +1,10 @@
-import { Box, Typography, Switch, Button } from '@mui/material'
+import { Box, Typography, Switch } from '@mui/material'
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { enUS } from 'date-fns/locale'
 import { useState, useCallback } from 'react'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import type { IClub, IWorkingHours } from '../../../../app/providers/types/club'
-import type { IOpenHour } from '../../../../app/providers/types/hours'
-import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
-import { updateOpenHours } from '../../../../app/services/ClubService'
-import { clubSelector } from '../../../../app/providers/reducers/ClubSlice'
 
 const daysOfWeek = [
   { key: 'mon', label: 'Mon', dayOfWeek: 1, group: 'weekdays' },
@@ -34,9 +30,6 @@ type SectionProps = {
 };
 
 export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps) => {
-  const dispatch = useAppDispatch()
-  const currentClub = useAppSelector(clubSelector)
-
   // Convert working_hours from IClub to WorkingDay format if available
   const getInitialWorkingDays = (): WorkingDay[] => {
     // Default time values for each day (ensuring start < end)
@@ -77,7 +70,7 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         const defaultTimes = getDefaultTimes(day.key);
         return {
           key: day.key,
-          enabled: day.key !== 'sat', // Sunday is enabled by default, only Saturday is disabled
+          enabled: day.key !== 'sat', // Enable all days except Saturday by default
           start: defaultTimes.start,
           end: defaultTimes.end,
         };
@@ -97,37 +90,6 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
     }));
     handleFieldChange('working_hours', workingHours);
   }, [handleFieldChange]);
-
-  const handleSaveWorkingHours = async () => {
-    if (currentClub?.id) {
-      const formatTime = (date: Date | null): string => {
-        if (!date) return '09:00:00';
-        
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const seconds = '00'; // Always use 00 for seconds
-        
-        return `${hours}:${minutes}:${seconds}`;
-      };
-
-      const openHoursData: IOpenHour = {
-        working_hours: workingDays.map((day, index) => ({
-          day_of_week: daysOfWeek[index].dayOfWeek,
-          is_active: day.enabled,
-          start_time: formatTime(day.start),
-          end_time: formatTime(day.end)
-        }))
-      };
-      
-      console.log('Sending working hours data:', openHoursData);
-      
-      try {
-        await dispatch(updateOpenHours(currentClub.id, openHoursData));
-      } catch (error) {
-        console.error('Failed to update working hours:', error);
-      }
-    }
-  };
 
   const handleToggle = (idx: number) => {
     const updated = workingDays.map((d, i) => (i === idx ? { ...d, enabled: !d.enabled } : d));
@@ -369,42 +331,7 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
   };
 
   return (
-    <Box sx={{ width: '100%', p: 0, position: 'relative' }}>
-      {/* Update Button */}
-      <Box sx={{ 
-        position: 'absolute', 
-        top: -8, 
-        right: 0,
-        zIndex: 1
-      }}>
-        <Button
-          variant="contained"
-          onClick={handleSaveWorkingHours}
-          sx={{
-            backgroundColor: '#0F766E',
-            color: 'white',
-            fontSize: '14px',
-            fontWeight: 600,
-            textTransform: 'none',
-            borderRadius: '8px',
-            padding: '10px 20px',
-            minWidth: '84px',
-            height: '40px',
-            boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-            border: 'none',
-            '&:hover': {
-              backgroundColor: '#0D6F66',
-              boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.1)',
-            },
-            '&:active': {
-              backgroundColor: '#0B5D57',
-            },
-          }}
-        >
-          Update
-        </Button>
-      </Box>
-
+    <Box sx={{ width: '100%', p: 0 }}>
       {/* Weekdays Section */}
       <Box sx={{ mb: 5, pt: 2 }}>
         <Typography 
