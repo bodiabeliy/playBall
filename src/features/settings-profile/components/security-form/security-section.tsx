@@ -38,7 +38,7 @@ export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) =
     <form style={{ width: '100%' }} onSubmit={handleSubmit}>
     
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%'}}>
-        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+        <FormControl fullWidth sx={{ borderRadius: '12px' }}>
            <TextField
             // label="Введіть пароль"
             variant="outlined"
@@ -48,6 +48,7 @@ export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) =
             onChange={(event) => handleFieldChange('new_password', event.target.value)}
           
             type={passwordVisible.new_password ? 'text' : 'password'}
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -63,7 +64,7 @@ export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) =
           />
         </FormControl>
         
-        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+  <FormControl fullWidth sx={{ borderRadius: '12px' }}>
           <TextField
             // label="Введіть пароль"
             variant="outlined"
@@ -73,6 +74,7 @@ export const SecuritySection = ({ formData, handleFieldChange }: SectionProps) =
             onChange={(event) => handleFieldChange('repeat_password', event.target.value)}
           
             type={passwordVisible.repeat_password ? 'text' : 'password'}
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

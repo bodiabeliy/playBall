@@ -58,18 +58,12 @@ export function AccessControlForm() {
   useEffect(() => {
     if (clubSettings) {
       console.log('Updating access control form data with club settings:', clubSettings);
-      // Only update the formData if the relevant fields exist in clubSettings
-      const updatedFormData = { ...formData };
-      
-      if (clubSettings.access_code_prior_duration !== undefined) {
-        updatedFormData.access_code_prior_duration = clubSettings.access_code_prior_duration;
-      }
-      
-      if (clubSettings.access_code_after_duration !== undefined) {
-        updatedFormData.access_code_after_duration = clubSettings.access_code_after_duration;
-      }
-      
-      setFormData(updatedFormData);
+      // Only update the fields that exist in clubSettings
+      setFormData(prev => ({
+        ...prev,
+        access_code_prior_duration: clubSettings.access_code_prior_duration ?? prev.access_code_prior_duration,
+        access_code_after_duration: clubSettings.access_code_after_duration ?? prev.access_code_after_duration,
+      }));
     }
   }, [clubSettings]);
 
@@ -232,10 +226,15 @@ export function AccessControlForm() {
     flexDirection: 'column',
     height: isMobile ? '100%' : 'auto',
     justifyContent: 'space-between',
-    boxShadow: '0 2px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 12px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.05)',
+    // Figma: X:0, Y:0, Blur:30, Spread:0, Color #343434 @ 6%
+    boxShadow: '0 0 30px rgba(52, 52, 52, 0.06)',
     background: '#fff',
     borderRadius: '16px',
     p: isMobile ? 2 : 3,
+    // Remove the default MUI Accordion top divider
+    '&::before': {
+      display: 'none',
+    },
     '&.MuiAccordion-root': {
       padding: 1
     }

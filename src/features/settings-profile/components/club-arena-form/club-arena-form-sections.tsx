@@ -1,4 +1,4 @@
-import { Box, FormControl, Typography, TextField, InputAdornment, IconButton, Popover, MenuItem } from '@mui/material';
+import { Box, FormControl, Typography, TextField, InputAdornment, IconButton, Popover, MenuItem, Button } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
 import FileUpload from '../../../file-upload';
 import WebsiteIcon from "../../../../shared/assets/icons/website.svg?react";
@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-
 import { getAllClubStatistic, uploadClubSingleImage, uploadClubGalleryImages } from '../../../../app/services/ClubService';
 import { clubStatisticSelector } from '../../../../app/providers/reducers/ClubSlice';
 import { getClubGallery, deleteDirectusFile } from '../../../../app/services/FileService';
+import MapPinIcon from "../../../../shared/assets/icons/map-pin.svg?react"
 
 type SectionProps = {
   formData: IClub;
@@ -227,7 +228,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('name', e.target.value)}
           fullWidth
           placeholder="Enter club name"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
       
@@ -240,7 +241,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('email', e.target.value)}
           fullWidth
           placeholder="Enter email"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
     </Box>
@@ -254,7 +255,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('website', e.target.value)}
           fullWidth
           placeholder="Enter website"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -278,7 +279,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              borderRadius: '8px',
+              borderRadius: '12px',
               paddingLeft: 0
             }
           }}
@@ -359,7 +360,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('facebook', e.target.value)}
           fullWidth
           placeholder="Enter Facebook"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -379,7 +380,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('instagram', e.target.value)}
           fullWidth
           placeholder="Enter Instagram"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -402,7 +403,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('facebook', e.target.value)}
           fullWidth
           placeholder="Enter Facebook"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
       <FormControl fullWidth sx={{ borderRadius: '8px' }}>
@@ -415,7 +416,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('instagram', e.target.value)}
           fullWidth
           placeholder=""
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
     </Box>
@@ -430,7 +431,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('facebook', e.target.value)}
           fullWidth
           placeholder="Enter Facebook"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
       <FormControl fullWidth sx={{ borderRadius: '8px' }}>
@@ -443,7 +444,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('instagram', e.target.value)}
           fullWidth
           placeholder="Enter Instagram"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
     </Box>
@@ -458,7 +459,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('facebook', e.target.value)}
           fullWidth
           placeholder="Enter Facebook"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
       <FormControl fullWidth sx={{ borderRadius: '8px' }}>
@@ -471,7 +472,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           onChange={(e) => handleFieldChange('instagram', e.target.value)}
           fullWidth
           placeholder="Enter Instagram"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
     </Box>
@@ -487,6 +488,7 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
           multiline
           fullWidth
           placeholder="Enter description"
+          sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
       </FormControl>
     </Box>
@@ -659,23 +661,22 @@ export const ContactInfoSection = ({ formData, handleFieldChange, handleFileUplo
   );
 };
 
-export const LocationSection = ({ formData, handleFieldChange }: SectionProps) => {
+export const LocationSection = ({ formData, handleFieldChange, openMapPicker }: SectionProps & { openMapPicker?: () => void }) => {
   return (
     <form style={{ width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
         <FormControl fullWidth sx={{ borderRadius: '8px' }}>
           <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-            State/Province
+            Country
           </Typography>
           <TextField
             value={formData.address}
             onChange={(e) => handleFieldChange('address', e.target.value)}
             fullWidth
-            placeholder="Enter address"
-            sx={{ mb: 2 }}
+            placeholder="Enter country"
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           />
         </FormControl>
-        
         <FormControl fullWidth sx={{ borderRadius: '8px' }}>
           <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
             City
@@ -685,65 +686,63 @@ export const LocationSection = ({ formData, handleFieldChange }: SectionProps) =
             onChange={(e) => handleFieldChange('city', e.target.value)}
             fullWidth
             placeholder="Enter city"
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           />
         </FormControl>
       </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
         <FormControl fullWidth sx={{ borderRadius: '8px' }}>
           <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-            Street
+            Address
           </Typography>
           <TextField
-            value={formData.latitude?.toString()}
-            onChange={(e) => handleFieldChange('latitude', parseFloat(e.target.value) || 0)}
+            value={formData.address}
+            onChange={(e) => handleFieldChange('address', e.target.value)}
             fullWidth
-            type="number"
-            placeholder="Enter number of courts"
-            sx={{ mb: 2 }}
+            placeholder="Enter address"
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
           />
         </FormControl>
-        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-            Postal Code
-          </Typography>
+        <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+          {/* <TextField
+            label="Latitude"
+            value={formData.latitude ?? ''}
+            onChange={(e) => handleFieldChange('latitude', Number(e.target.value))}
+            fullWidth
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+          />
           <TextField
-            value={formData.longitude?.toString()}
-            onChange={(e) => handleFieldChange('longitude', parseFloat(e.target.value) || 0)}
+            label="Longitude"
+            value={formData.longitude ?? ''}
+            onChange={(e) => handleFieldChange('longitude', Number(e.target.value))}
             fullWidth
-            type="number"
-            placeholder="Enter number of courts"
-            sx={{ mb: 2 }}
-          />
-        </FormControl>
-      </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
-        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-            Country
-          </Typography>
-          <TextField
-            value={formData.latitude?.toString()}
-            onChange={(e) => handleFieldChange('latitude', parseFloat(e.target.value) || 0)}
-            fullWidth
-            type="number"
-            placeholder="Enter number of courts"
-            sx={{ mb: 2 }}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
-          <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" gutterBottom>
-            Timezone
-          </Typography>
-          <TextField
-            value={formData.longitude?.toString()}
-            onChange={(e) => handleFieldChange('longitude', parseFloat(e.target.value) || 0)}
-            fullWidth
-            type="number"
-            placeholder="Enter number of courts"
-            sx={{ mb: 2 }}
-          />
-        </FormControl>
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+          /> */}
+        </Box>
+        <Box sx={{mx:"auto",}}>
+          <Button
+            type="button"
+            onClick={() => openMapPicker && openMapPicker()}
+            startIcon={<MapPinIcon />}
+            variant="text"
+            disableElevation
+            sx={{
+              mt: 1,
+              px: 0,
+              py: 0,
+              
+              minWidth: 'auto',
+              textTransform: 'none',
+              color: '#0C6C70',
+              '&:hover': {
+                backgroundColor: 'transparent',
+                color: '#0A595C',
+              },
+            }}
+          >
+            Choose on map
+          </Button>
+        </Box>
       </Box>
     </form>
   );

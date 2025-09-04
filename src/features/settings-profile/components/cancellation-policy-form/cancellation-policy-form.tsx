@@ -230,10 +230,15 @@ export function CancellationPolicyForm() {
     flexDirection: 'column',
     height: isMobile ? '100%' : 'auto',
     justifyContent: 'space-between',
-    boxShadow: '0 2px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 12px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.05)',
+    // Figma: X:0, Y:0, Blur:30, Spread:0, Color #343434 @ 6%
+    boxShadow: '0 0 30px rgba(52, 52, 52, 0.06)',
     background: '#fff',
     borderRadius: '16px',
     p: isMobile ? 2 : 3,
+    // Remove the default MUI Accordion top divider
+    '&::before': {
+      display: 'none',
+    },
     '&.MuiAccordion-root': {
       padding: 1
     }

@@ -11,11 +11,8 @@ interface UpdateSectionButtonProps<T = unknown> {
   isAccordionCollapse: boolean
   formData?: T
   sectionId?: string
-  // Optional action creator to dispatch when updating
   actionCreator?: ActionCreator<T>
-  // Optional additional params needed for the action
   actionParams?: Record<string, unknown>
-  // Optional labels override
   expandedLabel?: string
   collapsedLabel?: string
 }
@@ -33,6 +30,9 @@ export function UpdateSectionButton<T>({
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const dispatch = useAppDispatch()
+  
+  // When expanded and label is "Close", render as neutral gray action
+  const isCloseExpanded = isAccordionCollapse && (expandedLabel?.trim().toLowerCase() === 'close')
   
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent event bubbling to accordion
@@ -68,8 +68,12 @@ export function UpdateSectionButton<T>({
       onClick={handleClick}
       sx={{
         textTransform:"capitalize",
-        background: !isAccordionCollapse ? "rgba(223, 223, 223, 1)" : "#034C53",
-        color: !isAccordionCollapse ? "black" : "white",
+        background: !isAccordionCollapse
+          ? "rgba(223, 223, 223, 1)"
+          : (isCloseExpanded ? "#DFDFDF" : "#034C53"),
+        color: !isAccordionCollapse
+          ? "black"
+          : (isCloseExpanded ? "black" : "white"),
         // prevent any rotation or transitions and remove all shadows
         transition: 'none',
         boxShadow: 'none',

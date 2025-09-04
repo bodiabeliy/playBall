@@ -17,6 +17,7 @@ import type { IClub } from '../../../../app/providers/types/club';
 import type { IOpenHour } from '../../../../app/providers/types/hours';
 import { UpdateSectionButton } from '../../update-section-button/update-section-button';
 import { ContactInfoSection, LocationSection, AmenitiesSection } from './club-arena-form-sections';
+import { MapPickerDialog } from '../map-picker-dialog/map-picker-dialog';
 import { WorkingDaysSection } from '../../../settings-schedule/components/working-days-section/working-days-section';
 
 // Define interface for section configuration
@@ -57,6 +58,9 @@ export function ClubArenaForm() {
     gallery: [],
     working_hours: []
   });
+
+  // Map picker dialog state
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   // Track which accordion sections are expanded
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -103,6 +107,15 @@ export function ClubArenaForm() {
       ...prev,
       [field]: value
     }));
+  }, []);
+
+  const openMapPicker = useCallback(() => {
+    setIsMapOpen(true);
+  }, []);
+
+  const handleMapSelect = useCallback((coords: { lat: number; lng: number }) => {
+    setFormData(prev => ({ ...prev, latitude: coords.lat, longitude: coords.lng }));
+    setIsMapOpen(false);
   }, []);
 
   const toggleSection = useCallback((sectionId: string, options?: { save?: boolean }) => {
@@ -192,11 +205,12 @@ export function ClubArenaForm() {
       id: 'location',
       title: !expandedSections.location ? 'Location' : 'Location',
       // subTitle: 'Specify your club\'s address and coordinates for clients to find you easily',
-      content: ({ formData, handleFieldChange, handleFileUpload }) => (
+    content: ({ formData, handleFieldChange, handleFileUpload }) => (
         <LocationSection 
           formData={formData} 
           handleFieldChange={handleFieldChange} 
-          handleFileUpload={handleFileUpload}
+      handleFileUpload={handleFileUpload}
+      openMapPicker={openMapPicker}
         />
       ),
     },
@@ -231,17 +245,22 @@ export function ClubArenaForm() {
     flexDirection: 'column',
     height: isMobile ? '100%' : 'auto',
     justifyContent: 'space-between',
-    boxShadow: '0 2px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 12px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.05)',
+  // Figma: X:0, Y:0, Blur:30, Spread:0, Color #343434 @ 6%
+  boxShadow: '0 0 30px rgba(52, 52, 52, 0.06)',
     background: '#fff',
     borderRadius: '16px',
     p: isMobile ? 2 : 3,
+    // Remove the default MUI Accordion top divider
+    '&::before': {
+      display: 'none',
+    },
     '&.MuiAccordion-root': {
-      padding: 1
+      padding: 1,
     }
   };
 
   return (
-    <Stack spacing={2}>
+  <Stack spacing={2}>
       {sections.map((section) => (
         <Accordion
           key={section.id}
@@ -312,6 +331,17 @@ export function ClubArenaForm() {
           </Box>
         </Accordion>
       ))}
+      {/* Map picker dialog */}
+      <MapPickerDialog
+        open={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        onSelect={handleMapSelect}
+        initialPosition={{
+          lat: Number(formData.latitude) || 54.6872,
+          lng: Number(formData.longitude) || 25.2797,
+        }}
+        title="Choose on map"
+      />
     </Stack>
   );
 }
