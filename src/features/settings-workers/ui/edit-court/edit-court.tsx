@@ -1,5 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Dialog, DialogContent, Box, Typography, TextField, Button, FormControl, Select, MenuItem, InputLabel, FormControlLabel, Checkbox } from '@mui/material'
+import {
+  Dialog,
+  DialogContent,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+} from '@mui/material'
 import type { ICourt } from '../../../../app/providers/types/court'
 import CloseIcon from '@mui/icons-material/Close'
 
@@ -17,7 +29,7 @@ export function EditCourtDialog({ open, onClose, onSave, court }: EditCourtDialo
     court_type: '',
     description: '',
     category: '',
-    is_active: true
+    is_active: true,
   })
 
   useEffect(() => {
@@ -30,15 +42,15 @@ export function EditCourtDialog({ open, onClose, onSave, court }: EditCourtDialo
         description: court.description || '',
         category: court.category || '',
         is_active: court.is_active || false,
-        club_id: court.club_id
+        club_id: court.club_id,
       })
     }
   }, [court])
 
   const handleFieldChange = (field: keyof ICourt, value: string | boolean) => {
-    setCourtData(prev => ({
+    setCourtData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -50,115 +62,124 @@ export function EditCourtDialog({ open, onClose, onSave, court }: EditCourtDialo
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '8px' } }}>
       {/* Header */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        p: 3, 
-        pb: 2,
-        borderBottom: '1px solid #f0f0f0'
-      }}>
-        <Typography variant="h6" sx={{ fontWeight: 500, flex: 1, fontSize: 20 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          p: 3,
+          pb: 2,
+          borderBottom: '1px solid #f0f0f0',
+        }}>
+        <Typography variant="h6" sx={{ flex: 1, fontSize: 20 }}>
           Edit Court
         </Typography>
-        <Button 
+        <Button
           onClick={onClose}
-          sx={{ 
-            minWidth: 'auto', 
+          sx={{
+            minWidth: 'auto',
             p: 0.5,
             color: '#666',
             '&:hover': {
               background: 'transparent',
-              color: '#000'
-            }
-          }}
-        >
+              color: '#000',
+            },
+          }}>
           <CloseIcon />
         </Button>
       </Box>
-      
+
       {/* Form Content */}
       <DialogContent sx={{ p: 3, pt: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-          <TextField 
-            label="Court Name (optional)" 
-            fullWidth
-            value={courtData.name}
-            onChange={(e) => handleFieldChange('name', e.target.value)}
-            InputProps={{
-              sx: { borderRadius: '8px' }
-            }}
-          />
-          
           <FormControl fullWidth>
-            <InputLabel>Sports</InputLabel>
+            <Typography variant="body2" color="text.secondary">
+              Court Name (optional)
+            </Typography>
+            <TextField
+              fullWidth
+              value={courtData.name}
+              onChange={(e) => handleFieldChange('name', e.target.value)}
+              InputProps={{
+                sx: { borderRadius: '8px' },
+              }}
+            />
+          </FormControl>
+
+          <FormControl fullWidth>
+            <Typography variant="body2" color="text.secondary">
+              Sports
+            </Typography>
             <Select
               value={courtData.sport_type}
-              label="Sports"
               onChange={(e) => handleFieldChange('sport_type', e.target.value)}
-              sx={{ borderRadius: '8px' }}
-            >
+              sx={{ borderRadius: '8px' }}>
               <MenuItem value="padel">Padel</MenuItem>
               <MenuItem value="tennis">Tennis</MenuItem>
               <MenuItem value="pickleball">Pickleball</MenuItem>
             </Select>
           </FormControl>
-          
+
           <FormControl fullWidth>
-            <InputLabel>Type</InputLabel>
+            <Typography variant="body2" color="text.secondary">
+              Type
+            </Typography>
             <Select
               value={courtData.court_type}
-              label="Type"
               onChange={(e) => handleFieldChange('court_type', e.target.value)}
-              sx={{ borderRadius: '8px' }}
-            >
+              sx={{ borderRadius: '8px' }}>
               <MenuItem value="indoor">Indoor</MenuItem>
               <MenuItem value="outdoor">Outdoor</MenuItem>
               {courtData.sport_type === 'tennis' && <MenuItem value="covered">Covered</MenuItem>}
             </Select>
           </FormControl>
-          
+
           {courtData.sport_type === 'padel' && (
-            <FormControl fullWidth>
-              <InputLabel>Size</InputLabel>
-              <Select
-                value={courtData.category || ''}
-                label="Size"
-                onChange={(e) => handleFieldChange('category', e.target.value)}
-                sx={{ borderRadius: '8px' }}
-              >
-                <MenuItem value="single">Single</MenuItem>
-                <MenuItem value="double">Double</MenuItem>
-                <MenuItem value="multi">Multi-court</MenuItem>
-              </Select>
-            </FormControl>
+            <>
+              <FormControl fullWidth>
+                <Typography variant="body2" color="text.secondary">
+                  Size
+                </Typography>
+                <Select
+                  value={courtData.category || ''}
+                  onChange={(e) => handleFieldChange('category', e.target.value)}
+                  sx={{ borderRadius: '8px' }}>
+                  <MenuItem value="single">Single</MenuItem>
+                  <MenuItem value="double">Double</MenuItem>
+                  <MenuItem value="multi">Multi-court</MenuItem>
+                </Select>
+              </FormControl>
+            </>
           )}
-          
-          
-          <TextField 
-            label="Description (optional)" 
-            fullWidth
-            multiline
-            minRows={4}
-            value={courtData.description}
-            onChange={(e) => handleFieldChange('description', e.target.value)}
-            InputProps={{
-              sx: { borderRadius: '8px' }
-            }}
-          />
-          
-          <FormControlLabel 
+
+          <FormControl fullWidth>
+            <Typography variant="body2" color="text.secondary">
+              Description
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              minRows={4}
+              value={courtData.description}
+              onChange={(e) => handleFieldChange('description', e.target.value)}
+              InputProps={{
+                sx: { borderRadius: '8px' },
+              }}
+            />
+          </FormControl>
+
+          <FormControlLabel
             control={
-              <Checkbox 
+              <Checkbox
                 checked={courtData.is_active}
                 onChange={(e) => handleFieldChange('is_active', e.target.checked)}
                 sx={{
                   color: '#034C53',
                   '&.Mui-checked': {
                     color: '#034C53',
-                  }
+                  },
                 }}
               />
-            } 
+            }
             label="Active Court"
             sx={{ mt: 1 }}
           />
@@ -166,46 +187,37 @@ export function EditCourtDialog({ open, onClose, onSave, court }: EditCourtDialo
       </DialogContent>
 
       {/* Footer Buttons */}
-      <Box sx={{ 
-        display: 'flex', 
-        gap: 1.5,
-        px: 3, 
-        pb: 3, 
-        justifyContent: 'space-between'
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1.5,
+          px: 3,
+          pb: 3,
+          justifyContent: 'flex-end',
+        }}>
         <Button
           variant="outlined"
-          sx={{ 
-            borderColor: '#e0e0e0', 
-            color: 'rgba(0,0,0,0.7)',
-            padding: '12px 20px',
-            textTransform: 'none',
-            fontSize: '15px',
+          sx={{
             borderRadius: '8px',
-            flex: 0.4,
-            fontWeight: 500
+            backgroundColor: '#DFDFDF',
+            color: 'black',
+            border:"none",
+            transition: 'none',
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: 'none',
+            },
+            '&:active': {
+              boxShadow: 'none',
+            },
           }}
-          onClick={onClose}
-        >
+          onClick={onClose}>
           Cancel
         </Button>
-        <Button 
-          variant="contained" 
-          sx={{ 
-            bgcolor: '#034C53',
-            padding: '12px 20px',
-            color: 'white',
-            textTransform: 'none',
-            fontSize: '15px',
-            borderRadius: '8px',
-            flex: 0.6,
-            fontWeight: 500,
-            '&:hover': {
-              bgcolor: '#023840'
-            }
-          }} 
-          onClick={handleSave}
-        >
+        <Button
+          variant="contained"
+          sx={{ borderRadius: '8px', backgroundColor: '#034C53', '&:hover': { backgroundColor: '#023a40' } }}
+          onClick={handleSave}>
           Update
         </Button>
       </Box>

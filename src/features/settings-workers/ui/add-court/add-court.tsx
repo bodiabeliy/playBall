@@ -115,7 +115,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
       <DialogContent sx={{ px: 3, py: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
           <Box sx={{ mb: 1 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5,  }}>
               Court Name (optional)
             </Typography>
             <TextField
@@ -135,7 +135,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
           </Box>
           
           <Box sx={{ mb: 1 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5,  }}>
               Sports
             </Typography>
             <FormControl fullWidth size="small">
@@ -156,7 +156,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
           </Box>
           
           <Box sx={{ mb: 1 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5,  }}>
               Type
             </Typography>
             <FormControl fullWidth size="small">
@@ -178,7 +178,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
           
           {currentSportType === 'Padel' && (
             <Box sx={{ mb: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5,  }}>
                 Size
               </Typography>
               <FormControl fullWidth size="small">
@@ -202,7 +202,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
          
           
           <Box sx={{ mb: 1 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5,  }}>
               Description (optional)
             </Typography>
             <TextField
@@ -236,7 +236,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
               />
             }
             label={
-              <Typography variant="body2" sx={{ color: '#333', fontWeight: 500 }}>
+              <Typography variant="body2" sx={{ color: '#333',  }}>
                 Active Court
               </Typography>
             }
@@ -256,17 +256,19 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
       }}>
         <Button
           variant="outlined"
-          sx={{ 
-            borderColor: '#ccc', 
-            color: '#333', 
-            padding: '10px 24px',
+           sx={{
             borderRadius: '8px',
-            textTransform: 'none',
-            fontWeight: 500,
+            backgroundColor: '#DFDFDF',
+            color: 'black',
+            border:"none",
+            transition: 'none',
+            boxShadow: 'none',
             '&:hover': {
-              borderColor: '#999',
-              background: '#f5f5f5',
-            } 
+              boxShadow: 'none',
+            },
+            '&:active': {
+              boxShadow: 'none',
+            },
           }}
           onClick={onClose}
         >
@@ -274,16 +276,7 @@ export function AddCourtDialog({ open, onClose, onSave, currentSportType }: AddC
         </Button>
         <Button 
           variant="contained" 
-          sx={{ 
-            backgroundColor: '#034C53', 
-            padding: '10px 24px',
-            borderRadius: '8px',
-            textTransform: 'none',
-            fontWeight: 500,
-            '&:hover': {
-              backgroundColor: '#023a40',
-            }
-          }} 
+          sx={{ borderRadius: '8px', backgroundColor: '#034C53', '&:hover': { backgroundColor: '#023a40' } }}
           onClick={handleSave}
         >
           Add Court
