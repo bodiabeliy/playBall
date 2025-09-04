@@ -131,9 +131,8 @@ export const updateClub = (clubId:number, updateClub:IClub) => async (dispatch: 
 
 export const updateOpenHours = (clubId:number, updateHours:IOpenHour) => async (dispatch: AppDispatch) => {
   try {
-    console.log("Updating working hours with:", updateHours);
     const response = await $api.put(`/clubs/${clubId}/working-hours`, updateHours)
-    dispatch(getCurrentClub(response.data))
+    dispatch(getClubById(clubId))
   return response.data;
   } catch (error) {
     let errorMessage = ''
