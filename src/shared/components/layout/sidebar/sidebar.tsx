@@ -9,9 +9,7 @@ import type {  SidebarItem } from './model'
 
 import LogoIcon from '../../../../shared/assets/icons/logo.svg?react'
 import LogoCollapse from '../../../../shared/assets/icons/logo-collapse.svg?react'
-import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
-import { clubSelector, clubsSelector } from '../../../../app/providers/reducers/ClubSlice'
-import { getClubById } from '../../../../app/services/ClubService'
+
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -22,20 +20,18 @@ export const Sidebar = ({ isCollapsed }: SidebarProps) => {
   const location = useLocation()
   const { isMobile, forceCloseMobileSidebar, isNavigating, setIsNavigating, setIsSidebarCollapsed } =
     useSidebarLayoutContext()
-    const dispatch = useAppDispatch()
-    const clubList = useAppSelector(clubsSelector)
-    const currentClub = useAppSelector(clubSelector)
+
 
 
   // State for expandable items
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
   // const [selectedClinic, setSelectedClinic] = useState<Clinic>(MOCK_CLINICS[0])
 
-  useEffect(() => {
-    if (clubList.length > 0 && currentClub.name == '') {
-      dispatch(getClubById(clubList[0].id))
-    }
-  }, [clubList])
+  // useEffect(() => {
+  //   if (clubList.length > 0 && currentClub.name == '') {
+  //     dispatch(getClubById(clubList[0].id))
+  //   }
+  // }, [clubList])
 
   // Auto-expand items based on current route
   useEffect(() => {

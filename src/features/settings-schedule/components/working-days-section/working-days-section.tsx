@@ -1,8 +1,8 @@
-import { Box, Typography, Switch } from '@mui/material'
+import { Box, Divider, Typography } from '@mui/material'
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { enUS } from 'date-fns/locale'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import type { IClub, IWorkingHours } from '../../../../app/providers/types/club'
 
@@ -30,27 +30,44 @@ type SectionProps = {
 };
 
 export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps) => {
+  // Helpers
+  const makeTime = useCallback((h: number, m: number, s = 0): Date => {
+    const d = new Date();
+    d.setHours(h, m, s, 0);
+    return d;
+  }, []);
+
+  const parseTimeToDate = useCallback((value: unknown, fallback: Date): Date => {
+    if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+    if (typeof value === 'string' && value.includes(':')) {
+      const parts = value.split(':').map((n) => parseInt(n, 10));
+      const [h = 0, m = 0, s = 0] = parts;
+      return makeTime(h, m, s);
+    }
+    return fallback;
+  }, [makeTime]);
+
   // Convert working_hours from IClub to WorkingDay format if available
-  const getInitialWorkingDays = (): WorkingDay[] => {
+  const getInitialWorkingDays = useCallback((): WorkingDay[] => {
     // Default time values for each day (ensuring start < end)
     const getDefaultTimes = (dayKey: string) => {
       switch (dayKey) {
         case 'mon':
-          return { start: new Date('2024-01-01T08:00:00.000Z'), end: new Date('2024-01-01T18:00:00.000Z') };
+          return { start: makeTime(8, 0), end: makeTime(18, 0) };
         case 'tue':
-          return { start: new Date('2024-01-01T08:30:00.000Z'), end: new Date('2024-01-01T19:00:00.000Z') };
+          return { start: makeTime(8, 30), end: makeTime(19, 0) };
         case 'wed':
-          return { start: new Date('2024-01-01T09:00:00.000Z'), end: new Date('2024-01-01T17:30:00.000Z') };
+          return { start: makeTime(9, 0), end: makeTime(17, 30) };
         case 'thu':
-          return { start: new Date('2024-01-01T08:00:00.000Z'), end: new Date('2024-01-01T20:00:00.000Z') };
+          return { start: makeTime(8, 0), end: makeTime(20, 0) };
         case 'fri':
-          return { start: new Date('2024-01-01T07:30:00.000Z'), end: new Date('2024-01-01T18:30:00.000Z') };
+          return { start: makeTime(7, 30), end: makeTime(18, 30) };
         case 'sat':
-          return { start: new Date('2024-01-01T10:00:00.000Z'), end: new Date('2024-01-01T16:00:00.000Z') };
+          return { start: makeTime(10, 0), end: makeTime(16, 0) };
         case 'sun':
-          return { start: new Date('2024-01-01T10:30:00.000Z'), end: new Date('2024-01-01T17:00:00.000Z') };
+          return { start: makeTime(10, 30), end: makeTime(17, 0) };
         default:
-          return { start: new Date('2024-01-01T09:00:00.000Z'), end: new Date('2024-01-01T17:00:00.000Z') };
+          return { start: makeTime(9, 0), end: makeTime(17, 0) };
       }
     };
 
@@ -61,8 +78,8 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         return {
           key: day.key,
           enabled: workingHour ? workingHour.is_active : day.key !== 'sat', // Sunday is enabled by default, only Saturday is disabled
-          start: workingHour ? new Date(workingHour.start_time) : defaultTimes.start,
-          end: workingHour ? new Date(workingHour.end_time) : defaultTimes.end
+          start: workingHour ? parseTimeToDate(workingHour.start_time as unknown, defaultTimes.start) : defaultTimes.start,
+          end: workingHour ? parseTimeToDate(workingHour.end_time as unknown, defaultTimes.end) : defaultTimes.end
         };
       });
     } else {
@@ -76,9 +93,25 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         };
       });
     }
-  };
+  }, [formData.working_hours, parseTimeToDate, makeTime]);
 
   const [workingDays, setWorkingDaysState] = useState<WorkingDay[]>(getInitialWorkingDays());
+
+  // Reinitialize local state when incoming working_hours changes (e.g., on club switch or after save refresh)
+  useEffect(() => {
+    const newDays = getInitialWorkingDays();
+    setWorkingDaysState(newDays);
+    // Only initialize parent form when there are no working hours yet
+    if (!formData.working_hours || formData.working_hours.length === 0) {
+      const workingHours: IWorkingHours[] = newDays.map((day, index) => ({
+        day_of_week: daysOfWeek[index].dayOfWeek,
+        is_active: day.enabled,
+        start_time: day.start || new Date(),
+        end_time: day.end || new Date(),
+      }));
+      handleFieldChange('working_hours', workingHours);
+    }
+  }, [getInitialWorkingDays, handleFieldChange, formData.working_hours]);
 
   // Update IClub's working_hours whenever workingDays changes
   const updateWorkingHours = useCallback((days: WorkingDay[]) => {
@@ -109,6 +142,8 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
   
   const renderDayRow = (day: WorkingDay) => {
     const dayIndex = daysOfWeek.findIndex(d => d.key === day.key);
+    const startValue = day.start ?? makeTime(9, 0);
+    const endValue = day.end ?? makeTime(17, 0);
     
     return (
       <Box key={day.key} sx={{ 
@@ -136,60 +171,56 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
             {daysOfWeek[dayIndex].label}
           </Typography>
           
-          {/*  */}
-          
-
-          {/* Material UI Switch */}
-          <Switch
-            checked={day.enabled}
-            onChange={() => handleToggle(dayIndex)}
-            size="medium"
-            sx={{
-              width: 44,
+          {/* Custom Switch (same style as in cancellation-policy-form) */}
+          <Box 
+            component="span"
+            sx={{ 
+              display: 'inline-flex',
+              width: 42,
               height: 24,
-              padding: 0,
-              '& .MuiSwitch-switchBase': {
-                padding: 0,
-                margin: '2px',
-                transitionDuration: '300ms',
-                color: '#ffffff',
-                '&.Mui-checked': {
-                  transform: 'translateX(20px)',
-                  color: '#ffffff',
-                  '& + .MuiSwitch-track': {
-                    backgroundColor: '#0F766E',
-                    opacity: 1,
-                    border: 0,
-                  },
-                  '&.Mui-disabled + .MuiSwitch-track': {
-                    opacity: 0.5,
-                  },
-                },
-                '&.Mui-focusVisible .MuiSwitch-thumb': {
-                  color: '#0F766E',
-                  border: '6px solid #fff',
-                },
-                '&.Mui-disabled .MuiSwitch-thumb': {
-                  color: '#f5f5f5',
-                },
-                '&.Mui-disabled + .MuiSwitch-track': {
-                  opacity: 0.3,
-                },
-              },
-              '& .MuiSwitch-thumb': {
-                boxSizing: 'border-box',
-                width: 20,
-                height: 20,
-                boxShadow: '0 2px 4px 0 rgba(0,35,11,0.2)',
-              },
-              '& .MuiSwitch-track': {
-                borderRadius: 24 / 2,
-                backgroundColor: '#CBD5E1',
-                opacity: 1,
-                transition: 'background-color 300ms',
-              },
+              position: 'relative'
             }}
-          />
+            aria-label={`Toggle ${daysOfWeek[dayIndex].label}`}
+            role="switch"
+            aria-checked={day.enabled}
+          >
+            <Box 
+              component="span"
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                borderRadius: '34px',
+                backgroundColor: day.enabled ? '#034C53' : '#E5E5E5',
+                transition: 'background-color 0.3s ease'
+              }}
+            />
+            <Box
+              component="span"
+              onClick={() => handleToggle(dayIndex)}
+              sx={{
+                position: 'absolute',
+                cursor: 'pointer',
+                width: '100%',
+                height: '100%',
+                opacity: 0,
+                zIndex: 1
+              }}
+            />
+            <Box
+              component="span"
+              sx={{
+                position: 'absolute',
+                height: '20px',
+                width: '20px',
+                left: day.enabled ? '18px' : '2px',
+                bottom: '2px',
+                backgroundColor: 'white',
+                borderRadius: '50%',
+                transition: 'left 0.3s ease'
+              }}
+            />
+          </Box>
         </Box>
         
         {/* Time inputs */}
@@ -199,8 +230,10 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
           gap: 3,
           alignItems: 'flex-start'
         }}>
+          
           {/* From time */}
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, ml:3, }}>
+            
             <Typography sx={{ 
               fontSize: '13px', 
               color: '#64748B',
@@ -212,7 +245,7 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
               <TimePicker
-                value={day.start}
+                value={startValue}
                 onChange={(newValue) => handleTimeChange(dayIndex, 'start', newValue)}
                 disabled={!day.enabled}
                 format="HH:mm"
@@ -221,13 +254,16 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
                   openPickerIcon: AccessTimeIcon,
                 }}
                 slotProps={{
+                  inputAdornment: {
+                    sx:{scale:0.75},
+                    position: 'start',
+                  },
                   textField: {
                     size: 'small',
                     fullWidth: true,
                     sx: {
                       '& .MuiInputBase-root': {
-                        height: '44px',
-                        borderRadius: '8px',
+                        borderRadius: '12px',
                         backgroundColor: day.enabled ? '#ffffff' : '#F8FAFC',
                         border: '1px solid #E2E8F0',
                         fontSize: '14px',
@@ -263,7 +299,6 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
               />
             </LocalizationProvider>
           </Box>
-          
           {/* To time */}
           <Box sx={{ flex: 1 }}>
             <Typography sx={{ 
@@ -277,7 +312,7 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
               <TimePicker
-                value={day.end}
+                value={endValue}
                 onChange={(newValue) => handleTimeChange(dayIndex, 'end', newValue)}
                 disabled={!day.enabled}
                 format="HH:mm"
@@ -286,13 +321,16 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
                   openPickerIcon: AccessTimeIcon,
                 }}
                 slotProps={{
+                  inputAdornment: {
+                    sx:{scale:0.75},
+                    position: 'start',
+                  },
                   textField: {
                     size: 'small',
                     fullWidth: true,
                     sx: {
                       '& .MuiInputBase-root': {
-                        height: '44px',
-                        borderRadius: '8px',
+                        borderRadius: '12px',
                         backgroundColor: day.enabled ? '#ffffff' : '#F8FAFC',
                         border: '1px solid #E2E8F0',
                         fontSize: '14px',
@@ -348,11 +386,24 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         >
           Weekdays
         </Typography>
-        
-        <Box>
+        <Box sx={{ position: 'relative' }}>
+          {/* Vertical divider across all Weekdays rows */}
+          <Box
+            sx={{
+              position: 'absolute',
+              left: '96px', // 72px left column + 24px gap (mr:3)
+              top: 0,
+              bottom: 0,
+              width: '1px',
+              bgcolor: '#E5E5E5',
+              pointerEvents: 'none',
+            }}
+          />
           {weekdays.map((day) => renderDayRow(day))}
         </Box>
       </Box>
+      {/* Horizontal divider between Weekdays and Weekends */}
+      <Divider sx={{ borderColor: '#E5E5E5', mb: 3 }} />
       
       {/* Weekends Section */}
       <Box>
@@ -367,8 +418,19 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         >
           Weekends
         </Typography>
-        
-        <Box>
+        <Box sx={{ position: 'relative' }}>
+          {/* Vertical divider across all Weekends rows */}
+          <Box
+            sx={{
+              position: 'absolute',
+              left: '96px', // 72px left column + 24px gap (mr:3)
+              top: 0,
+              bottom: 0,
+              width: '1px',
+              bgcolor: '#E5E5E5',
+              pointerEvents: 'none',
+            }}
+          />
           {weekends.map((day) => renderDayRow(day))}
         </Box>
       </Box>

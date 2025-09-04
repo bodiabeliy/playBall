@@ -134,7 +134,7 @@ export const updateOpenHours = (clubId:number, updateHours:IOpenHour) => async (
     console.log("Updating working hours with:", updateHours);
     const response = await $api.put(`/clubs/${clubId}/working-hours`, updateHours)
     dispatch(getCurrentClub(response.data))
-    return response.data;
+  return response.data;
   } catch (error) {
     let errorMessage = ''
     if (request.isAxiosError(error) && error.response) {

@@ -117,7 +117,7 @@ export function CancellationPolicyForm() {
             <Typography variant="body1">
               Allow clients to cancel bookings
             </Typography>
-            {/* custome switch */}
+            {/* custom switch */}
             <Box 
               component="span"
               sx={{ 

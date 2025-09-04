@@ -135,6 +135,7 @@ export function ClubArenaForm() {
           };
           
           console.log('Saving working hours data:', openHoursData);
+          // Save; service will refresh the club to avoid wiping header fields
           dispatch(updateOpenHours(currentClub.id, openHoursData));
         }
       } else {
