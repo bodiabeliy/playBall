@@ -10,9 +10,9 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers';
 import { useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { getAllClubs, getClubById, updateClub } from '../../../../app/services/ClubService';
+import { getAllClubs, updateClub } from '../../../../app/services/ClubService';
 import { updateOpenHours } from '../../../../app/services/ClubService';
-import { clubSelector, clubsSelector } from '../../../../app/providers/reducers/ClubSlice';
+import { clubSelector } from '../../../../app/providers/reducers/ClubSlice';
 import type { IClub } from '../../../../app/providers/types/club';
 import type { IOpenHour } from '../../../../app/providers/types/hours';
 import { UpdateSectionButton } from '../../update-section-button/update-section-button';
@@ -35,7 +35,6 @@ export function ClubArenaForm() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useAppDispatch();
-  const clubList = useAppSelector(clubsSelector);
   const currentClub = useAppSelector(clubSelector);
 
   // Initialize form data with default values
@@ -73,11 +72,6 @@ export function ClubArenaForm() {
     dispatch(getAllClubs());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (clubList.length > 0) {
-      dispatch(getClubById(clubList[0].id));
-    }
-  }, [clubList, dispatch]);
 
   // Update form data when club data changes in Redux store
   useEffect(() => {
@@ -111,9 +105,10 @@ export function ClubArenaForm() {
     }));
   }, []);
 
-  const toggleSection = useCallback((sectionId: string) => {
+  const toggleSection = useCallback((sectionId: string, options?: { save?: boolean }) => {
     // If the section is currently expanded and we're closing it, save the data
-    if (expandedSections[sectionId] && currentClub?.id) {
+    const shouldSave = options?.save !== false; // default true
+    if (expandedSections[sectionId] && currentClub?.id && shouldSave) {
       console.log("expandedSections[sectionId]", expandedSections[sectionId]);
       
       // Handle working hours section specially
@@ -151,7 +146,7 @@ export function ClubArenaForm() {
     }
     
     // Toggle the section
-    setExpandedSections((prev) => ({
+  setExpandedSections((prev) => ({
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
@@ -257,32 +252,42 @@ export function ClubArenaForm() {
           <Box>
             <AccordionSummary
               expandIcon={
-               <>
-              
-                <UpdateSectionButton<IClub> 
-                  onClick={() => toggleSection(section.id)} 
-                  isAccordionCollapse={expandedSections[section.id]} 
-                  formData={formData}
-                  sectionId={section.id}
-                />
-               {
-                expandedSections[section.id]  && 
-                 <UpdateSectionButton<IClub> 
-                  onClick={() => toggleSection(section.id)} 
-                  isAccordionCollapse={expandedSections[section.id]} 
-                  formData={formData}
-                  sectionId={section.id}
-                />
-               }
-               </>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <UpdateSectionButton<IClub>
+                    onClick={() => toggleSection(section.id)}
+                    isAccordionCollapse={expandedSections[section.id]}
+                    formData={formData}
+                    sectionId={section.id}
+                    expandedLabel="Update"
+                    collapsedLabel="Show"
+                  />
+                  {expandedSections[section.id] && (
+                    <UpdateSectionButton<IClub>
+                      onClick={() => toggleSection(section.id, { save: false })}
+                      isAccordionCollapse={expandedSections[section.id]}
+                      formData={formData}
+                      sectionId={section.id}
+                      expandedLabel="Close"
+                      collapsedLabel="Show"
+                    />
+                  )}
+                </Box>
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior
               sx={{
                 padding: 0,
                 cursor: 'default', // Remove pointer cursor
+                // prevent MUI from rotating the expandIcon container or adding transitions
+                '& .MuiAccordionSummary-expandIconWrapper': {
+                  transform: 'none !important',
+                  transition: 'none !important',
+                },
                 '& .MuiAccordionSummary-content': {
                   pointerEvents: 'none' // Make sure clicking on the content doesn't trigger accordion
-                }
+                },
+                boxShadow: 'none',
+                '&:before': { display: 'none' },
+                // also ensure no shadows on header
               }}
             >
               <Box sx={{display:"flex", flexDirection:"column"}}>

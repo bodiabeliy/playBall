@@ -15,6 +15,9 @@ interface UpdateSectionButtonProps<T = unknown> {
   actionCreator?: ActionCreator<T>
   // Optional additional params needed for the action
   actionParams?: Record<string, unknown>
+  // Optional labels override
+  expandedLabel?: string
+  collapsedLabel?: string
 }
 
 export function UpdateSectionButton<T>({ 
@@ -23,7 +26,9 @@ export function UpdateSectionButton<T>({
   formData, 
   sectionId,
   actionCreator,
-  actionParams = {}
+  actionParams = {},
+  expandedLabel,
+  collapsedLabel
 }: UpdateSectionButtonProps<T>) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -65,13 +70,21 @@ export function UpdateSectionButton<T>({
         textTransform:"capitalize",
         background: !isAccordionCollapse ? "rgba(223, 223, 223, 1)" : "#034C53",
         color: !isAccordionCollapse ? "black" : "white",
-        transform: !isAccordionCollapse ? "rotate(0deg)" : "rotate(180deg)",
+        // prevent any rotation or transitions and remove all shadows
+        transition: 'none',
+        boxShadow: 'none',
+        '&:hover': {
+          boxShadow: 'none',
+        },
+        '&:active': {
+          boxShadow: 'none',
+        },
         '& .MuiButton-startIcon': {
           marginRight: isMobile ? 0 : '8px',
           marginLeft: isMobile ? 0 : '-4px',
         },
       }}>
-      {!isAccordionCollapse ? 'Show' : " Update"}
+      {!isAccordionCollapse ? (collapsedLabel ?? 'Show') : (expandedLabel ?? 'Update')}
     </Button>
   )
 }

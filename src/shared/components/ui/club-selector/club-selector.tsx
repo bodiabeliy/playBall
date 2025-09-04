@@ -12,7 +12,7 @@ import type { IClub } from '../../../../app/providers/types/club'
 interface ClubSelectorProps {
   clubs: IClub[]
   selectedClub?: IClub
-  onClubSelect: (clinic: IClub) => void
+  onClubSelect: (club: IClub) => void
   disabled?: boolean
 }
 
@@ -36,7 +36,7 @@ export const ClubSelector = ({ clubs, selectedClub, onClubSelect, disabled = fal
 
   const handleClubSelect = useCallback(
     (club: IClub) => {
-      onClubSelect(club)
+      onClubSelect(club)      
       setCurrentClubClub(club)
       handleClose()
     },
@@ -63,7 +63,7 @@ export const ClubSelector = ({ clubs, selectedClub, onClubSelect, disabled = fal
           fontSize: '15px',
         }}
         startIcon={<ClubIcon style={{ fontSize: 18 }} />}>
-        {selectedClub?.name != '' ? selectedClub?.name : t('clinic-selector.create-clinic')}
+        {selectedClub?.name != '' ? selectedClub?.name : t('club-selector.create-club')}
       </Button>
       <Menu
         anchorEl={anchorEl}

@@ -70,10 +70,11 @@ export function CancellationPolicyForm() {
     }));
   };
 
-  const toggleSection = useCallback((sectionId: string) => {
+  const toggleSection = useCallback((sectionId: string, options?: { save?: boolean }) => {
+    const shouldSave = options?.save !== false; // default true
     // If the section is currently expanded and we're closing it, save the data
-    if (expandedSections[sectionId] && currentClub?.id) {
-      console.log("Saving cancellation policy data:", formData);
+    if (expandedSections[sectionId] && currentClub?.id && shouldSave) {
+      console.log('Saving cancellation policy data:', formData);
       
       // Only dispatch if we have values to update
       if (formData && (formData.cancellation_enabled !== undefined || formData.cancellation_duration !== undefined)) {
@@ -116,6 +117,7 @@ export function CancellationPolicyForm() {
             <Typography variant="body1">
               Allow clients to cancel bookings
             </Typography>
+            {/* custome switch */}
             <Box 
               component="span"
               sx={{ 
@@ -250,20 +252,41 @@ export function CancellationPolicyForm() {
           <Box>
             <AccordionSummary
               expandIcon={
-                <UpdateSectionButton<IClubSettings>
-                  onClick={() => toggleSection(section.id)} 
-                  isAccordionCollapse={expandedSections[section.id]} 
-                  formData={formData}
-                  sectionId={section.id}
-                />
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <UpdateSectionButton<IClubSettings>
+                    onClick={() => toggleSection(section.id)} 
+                    isAccordionCollapse={expandedSections[section.id]} 
+                    formData={formData}
+                    sectionId={section.id}
+                    expandedLabel="Update"
+                    collapsedLabel="Show"
+                  />
+                  {expandedSections[section.id] && (
+                    <UpdateSectionButton<IClubSettings>
+                      onClick={() => toggleSection(section.id, { save: false })}
+                      isAccordionCollapse={expandedSections[section.id]}
+                      formData={formData}
+                      sectionId={section.id}
+                      expandedLabel="Close"
+                      collapsedLabel="Show"
+                    />
+                  )}
+                </Box>
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior
               sx={{
                 padding: 0,
                 cursor: 'default', // Remove pointer cursor
+                // prevent MUI from rotating the expandIcon container or adding transitions
+                '& .MuiAccordionSummary-expandIconWrapper': {
+                  transform: 'none !important',
+                  transition: 'none !important',
+                },
                 '& .MuiAccordionSummary-content': {
                   pointerEvents: 'none' // Make sure clicking on the content doesn't trigger accordion
-                }
+                },
+                boxShadow: 'none',
+                '&:before': { display: 'none' },
               }}
             >
              <Box sx={{display:"flex", flexDirection:"column"}}>

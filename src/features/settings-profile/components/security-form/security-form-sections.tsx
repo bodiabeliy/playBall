@@ -1,4 +1,4 @@
-import { Box, FormControl, Typography, TextField, InputAdornment, IconButton } from '@mui/material';
+import { Box, FormControl, TextField, InputAdornment, IconButton } from '@mui/material';
 import { useState } from 'react';
 
 import ForgotPassword from '../../../../shared/assets/icons/forgot-password.svg?react'
@@ -37,11 +37,32 @@ export const SecuritySection = ({ formData, handleFieldChange, errors }: Section
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" sx={{ mb: 3 }}>
-        Your password must be at least 8 characters long and include a number or symbol
-      </Typography>
+      
       
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
+        <FormControl fullWidth sx={{ borderRadius: '8px' }}>
+          <TextField
+            type={passwordVisible.new_password ? 'text' : 'password'}
+            value={formData.current_password}
+            onChange={(e) => handleFieldChange("current_password", e.target.value)}
+            fullWidth
+            placeholder="Current Password"
+            error={Boolean(errors?.new_password)}
+            helperText={errors?.new_password}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                   <IconButton
+                    aria-label={passwordVisible.new_password ? 'hide the password' : 'display the password'}
+                    onClick={() => togglePasswordVisibility('new_password')}
+                    edge="end">
+                    {passwordVisible.new_password ? <ForgotPassword /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </FormControl>
         <FormControl fullWidth sx={{ borderRadius: '8px' }}>
           <TextField
             type={passwordVisible.new_password ? 'text' : 'password'}

@@ -43,11 +43,12 @@ export function SidebarLayout({ children, title, subtitle }: SidebarLayoutProps)
   }, [])
 
 
-    const handleClinicSelect = useCallback(
-    (club: IClub) => {
+  const handleClubSelect = useCallback(
+    (club: IClub) => {   
+         
       dispatch(getClubById(club.id))
     },
-    [clubsList, currentClub]
+    [currentClub]
   )
 
 
@@ -195,7 +196,7 @@ export function SidebarLayout({ children, title, subtitle }: SidebarLayoutProps)
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ClubSelector clubs={clubsList} selectedClub={currentClub} onClubSelect={handleClinicSelect} />
+                <ClubSelector clubs={clubsList} selectedClub={currentClub} onClubSelect={handleClubSelect} />
               </Box>
             </Toolbar>
           </AppBar>

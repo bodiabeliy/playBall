@@ -127,15 +127,18 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
           pt: 0.5
         }}>
           <Typography sx={{ 
-            color: '#64748B',
+            color: '#888888',
             fontSize: '14px',
-            fontWeight: 500,
+            fontWeight: 400,
             mb: 1.5,
             lineHeight: 1.2
           }}>
             {daysOfWeek[dayIndex].label}
           </Typography>
           
+          {/*  */}
+          
+
           {/* Material UI Switch */}
           <Switch
             checked={day.enabled}
@@ -337,8 +340,8 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         <Typography 
           sx={{ 
             fontSize: '16px', 
-            fontWeight: 600, 
-            color: '#64748B',
+            fontWeight: 400, 
+            color: '#888888',
             mb: 3,
             letterSpacing: '0.01em'
           }}
@@ -356,8 +359,8 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
         <Typography 
           sx={{ 
             fontSize: '16px', 
-            fontWeight: 600, 
-            color: '#64748B',
+            fontWeight: 400, 
+            color: '#888888',
             mb: 3,
             letterSpacing: '0.01em'
           }}

@@ -95,8 +95,10 @@ export function SecurityForm() {
     if (!formData.new_password) {
       errors.new_password = 'New password is required';
       isValid = false;
-    } else if (formData.new_password.length < 8) {
-      errors.new_password = 'Password must be at least 8 characters long';
+    }
+
+    if (formData.current_password !=formData.new_password) {
+      errors.current_password = 'Current password and New password doesnt match!';
       isValid = false;
     }
     
@@ -114,34 +116,36 @@ export function SecurityForm() {
 
   // Validation is now handled in toggleSection when the section is closing
 
-  const toggleSection = useCallback((sectionId: string) => {
-    // If the section is currently expanded and we're closing it, save the data
+  const toggleSection = useCallback((sectionId: string, options?: { save?: boolean }) => {
+    const shouldSave = options?.save !== false; // default true
+    // If the section is currently expanded and we're closing it
     if (expandedSections[sectionId]) {
-      console.log("Saving password data:", formData);
-      
-      // Only dispatch if form is valid
-      if (validateForm()) {
-        dispatch(changePassword(formData.current_password, formData.new_password));
-      } else {
-        // Don't allow closing if validation fails
-        return;
+      if (shouldSave) {
+        console.log('Saving password data:', formData);
+
+        // Only dispatch if form is valid; otherwise keep it open
+        if (validateForm()) {
+          dispatch(changePassword(formData.current_password, formData.new_password));
+
+          // Reset form after saving
+          setFormData({
+            current_password: '',
+            new_password: '',
+            confirm_password: ''
+          });
+          
+          setValidationErrors({
+            current_password: '',
+            new_password: '',
+            confirm_password: '',
+            general: ''
+          });
+        } else {
+          return; // don't close if invalid
+        }
       }
-      
-      // Reset form after saving
-      setFormData({
-        current_password: '',
-        new_password: '',
-        confirm_password: ''
-      });
-      
-      setValidationErrors({
-        current_password: '',
-        new_password: '',
-        confirm_password: '',
-        general: ''
-      });
     }
-    
+
     // Toggle the section
     setExpandedSections((prev) => ({
       ...prev,
@@ -155,7 +159,7 @@ export function SecurityForm() {
       id: 'security',
       title: !expandedSections.security ? 'Change Password' : 'Change Password',
       subTitle: !expandedSections.security 
-        ? 'Change your account password to maintain security' 
+        ? 'To change your password, we’ll first send a confirmation link to your email.' 
         : 'Your password must be at least 8 characters long and include a number or symbol',
       content: ({ formData, handleFieldChange }) => (
         <SecuritySection 
@@ -195,27 +199,48 @@ export function SecurityForm() {
           <Box>
             <AccordionSummary
               expandIcon={
-                <UpdateSectionButton<SecurityFormData>
-                  onClick={() => toggleSection(section.id)} 
-                  isAccordionCollapse={expandedSections[section.id]} 
-                  formData={formData}
-                  sectionId={section.id}
-                />
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <UpdateSectionButton<SecurityFormData>
+                    onClick={() => toggleSection(section.id)} 
+                    isAccordionCollapse={expandedSections[section.id]} 
+                    formData={formData}
+                    sectionId={section.id}
+                    expandedLabel="Update"
+                    collapsedLabel="Show"
+                  />
+                  {expandedSections[section.id] && (
+                    <UpdateSectionButton<SecurityFormData>
+                      onClick={() => toggleSection(section.id, { save: false })}
+                      isAccordionCollapse={expandedSections[section.id]}
+                      formData={formData}
+                      sectionId={section.id}
+                      expandedLabel="Close"
+                      collapsedLabel="Show"
+                    />
+                  )}
+                </Box>
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior
               sx={{
                 padding: 0,
                 cursor: 'default', // Remove pointer cursor
+                // prevent MUI from rotating the expandIcon container or adding transitions
+                '& .MuiAccordionSummary-expandIconWrapper': {
+                  transform: 'none !important',
+                  transition: 'none !important',
+                },
                 '& .MuiAccordionSummary-content': {
                   pointerEvents: 'none' // Make sure clicking on the content doesn't trigger accordion
-                }
+                },
+                boxShadow: 'none',
+                '&:before': { display: 'none' },
               }}
             >
               <Box sx={{display:"flex", flexDirection:"column"}}>
                 <Typography variant="h6">{section.title}</Typography>
                 {
                   section?.subTitle && (
-                    <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" sx={{ mb: 3, maxWidth:"65%" }}>
+                    <Typography variant="body2" color="rgba(21, 22, 24, 0.6);" sx={{ mb: 3 }}>
                       {section.subTitle}
                     </Typography>
                   )
