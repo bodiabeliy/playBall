@@ -71,7 +71,7 @@ export function UpdateSectionButton<T>({
           marginLeft: isMobile ? 0 : '-4px',
         },
       }}>
-      {!isAccordionCollapse ? 'Edit' : " Update"}
+      {!isAccordionCollapse ? 'Show' : " Update"}
     </Button>
   )
 }

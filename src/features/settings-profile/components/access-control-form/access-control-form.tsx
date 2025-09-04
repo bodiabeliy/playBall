@@ -247,7 +247,6 @@ export function AccessControlForm() {
           key={section.id}
           defaultExpanded={false}
           expanded={expandedSections[section.id]}
-          onChange={() => {}} // Disable accordion's default toggle behavior
           sx={accordionStyles}
         >
           <Box>

@@ -7,7 +7,6 @@ const $api = axios.create({
     Accept: '*/*',
     'Content-Type': 'application/json',
   },
-  withCredentials:true
 })
 
 $api.interceptors.request.use((configuration) => {
@@ -15,7 +14,6 @@ $api.interceptors.request.use((configuration) => {
   return configuration
 })
 
-// Response interceptor for handling refresh token
 $api.interceptors.response.use(
   (response) => {
     return response
@@ -23,23 +21,18 @@ $api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // If the error is 401 (Unauthorized) and we haven't already tried to refresh the token
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
-
       const refreshToken = localStorage.getItem('refresh')
-      
       if (!refreshToken) {
-        // No refresh token available, logout user
         clearTokens()
         window.location.href = '/login'
         return Promise.reject(error)
       }
 
       try {
-        // Try to refresh the token using the correct endpoint and payload
         const refreshResponse = await axios.post(
-          `${process.env.VITE_API_URL}/api/v1/club-panel/auth/token/refresh`,
+          `${process.env.VITE_API_URL}/club-panel/auth/token/refresh`,
           { refresh_token: refreshToken },
           {
             headers: {
@@ -64,12 +57,7 @@ $api.interceptors.response.use(
         }
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError)
-        
-        // Clear tokens and redirect to login
         clearTokens()
-        
-        // Dispatch logout action if we have access to store
-        // For now, force redirect to login
         window.location.href = '/login'
         
         return Promise.reject(refreshError)

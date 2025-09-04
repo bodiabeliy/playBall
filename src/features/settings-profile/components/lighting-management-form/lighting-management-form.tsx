@@ -136,6 +136,7 @@ export function LightingManagementForm() {
                     }
                   }}
                 >
+                  <MenuItem value={2}>2 minutes</MenuItem>
                   <MenuItem value={5}>5 minutes</MenuItem>
                   <MenuItem value={10}>10 minutes</MenuItem>
                   <MenuItem value={15}>15 minutes</MenuItem>
@@ -167,6 +168,7 @@ export function LightingManagementForm() {
                     }
                   }}
                 >
+                  <MenuItem value={2}>2 minutes</MenuItem>
                   <MenuItem value={5}>5 minutes</MenuItem>
                   <MenuItem value={10}>10 minutes</MenuItem>
                   <MenuItem value={15}>15 minutes</MenuItem>

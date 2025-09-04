@@ -114,7 +114,7 @@ export function ClubArenaForm() {
   const toggleSection = useCallback((sectionId: string) => {
     // If the section is currently expanded and we're closing it, save the data
     if (expandedSections[sectionId] && currentClub?.id) {
-      console.log(`Saving ${sectionId} data:`, formData);
+      console.log("expandedSections[sectionId]", expandedSections[sectionId]);
       
       // Handle working hours section specially
       if (sectionId === 'openHours') {
@@ -257,12 +257,24 @@ export function ClubArenaForm() {
           <Box>
             <AccordionSummary
               expandIcon={
+               <>
+              
                 <UpdateSectionButton<IClub> 
                   onClick={() => toggleSection(section.id)} 
                   isAccordionCollapse={expandedSections[section.id]} 
                   formData={formData}
                   sectionId={section.id}
                 />
+               {
+                expandedSections[section.id]  && 
+                 <UpdateSectionButton<IClub> 
+                  onClick={() => toggleSection(section.id)} 
+                  isAccordionCollapse={expandedSections[section.id]} 
+                  formData={formData}
+                  sectionId={section.id}
+                />
+               }
+               </>
               }
               onClick={(e) => e.preventDefault()} // Prevent the default accordion behavior
               sx={{
