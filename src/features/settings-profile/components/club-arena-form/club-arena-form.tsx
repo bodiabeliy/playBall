@@ -42,6 +42,7 @@ export function ClubArenaForm() {
   const [formData, setFormData] = useState<IClub>({
     id: 1,
     name: '',
+  country: '',
     address: '',
     city: '',
     latitude: 1,
@@ -83,6 +84,7 @@ export function ClubArenaForm() {
       setFormData({
         id: currentClub.id,
         name: currentClub.name,
+  country: currentClub.country,
         address: currentClub.address,
         city: currentClub.city,
         latitude: currentClub.latitude || 0,
@@ -113,8 +115,15 @@ export function ClubArenaForm() {
     setIsMapOpen(true);
   }, []);
 
-  const handleMapSelect = useCallback((coords: { lat: number; lng: number }) => {
-    setFormData(prev => ({ ...prev, latitude: coords.lat, longitude: coords.lng }));
+  const handleMapSelect = useCallback((data: { lat: number; lng: number; country?: string; city?: string; address?: string }) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: data.lat,
+      longitude: data.lng,
+      country: data.country ?? prev.country,
+      city: data.city ?? prev.city,
+      address: data.address ?? prev.address,
+    }));
     setIsMapOpen(false);
   }, []);
 

@@ -4,11 +4,12 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import type { LatLngExpression, LeafletMouseEvent, Marker as LeafletMarker } from 'leaflet'
+import { reverseGeocode } from '../../../../app/services/MapService'
 
 type MapPickerDialogProps = {
   open: boolean
   onClose: () => void
-  onSelect: (coords: { lat: number; lng: number }) => void
+  onSelect: (data: { lat: number; lng: number; country?: string; city?: string; address?: string }) => void
   initialPosition?: { lat: number; lng: number }
   title?: string
 }
@@ -62,8 +63,10 @@ export function MapPickerDialog({
     []
   )
 
-  const handleConfirm = () => {
-    if (position) onSelect(position)
+  const handleConfirm = async () => {
+    if (!position) return
+    const meta = await reverseGeocode(position.lat, position.lng)
+    onSelect({ lat: position.lat, lng: position.lng, ...meta })
   }
 
   const center: LatLngExpression = position ? [position.lat, position.lng] : [54.6872, 25.2797]
