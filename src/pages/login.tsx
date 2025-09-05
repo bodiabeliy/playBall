@@ -24,14 +24,9 @@ export function LoginPage() {
   const notificationMessage = useAppSelector(notificationMessageSelector)
 
   const validateSignUp = (data: IUserDto) => ({
-    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim()) ? '' : 'Некоректна електронна пошта',
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim()) ? '' : 'Wrong email!',
     password: !data.password
-      ? "Поле обов'язкове"
-      : data.password.length < 8
-        ? 'Мінімум 8 символів'
-        : !/[A-Za-z]/.test(data.password) || !/[0-9]/.test(data.password)
-          ? 'Пароль має містити літери та цифри'
-          : '',
+      ?"": "Field required"
   })
 
   const { formData, handleFieldChange, errors } = useFormValidation<IUserDto>(
