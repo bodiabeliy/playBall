@@ -165,31 +165,42 @@ export function CourtsManagment() {
 
   return (
     <>
+      {
+        isMobile && (
+            <Typography variant="h6" sx={{ fontWeight: 500, mr: 4 }}>
+              Courts
+            </Typography>
+        )
+      }
       <Box
         sx={{
           display: 'flex',
           justifyContent: isMobile || editingCourt ? 'space-between' : 'end',
-          px: isMobile ? 2 : 0,
+          // px: isMobile ? 2 : 0,
         }}>
+          
         {editingCourt ? <BackBtn handleBack={handleBackToCourts} /> : null}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection:isMobile?"column":"row", justifyContent: 'space-between', width: '100%' }}>
           <Box sx={{ display: 'flex' }}>
-            <Typography variant="h6" sx={{ fontWeight: 500, mr: 4 }}>
-              Courts
-            </Typography>
+              {
+                !isMobile && (
+                    <Typography variant="h6" sx={{ fontWeight: 500, mr: 4 }}>
+                      Courts
+                    </Typography>
+                )
+              }
             <CourtsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
           </Box>
-         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pt:isMobile? 2:0, pb:isMobile? 2:0,  }}>
            <SearchField 
               value={searchQuery} 
               onChange={(value) => {
-                // Set the search query directly
                 setSearchQuery(value);
-                // Reset to first page when searching
                 setPage(0);
               }} 
               fullWidth={false} 
               placeholder="Search courts..."
+              isMoblie={isMobile}
            />
            <PrimaryButton
             startIcon={<PlusIcon />}

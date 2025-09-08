@@ -670,8 +670,8 @@ export const LocationSection = ({ formData, handleFieldChange, openMapPicker }: 
             Country
           </Typography>
           <TextField
-            value={formData.country || ''}
-            onChange={(e) => handleFieldChange('country', e.target.value)}
+            value={formData.address}
+            onChange={(e) => handleFieldChange('address', e.target.value)}
             fullWidth
             placeholder="Enter country"
             sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}

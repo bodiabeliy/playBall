@@ -84,7 +84,7 @@ export function ClubArenaForm() {
       setFormData({
         id: currentClub.id,
         name: currentClub.name,
-  country: currentClub.country,
+        // country: currentClub?.country,
         address: currentClub.address,
         city: currentClub.city,
         latitude: currentClub.latitude || 0,

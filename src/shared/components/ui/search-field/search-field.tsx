@@ -9,6 +9,7 @@ interface SearchFieldProps {
   placeholder?: string
   fullWidth?: boolean
   isStartAdornment?: boolean
+  isMoblie:boolean
   sx?: SxProps
 }
 
@@ -18,6 +19,7 @@ export function SearchField({
   placeholder = 'Search',
   fullWidth = false,
   isStartAdornment = true,
+  isMoblie,
   sx,
 }: SearchFieldProps) {
   const [localValue, setLocalValue] = useState(value)
@@ -101,7 +103,7 @@ export function SearchField({
         },
       }}
       sx={{
-        width: 240,
+        width:!isMoblie? 240:180,
         borderRadius: '8px',
         background: '#fff',
         boxShadow: 'none',

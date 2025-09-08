@@ -1,4 +1,4 @@
-import { Tab, Tabs, useMediaQuery, useTheme } from '@mui/material'
+import { Tab, Tabs} from '@mui/material'
 
 import { TabLabel } from '../../shared/components/ui/tab-label'
 import { TAB_LABELS } from '../../features'
@@ -9,8 +9,6 @@ interface CourtsNavigationProps {
 }
 
 export function CourtsNavigation({ activeTab, onTabChange }: CourtsNavigationProps) {
-  const theme = useTheme()
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'))
 
   return (
     <Tabs
@@ -18,15 +16,14 @@ export function CourtsNavigation({ activeTab, onTabChange }: CourtsNavigationPro
       onChange={(_, newValue) => {
         onTabChange(newValue)
       }}
-      variant="scrollable"
-      orientation={!isTablet ? 'horizontal' : 'vertical'}
+      orientation={'horizontal'}
       sx={{
         borderRadius: '10px',
         border: '1px solid #DFDFDF',
         fontWeight: 500,
         minHeight: '30px',
         '& .MuiTabs-flexContainer': {
-          flexDirection: !isTablet ? 'row' : 'column',
+          flexDirection:'row',
           justifyContent: 'flex-start',
           alignItems: 'flex-start',
         },

@@ -213,6 +213,7 @@ export function CourtsTable({
         background: '#fff',
         p: 0,
         boxShadow: 'none',
+        // Remove overflow:scroll from parent - it causes issues with inner scrolling
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -224,13 +225,23 @@ export function CourtsTable({
           boxShadow: 'none', 
           borderRadius: 0,
           position: 'relative',
-          cursor: resizing ? 'col-resize' : 'default'
+          cursor: resizing ? 'col-resize' : 'default',
+          // Make TableContainer properly scrollable
+          overflow: 'auto',
+          // Enable momentum scrolling on iOS
+          WebkitOverflowScrolling: 'touch',
+          // Allow container to shrink and take available space
+          flex: 1,
+          minHeight: 0,
+          // Ensure content doesn't get cut off at edges
+          padding: '0 1px',
         }}
       >
         <Table
+          stickyHeader
           sx={{
             minWidth: 1200,
-            overflow: "scroll",
+            // Remove conflicting overflow from table
             borderCollapse: 'separate',
             borderSpacing: 0,
             tableLayout: 'fixed', // Changed from 'auto' to 'fixed' for resizable columns
