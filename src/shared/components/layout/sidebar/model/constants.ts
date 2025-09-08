@@ -60,7 +60,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
         id: 'pricing',
         text: 'sidebar.pricing',
         icon: PricingIcon,
-        // link: '/patients', //change
+        link: '/pricing', //change
       },
       {
         id: 'booking',

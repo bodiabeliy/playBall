@@ -1,9 +1,7 @@
 import request from 'axios'
 import $api from './api/index'
 import type { AppDispatch } from '../providers/store'
-import {
-  getCurrentUserNotification,
-} from '../providers/reducers/UserSlice'
+import { getCurrentUserNotification } from '../providers/reducers/UserSlice'
 import { getPricings, getCurrentPricing } from '../providers/reducers/PricingSlice'
 import type { IPricing } from '../providers/types/pricing'
 

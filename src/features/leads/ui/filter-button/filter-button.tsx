@@ -21,16 +21,13 @@ export function FilterButton({ isExpanded, isMobile = false, onClick, activeFilt
       sx={{
         border:"1px solid #888888",
         color:"#888888",
-        height: isMobile ? 32 : 'auto',
         alignSelf: 'center',
         textTransform: 'uppercase',
         fontWeight: 500,
         fontSize: '14px',
-        px: 2,
-        py: 1,
         position: 'relative',
       }}>
-      Filter
+      All types
       <Badge
         badgeContent={activeFilters}
         sx={{
