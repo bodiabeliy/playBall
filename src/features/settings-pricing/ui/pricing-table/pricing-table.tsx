@@ -17,6 +17,7 @@ import { useState, useMemo } from 'react'
 import { PaginationFooter } from '..'
 import type { IPricing, PricingResponse } from '../../../../app/providers/types/pricing'
 import { PricingDialog } from '../edit-pricing/edit-pricing'
+import { PricingDetailsDialog } from '../pricing-details'
 
 import EditIcon from "../../../../shared/assets/icons/edit.svg?react"
 import TrashIcon from "../../../../shared/assets/icons/trash.svg?react"
@@ -35,7 +36,6 @@ interface PricingTableProps {
   onRowsPerPageChange: (rowsPerPage: number) => void;
   onEdit?: (pricing: IPricing) => void;
   onDelete?: (pricing: IPricing) => void;
-  onView?: (pricing: IPricing) => void;
   searchQuery?: string;
   isLoading?: boolean;
 }
@@ -50,7 +50,6 @@ export function PricingTable({
   onRowsPerPageChange,
   onEdit,
   onDelete,
-  onView,
   searchQuery = '',
   isLoading = false
 }: PricingTableProps) {
@@ -58,6 +57,7 @@ export function PricingTable({
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false)
   const [selectedPricing, setSelectedPricing] = useState<IPricing | null>(null)
+  const [viewDialogOpen, setViewDialogOpen] = useState<boolean>(false)
 
   const handleChangePage = (_event: React.ChangeEvent<unknown>, value: number) => {
     onPageChange(value - 1)
@@ -411,7 +411,7 @@ export function PricingTable({
                   <IconButton 
                     size="small" 
                     sx={{ mr: 1 }} 
-                    onClick={() => onView?.(pricing)}
+                    onClick={() => { setSelectedPricing(pricing); setViewDialogOpen(true); }}
                   >
                     <ViewIcon />
                   </IconButton>
@@ -478,6 +478,18 @@ export function PricingTable({
           setEditDialogOpen(false);
         }}
         pricing={selectedPricing}
+      />
+
+      {/* Pricing Details Dialog */}
+      <PricingDetailsDialog
+        open={viewDialogOpen}
+        onClose={() => setViewDialogOpen(false)}
+        pricing={selectedPricing}
+        onEdit={(p) => {
+          setViewDialogOpen(false)
+          setSelectedPricing(p)
+          setEditDialogOpen(true)
+        }}
       />
     </Box>
   )
