@@ -21,7 +21,6 @@ export function RemovePricingDialog({
   open,
   onClose,
   onConfirm,
-  pricing
 }: RemovePricingDialogProps) {
   return (
     <Dialog

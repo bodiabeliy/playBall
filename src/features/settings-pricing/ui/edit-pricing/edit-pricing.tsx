@@ -11,9 +11,20 @@ import {
   Switch,
   IconButton,
   Typography,
+
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  OutlinedInput,
+  Chip,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import type { IPricing } from '../../../../app/providers/types/pricing'
+import { clubSelector } from '../../../../app/providers/reducers/ClubSlice'
+import { courtsSelector } from '../../../../app/providers/reducers/CourtSlice'
+import { useAppSelector, useAppDispatch } from '../../../../app/providers/store-helpers'
+import { getAllCourts } from '../../../../app/services/CourtService'
 
 interface EditPricingDialogProps {
   open: boolean
@@ -22,21 +33,34 @@ interface EditPricingDialogProps {
   pricing: IPricing | null
 }
 
-export function EditPricingDialog({
+export function PricingDialog({
   open,
   onClose,
   onSave,
-  pricing
+  pricing,
 }: EditPricingDialogProps) {
-  const [formData, setFormData] = useState<Partial<IPricing>>({
+  const [formData, setFormData] = useState<IPricing>({
     name: '',
     description: '',
     is_timed: false,
     start_date: '',
     end_date: '',
     price_segments: [],
+    court_ids: [],
     courts: [],
   })
+
+  const dispatch = useAppDispatch()
+  const currentClub = useAppSelector(clubSelector)
+  const courtsList = useAppSelector(courtsSelector)
+
+  // Fetch courts for current club when dialog opens
+  useEffect(() => {
+    if (open && currentClub?.id) {
+      dispatch(getAllCourts(currentClub.id))
+    }
+  }, [open, currentClub?.id, dispatch])
+
 
   useEffect(() => {
     if (pricing && open) {
@@ -51,15 +75,16 @@ export function EditPricingDialog({
         start_date: '',
         end_date: '',
         price_segments: [],
+        court_ids:[],
         courts: [],
       })
     }
   }, [pricing, open])
 
-  const handleChange = (field: keyof IPricing, value: string | boolean) => {
+  const handleChange = (field: keyof IPricing, value: string | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -147,6 +172,32 @@ export function EditPricingDialog({
               fullWidth
             />
           </Box>
+
+          {/* Courts multi-select, uses court_ids per API schema */}
+          <FormControl fullWidth>
+            <InputLabel id="pricing-courts-label">Courts</InputLabel>
+            <Select
+              labelId="pricing-courts-label"
+              multiple
+              value={(formData.court_ids || []) as string[]}
+              onChange={(e) => handleChange('court_ids', typeof e.target.value === 'string' ? [e.target.value] : (e.target.value as string[]))}
+              input={<OutlinedInput label="Courts" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {(selected as string[]).map((id) => {
+                    const court = courtsList?.items?.find(c => String(c.id) === String(id))
+                    return <Chip key={id} label={court?.name || id} size="small" />
+                  })}
+                </Box>
+              )}
+            >
+              {courtsList?.items?.map((court) => (
+                <MenuItem key={court.id} value={String(court.id)}>
+                  {court.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
       </DialogContent>
       

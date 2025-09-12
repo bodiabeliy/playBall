@@ -22,6 +22,7 @@ export interface IPricing {
   start_date: string; // ISO 8601 date format like "2025-09-08"
   end_date: string;   // ISO 8601 date format like "2025-09-08"
   price_segments: IPriceSegment[];
+  court_ids:string[]
   courts: IPricingCourt[];
 }
 

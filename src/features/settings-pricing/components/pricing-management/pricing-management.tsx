@@ -5,7 +5,7 @@ import { SearchField, PrimaryButton } from '../../../../shared/components'
 import { PricingNavigation, TAB_LABELS } from '../../../../widgets/pricing'
 import { PricingTable } from '../../ui/pricing-table/pricing-table'
 import { PricingFilterSection } from '../../ui/pricing-filter-section/pricing-filter-section'
-import { EditPricingDialog } from '../../ui/edit-pricing/edit-pricing'
+import { CreatePricingDialog } from '../../ui/create-pricing'
 import { RemovePricingDialog } from '../../ui/remove-pricing/remove-pricing'
 import { FilterButton } from '../../../../features/leads/ui/filter-button/filter-button'
 import type { IPricing } from '../../../../app/providers/types/pricing'
@@ -24,7 +24,6 @@ export function PricingManagement() {
   const [activeTab, setActiveTab] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [isFiltersExpanded, setIsFiltersExpanded] = useState(false)
-  const [editingPricing, setEditingPricing] = useState<IPricing | null>(null)
   const [deletingPricing, setDeletingPricing] = useState<IPricing | null>(null)
   const [openAddPricingDialog, setOpenAddPricingDialog] = useState(false)
   const [openRemovePricingDialog, setOpenRemovePricingDialog] = useState(false)
@@ -135,29 +134,9 @@ export function PricingManagement() {
     setPage(0)
   }
 
-  const handleEditPricing = async (updatedPricing: IPricing) => {
-    if (updatedPricing.id && currentClub?.id) {
-      try {
-        // For now, just close the dialog - implement update when API is ready
-        setEditingPricing(null)
-        setOpenAddPricingDialog(false)
-        // Refresh the pricing list
-        if (currentClub && currentClub.id) {
-          await dispatch(getAllPricings(
-            currentClub.id,
-            page + 1,
-            rowsPerPage,
-            searchQuery.toLowerCase(),
-            appliedFilters.sport_type || currentSportType,
-            '',
-            appliedFilters.sort_by,
-            appliedFilters.sort_order
-          ))
-        }
-      } catch (error) {
-        console.error('Failed to update pricing:', error)
-      }
-    }
+  const handleEditPricing = async () => {
+    // Edit is not supported yet by API; keep placeholder for future update
+    console.info('EditPricing requested but create-only flow is enabled for now.')
   }
 
   const handleDeletePricing = async (pricing: IPricing) => {
@@ -192,6 +171,8 @@ export function PricingManagement() {
   const handleSavePricing = async (newPricing: IPricing) => {
     if (currentClub && currentClub.id) {
       try {
+        console.log("createPricing");
+        
         await dispatch(createPricing(currentClub.id, newPricing))
         setOpenAddPricingDialog(false)
         
@@ -320,12 +301,10 @@ export function PricingManagement() {
         />
       </Box>
 
-      {/* Dialogs */}
-      <EditPricingDialog
+  <CreatePricingDialog
         open={openAddPricingDialog}
         onClose={() => setOpenAddPricingDialog(false)}
         onSave={handleSavePricing}
-        pricing={editingPricing}
       />
 
       <RemovePricingDialog

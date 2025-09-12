@@ -19,6 +19,7 @@ const initialState: PricingState = {
     start_date: '',
     end_date: '',
     price_segments: [],
+  court_ids: [],
     courts: []
   },
   pricings: {

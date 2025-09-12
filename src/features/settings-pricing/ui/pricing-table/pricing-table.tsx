@@ -16,7 +16,7 @@ import type { SelectChangeEvent } from '@mui/material'
 import { useState, useMemo } from 'react'
 import { PaginationFooter } from '..'
 import type { IPricing, PricingResponse } from '../../../../app/providers/types/pricing'
-import { EditPricingDialog } from '../edit-pricing/edit-pricing'
+import { PricingDialog } from '../edit-pricing/edit-pricing'
 
 import EditIcon from "../../../../shared/assets/icons/edit.svg?react"
 import TrashIcon from "../../../../shared/assets/icons/trash.svg?react"
@@ -468,7 +468,7 @@ export function PricingTable({
       />
       
       {/* Edit Pricing Dialog */}
-      <EditPricingDialog
+      <PricingDialog
         open={editDialogOpen}
         onClose={() => setEditDialogOpen(false)}
         onSave={(updatedPricing) => {
