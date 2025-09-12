@@ -30,6 +30,7 @@ interface PricingTableProps {
   totalRows: number;
   page: number;
   rowsPerPage: number;
+  sportType?: string; // normalized (lowercase) sport type currently active
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rowsPerPage: number) => void;
   onEdit?: (pricing: IPricing) => void;
@@ -44,6 +45,7 @@ export function PricingTable({
   totalRows,
   page,
   rowsPerPage,
+  sportType,
   onPageChange,
   onRowsPerPageChange,
   onEdit,
@@ -52,7 +54,7 @@ export function PricingTable({
   searchQuery = '',
   isLoading = false
 }: PricingTableProps) {
-  const [sortField, setSortField] = useState<SortField>('name')
+  const [sortField, setSortField] = useState<SortField>('start_date')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false)
   const [selectedPricing, setSelectedPricing] = useState<IPricing | null>(null)
@@ -124,6 +126,9 @@ export function PricingTable({
       .map(day => daysMap[day])
       .join(', ');
   };
+
+  console.log("sortedPricings", sortedPricings);
+  
 
   return (
     <Box
@@ -309,15 +314,31 @@ export function PricingTable({
                     fontSize: 14,
                     verticalAlign: 'top',
                   }}>
-                  <Chip 
-                    label="Padel" 
-                    size="small"
-                    sx={{ 
-                      backgroundColor: '#034C53', 
-                      color: 'white',
-                      fontSize: '12px',
-                    }}
-                  />
+                  {(() => {
+                    if (!pricing.courts || pricing.courts.length === 0) {
+                      return <Typography variant="body2" sx={{ color: '#666' }}>-</Typography>
+                    }
+                    // If sportType prop provided, find matching court
+                    const normalized = sportType?.toLowerCase()
+                    const match = normalized
+                      ? pricing.courts.find(c => c.sport_type?.toLowerCase() === normalized)
+                      : pricing.courts[0]
+                    if (!match) {
+                      return <Typography variant="body2" sx={{ color: '#666' }}>-</Typography>
+                    }
+                    const label = match.sport_type.charAt(0).toUpperCase() + match.sport_type.slice(1)
+                    return (
+                      <Chip 
+                        label={label}
+                        size="small"
+                        sx={{ 
+                          backgroundColor: '#034C53', 
+                          color: 'white',
+                          fontSize: '12px',
+                        }}
+                      />
+                    )
+                  })()}
                 </TableCell>
                 <TableCell 
                   align="center"

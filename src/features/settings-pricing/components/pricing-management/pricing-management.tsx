@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Box, useTheme, useMediaQuery, Typography } from '@mui/material'
 import PlusIcon from '../../../../shared/assets/icons/plus.svg?react'
 import { SearchField, PrimaryButton } from '../../../../shared/components'
-import { ReusableNavigation } from '../../../../shared/components/ui/reusable-navigation'
+import { PricingNavigation, TAB_LABELS } from '../../../../widgets/pricing'
 import { PricingTable } from '../../ui/pricing-table/pricing-table'
 import { PricingFilterSection } from '../../ui/pricing-filter-section/pricing-filter-section'
 import { EditPricingDialog } from '../../ui/edit-pricing/edit-pricing'
@@ -13,10 +13,12 @@ import type { PricingFilterValues } from '../../model/types'
 
 import { useAppDispatch, useAppSelector } from '../../../../app/providers/store-helpers'
 import { clubSelector } from '../../../../app/providers/reducers/ClubSlice'
-import { pricingsSelector, pricingLoadingSelector } from '../../../../app/providers/reducers/PricingSlice'
+import { 
+  pricingsSelector, 
+  pricingLoadingSelector,
+  setLoading
+} from '../../../../app/providers/reducers/PricingSlice'
 import { getAllPricings, createPricing, deletePricing } from '../../../../app/services/PricingService'
-
-const TAB_LABELS = ['Padel', 'Tennis', 'Pickleball']
 
 export function PricingManagement() {
   const [activeTab, setActiveTab] = useState(0)
@@ -37,7 +39,7 @@ export function PricingManagement() {
     start_date: '',
     end_date: '',
     is_timed: '',
-    sort_by: 'name',
+  sort_by: 'start_date',
     sort_order: 'asc',
   })
 
@@ -51,33 +53,57 @@ export function PricingManagement() {
 
   const currentSportType = TAB_LABELS[activeTab].toLowerCase()
 
-  // Load pricing data
-  useEffect(() => {
-    const loadPricing = async () => {
-      if (currentClub && currentClub.id) {
-        try {
-          await dispatch(getAllPricings(
-            currentClub.id,
-            page + 1,
-            rowsPerPage,
-            searchQuery,
-            appliedFilters.sport_type || currentSportType,
-            '',
-            appliedFilters.sort_by,
-            appliedFilters.sort_order
-          ))
-        } catch (error) {
-          console.error('Failed to load pricing:', error)
-        }
-      }
+  // Derive effective sport filter (tab has priority unless explicit filter chosen)
+  const effectiveSportType = (appliedFilters.sport_type || currentSportType).toLowerCase()
+
+  // Filter pricings client-side (API might not yet implement sport_type filtering for price-policies)
+  const filteredPricingResponse = useMemo(() => {
+    const source = pricingList || { items: [], total: 0, page: 1, size: rowsPerPage, pages: 0 }
+    const items = (source.items || []).filter(p => {
+      // if no courts treat as keep (or could exclude). We'll exclude to avoid wrong sport showing.
+      if (!p.courts || p.courts.length === 0) return false
+      return p.courts.some(c => c.sport_type?.toLowerCase() === effectiveSportType)
+    })
+    return {
+      ...source,
+      items,
+      total: items.length,
+      pages: Math.max(1, Math.ceil(items.length / rowsPerPage)),
     }
+  }, [pricingList, effectiveSportType, rowsPerPage])
 
+  // Ensure current page is in range after filtering
+  useEffect(() => {
+    const maxPageIndex = Math.max(0, Math.ceil(filteredPricingResponse.total / rowsPerPage) - 1)
+    if (page > maxPageIndex) setPage(0)
+  }, [filteredPricingResponse.total, rowsPerPage, page])
+
+  // Handler for search input with debounce
+  useEffect(() => {    
     const delaySearch = setTimeout(() => {
-      loadPricing()
-    }, 300)
+      if (currentClub && currentClub.id) {
+        dispatch(setLoading(true));
+        dispatch(getAllPricings(
+          currentClub.id, 
+          page + 1, 
+          rowsPerPage, 
+          searchQuery.toLowerCase(),
+          appliedFilters.sport_type || currentSportType,
+          '', 
+          appliedFilters.sort_by,
+          appliedFilters.sort_order
+        ))
+          .then((response) => {
+            console.log(`Received ${response?.items?.length || 0} pricing policies from API out of ${response?.total || 0} total`);
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
+      }
+    }, 300); // Reduce debounce time for more responsive search
 
-    return () => clearTimeout(delaySearch)
-  }, [page, rowsPerPage, searchQuery, activeTab, currentSportType, appliedFilters, dispatch, currentClub])
+    return () => clearTimeout(delaySearch);
+  }, [page, rowsPerPage, searchQuery, activeTab, currentSportType, appliedFilters.sport_type, appliedFilters.sort_by, appliedFilters.sort_order, dispatch, currentClub])
 
 
 
@@ -99,7 +125,7 @@ export function PricingManagement() {
       start_date: '',
       end_date: '',
       is_timed: '',
-      sort_by: 'name',
+  sort_by: 'start_date',
       sort_order: 'asc',
     })
     setPage(0)
@@ -121,8 +147,11 @@ export function PricingManagement() {
             currentClub.id,
             page + 1,
             rowsPerPage,
-            searchQuery,
-            appliedFilters.sport_type || currentSportType
+            searchQuery.toLowerCase(),
+            appliedFilters.sport_type || currentSportType,
+            '',
+            appliedFilters.sort_by,
+            appliedFilters.sort_order
           ))
         }
       } catch (error) {
@@ -148,8 +177,11 @@ export function PricingManagement() {
           currentClub.id,
           page + 1,
           rowsPerPage,
-          searchQuery,
-          appliedFilters.sport_type || currentSportType
+          searchQuery.toLowerCase(),
+          appliedFilters.sport_type || currentSportType,
+          '',
+          appliedFilters.sort_by,
+          appliedFilters.sort_order
         ))
       } catch (error) {
         console.error('Failed to delete pricing:', error)
@@ -168,8 +200,11 @@ export function PricingManagement() {
           currentClub.id,
           page + 1,
           rowsPerPage,
-          searchQuery,
-          appliedFilters.sport_type || currentSportType
+          searchQuery.toLowerCase(),
+          appliedFilters.sport_type || currentSportType,
+          '',
+          appliedFilters.sort_by,
+          appliedFilters.sort_order
         ))
       } catch (error) {
         console.error('Failed to create pricing:', error)
@@ -181,7 +216,13 @@ export function PricingManagement() {
 
   return (
     <>
-      
+      {
+        isMobile && (
+          <Typography variant="h6" sx={{ fontWeight: 500, mr: 4 }}>
+            Pricing
+          </Typography>
+        )
+      }
       <Box
         sx={{
           display: 'flex',
@@ -196,10 +237,17 @@ export function PricingManagement() {
                 </Typography>
               )
             }
-            <ReusableNavigation 
+            <PricingNavigation 
               activeTab={activeTab} 
-              onTabChange={setActiveTab} 
-              labels={TAB_LABELS} 
+              onTabChange={(newValue) => {
+                setActiveTab(newValue)
+                setPage(0) // Reset page when changing tabs
+                // Clear sport_type filter to use the current tab's sport type
+                setAppliedFilters(prev => ({
+                  ...prev,
+                  sport_type: ''
+                }))
+              }} 
             />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pt: isMobile ? 2 : 0, pb: isMobile ? 2 : 0 }}>
@@ -258,10 +306,11 @@ export function PricingManagement() {
           position: 'relative',
         }}>
         <PricingTable
-          pricings={pricingList}
-          totalRows={pricingList.total}
+          pricings={filteredPricingResponse}
+          totalRows={filteredPricingResponse.total}
           page={page}
           rowsPerPage={rowsPerPage}
+          sportType={effectiveSportType}
           onPageChange={setPage}
           onRowsPerPageChange={setRowsPerPage}
           onEdit={handleEditPricing}
