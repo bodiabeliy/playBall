@@ -5,25 +5,24 @@ import { ROLE_OPTIONS, BRANCH_OPTIONS, COLOR_OPTIONS } from '../../model'
 import ColorIcon from '../../../../shared/assets/icons/status.svg?react'
 
 interface EditWorkerFormProps {
-  worker: Worker
+  worker?: Worker
   onCancel: () => void
   onSave: (data: WorkerFormData) => void
 }
 
-export function EditWorkerForm({ worker, onCancel, onSave }: EditWorkerFormProps) {
-  const [firstName] = useState(worker.name.split(' ')[0] || '')
-  const [lastName] = useState(worker.name.split(' ')[1] || '')
-  const [middleName] = useState(worker.name.split(' ')[2] || '')
-  const [email] = useState(worker.email)
+export function EditWorkerForm({ worker, onCancel }: EditWorkerFormProps) {
+  const [firstName] = useState(worker?.name.split(' ')[0] || '')
+  const [lastName] = useState(worker?.name.split(' ')[1] || '')
+  const [middleName] = useState(worker?.name.split(' ')[2] || '')
+  const [email] = useState(worker?.email)
   const [phone] = useState('+380(11)111-11-11')
-  const [role, setRole] = useState(worker.role)
-  const [branch, setBranch] = useState(worker.branch)
+  const [role, setRole] = useState(worker?.role)
+  const [branch, setBranch] = useState(worker?.branch)
   const [rate1, setRate1] = useState('1')
   const [rate2, setRate2] = useState('2')
-  const [color, setColor] = useState(worker.color)
+  const [color, setColor] = useState(worker?.color)
 
   const handleSave = () => {
-    onSave({ firstName, lastName, middleName, email, phone, role, branch, rate1, rate2, color })
   }
 
   return (

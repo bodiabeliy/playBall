@@ -1,1 +1,1 @@
-export { EditPricingDialog } from './edit-pricing'
+export { PricingDialog } from './edit-pricing'

@@ -42,7 +42,7 @@ export function ClubArenaForm() {
   const [formData, setFormData] = useState<IClub>({
     id: 1,
     name: '',
-  country: '',
+    country: '',
     address: '',
     city: '',
     latitude: 1,

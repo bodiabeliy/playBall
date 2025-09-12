@@ -11,6 +11,7 @@ const ROUTES = {
   COURTS:'/courts',
 
   PRICING: '/pricing',
+  PRICING_NEW: '/pricing/new-price',
 
 
   PATIENTS: '/patients',
@@ -39,6 +40,7 @@ export const getCourtsRoute = () => ROUTES.COURTS
 export const getClubSettingsRoute = () => ROUTES.CLUB_SETTINGS
 
 export const getPricingRoute = () => ROUTES.PRICING
+export const getPricingNewRoute = () => ROUTES.PRICING_NEW
 
 export const getPatientsRoute = () => ROUTES.PATIENTS
 export const getPatientDetailsRoute = (id: string) => ROUTES.PATIENT_DETAILS.replace(':id', id)

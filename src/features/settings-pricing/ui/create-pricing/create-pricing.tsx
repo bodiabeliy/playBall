@@ -34,6 +34,8 @@ export interface CreatePricingDialogProps {
   open: boolean
   onClose: () => void
   onSave: (pricing: IPricing) => void
+  pricing?: IPricing | null
+  title?: string
 }
 
 const COLORS = ['#84E81D', '#00B894', '#1ABCFE', '#9B51E0', '#F2994A', '#EB5757']
@@ -47,7 +49,7 @@ const DAYS = [
   { label: 'Sat', value: 6 },
 ]
 
-export function CreatePricingDialog({ open, onClose, onSave }: CreatePricingDialogProps) {
+export function CreatePricingDialog({ open, onClose, onSave, pricing = null, title }: CreatePricingDialogProps) {
   const dispatch = useAppDispatch()
   const currentClub = useAppSelector(clubSelector)
   const courtsList = useAppSelector(courtsSelector)
@@ -70,9 +72,22 @@ export function CreatePricingDialog({ open, onClose, onSave }: CreatePricingDial
     }
   }, [open, currentClub?.id, dispatch])
 
-  // Reset form when dialog closes
+  // Prefill when editing; reset when closed
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      if (pricing) {
+        setFormData({
+          name: pricing.name || '',
+          description: pricing.description || '',
+          is_timed: Boolean(pricing.is_timed),
+          start_date: pricing.start_date || '',
+          end_date: pricing.end_date || '',
+          price_segments: pricing.price_segments || [],
+          court_ids: pricing.court_ids || [],
+          courts: pricing.courts || [],
+        })
+      }
+    } else {
       setFormData({
         name: '',
         description: '',
@@ -84,7 +99,7 @@ export function CreatePricingDialog({ open, onClose, onSave }: CreatePricingDial
         courts: [],
       })
     }
-  }, [open])
+  }, [open, pricing])
 
   const handleField = <K extends keyof IPricing>(key: K, value: IPricing[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }))
@@ -121,8 +136,6 @@ export function CreatePricingDialog({ open, onClose, onSave }: CreatePricingDial
     return new Date(formData.start_date) <= new Date(formData.end_date)
   }, [formData.start_date, formData.end_date])
 
-  const hasCourts = (formData.court_ids?.length || 0) > 0
-  const hasAtLeastOneSegment = (formData.price_segments?.length || 0) > 0
   const segmentsValid = useMemo(() => {
     return (formData.price_segments || []).every((s) =>
       Boolean(s.name && s.start_time && s.end_time) &&
@@ -140,8 +153,10 @@ export function CreatePricingDialog({ open, onClose, onSave }: CreatePricingDial
 //   )
 
   const handleSave = () => {
-    console.log("is create policy");
-    onSave(formData)
+    onSave({
+      ...formData,
+      name: formData.name || formData.price_segments?.[0]?.name || 'New Price',
+    })
   }
 
   return (
@@ -157,7 +172,7 @@ export function CreatePricingDialog({ open, onClose, onSave }: CreatePricingDial
       }}
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 2 }}>
-        <Typography variant="h6" fontWeight={600}>New Price</Typography>
+  <Typography variant="h6" fontWeight={600}>{title || (pricing ? 'Edit Price' : 'New Price')}</Typography>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
         </IconButton>
@@ -426,6 +441,7 @@ export function CreatePricingDialog({ open, onClose, onSave }: CreatePricingDial
         <Button
           variant="contained"
           onClick={handleSave}
+          disabled={!(isDateRangeValid && (formData.court_ids?.length || 0) > 0 && (formData.price_segments?.length || 0) > 0 && segmentsValid)}
           sx={{ background: '#0029d9' }}
         >
           Save

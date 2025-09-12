@@ -38,6 +38,7 @@ import {
   getRecoveryPasswordRoute,
   getCourtsRoute,
   getPricingRoute,
+  getPricingNewRoute,
 } from '../../shared/types/routes'
 import { Route, Routes } from 'react-router'
 import { CodeConfirmationPage } from '../../pages/code-confirmation'
@@ -50,6 +51,7 @@ import { useEffect } from 'react'
 import { useAppDispatch } from './store-helpers'
 import { areTokensValid, clearTokens } from '../../shared/utils/tokenUtils'
 import PricingPage from '../../pages/pricing'
+import PricingDetailPage from '../../pages/pricing-details'
 
 const unAuthorizedRoutes = [
   {
@@ -103,9 +105,13 @@ const authorizedRoutes = [
     element: <CourtsPage />,
     path: getCourtsRoute(),
   },
-    {
+  {
     element: <PricingPage />,
     path: getPricingRoute(),
+  },
+   {
+    element: <PricingDetailPage />,
+    path: getPricingNewRoute(),
   },
   {
     element: <LostConsultationPage />,

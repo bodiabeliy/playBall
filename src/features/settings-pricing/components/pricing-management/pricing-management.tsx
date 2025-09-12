@@ -19,9 +19,13 @@ import {
   setLoading
 } from '../../../../app/providers/reducers/PricingSlice'
 import { getAllPricings, createPricing, deletePricing } from '../../../../app/services/PricingService'
+import { PricingViewSwitcher } from '../../../../widgets/pricing/pricing-view-switcher'
+import { useNavigate } from 'react-router'
 
 export function PricingManagement() {
   const [activeTab, setActiveTab] = useState(0)
+  const [activeSwitcherTab, setActiveSwitcherTab] = useState(1)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [isFiltersExpanded, setIsFiltersExpanded] = useState(false)
   const [deletingPricing, setDeletingPricing] = useState<IPricing | null>(null)
@@ -51,6 +55,7 @@ export function PricingManagement() {
   const isLoading = useAppSelector(pricingLoadingSelector)
 
   const currentSportType = TAB_LABELS[activeTab].toLowerCase()
+  const navigate = useNavigate()
 
   // Derive effective sport filter (tab has priority unless explicit filter chosen)
   const effectiveSportType = (appliedFilters.sport_type || currentSportType).toLowerCase()
@@ -170,9 +175,7 @@ export function PricingManagement() {
 
   const handleSavePricing = async (newPricing: IPricing) => {
     if (currentClub && currentClub.id) {
-      try {
-        console.log("createPricing");
-        
+      try {        
         await dispatch(createPricing(currentClub.id, newPricing))
         setOpenAddPricingDialog(false)
         
@@ -232,6 +235,13 @@ export function PricingManagement() {
             />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, pt: isMobile ? 2 : 0, pb: isMobile ? 2 : 0 }}>
+
+             <PricingViewSwitcher 
+              activeTab={activeSwitcherTab} 
+              onTabChange={(newValue) => {
+                setActiveSwitcherTab(newValue)
+              }} 
+            />
             <FilterButton
               activeFilters={activeFiltersCount}
               isMobile={isMobile}
@@ -255,7 +265,7 @@ export function PricingManagement() {
                 fontSize: 13,
                 height: '30px',
               }}
-              onClick={() => setOpenAddPricingDialog(true)}>
+              onClick={() => navigate('/pricing/new-price',)}>
               New Price
             </PrimaryButton>
           </Box>

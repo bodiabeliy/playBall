@@ -811,8 +811,8 @@ export const AmenitiesSection = ({ formData, handleFieldChange }: SectionProps) 
               <Box
                 sx={{
                   position: 'relative',
-                  width: 24,
-                  height: 24,
+                  width: 18,
+                  height: 18,
                   border: formData.amenities?.includes(amenity.id) 
                     ? '2px solid #034C53' 
                     : '2px solid #ccc',

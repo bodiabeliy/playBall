@@ -1,6 +1,6 @@
 import { Badge, Button } from '@mui/material'
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
-import FilterIcon from "../../../../shared/assets/icons/filter.svg?react"
+import CourtIcon from '../../../../shared/assets/icons/courts.svg?react'
 
 interface FilterButtonProps {
   activeFilters: number
@@ -10,26 +10,26 @@ interface FilterButtonProps {
   onClick: () => void
 }
 
-export function FilterButton({ isExpanded, isMobile = false, onClick, activeFilters }: FilterButtonProps) {
+export function FilterButton({ isExpanded, isMobile = false, onClick }: FilterButtonProps) {
   return (
     <Button
       variant="outlined"
       onClick={onClick}
-      startIcon={<FilterIcon />}
+      startIcon={<CourtIcon style={{scale:0.75}} />}
       fullWidth={isMobile}
       endIcon={isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       sx={{
-        border:"1px solid #888888",
-        color:"#888888",
+        border:"1px solid #6e6e6e",
+        borderRadius:"12px",
+        color:"#6e6e6e",
         alignSelf: 'center',
-        textTransform: 'uppercase',
         fontWeight: 500,
         fontSize: '14px',
         position: 'relative',
       }}>
       All types
       <Badge
-        badgeContent={activeFilters}
+        // badgeContent={activeFilters}
         sx={{
           position: 'absolute',
           top: 4,
