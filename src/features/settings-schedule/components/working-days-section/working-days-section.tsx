@@ -274,8 +274,8 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
                           borderColor: day.enabled ? '#CBD5E1' : '#E2E8F0',
                         },
                         '&.Mui-focused': {
-                          borderColor: day.enabled ? '#0F766E' : '#E2E8F0',
-                          boxShadow: day.enabled ? '0 0 0 3px rgba(15, 118, 110, 0.1)' : 'none',
+                          borderColor: day.enabled ? '#034C53' : '#E2E8F0',
+                          boxShadow: day.enabled ? '0 0 0 3px rgba(3, 76, 83, 0.1)' : 'none',
                         },
                         '& .MuiInputBase-input': {
                           padding: '10px 14px',
@@ -295,6 +295,25 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
                       },
                     },
                   },
+                  layout: {
+                    sx: {
+                      '& .MuiPickersLayout-contentWrapper': {
+                        '& .Mui-selected': {
+                          backgroundColor: '#034C53 !important', 
+                        },
+                        '& .MuiClock-pin': {
+                          backgroundColor: '#034C53 !important',
+                        },
+                        '& .MuiClockPointer-root': {
+                          backgroundColor: '#034C53 !important',
+                          '& .MuiClockPointer-thumb': {
+                            backgroundColor: '#034C53 !important',
+                            borderColor: '#034C53 !important',
+                          }
+                        }
+                      }
+                    }
+                  }
                 }}
               />
             </LocalizationProvider>
@@ -341,8 +360,8 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
                           borderColor: day.enabled ? '#CBD5E1' : '#E2E8F0',
                         },
                         '&.Mui-focused': {
-                          borderColor: day.enabled ? '#0F766E' : '#E2E8F0',
-                          boxShadow: day.enabled ? '0 0 0 3px rgba(15, 118, 110, 0.1)' : 'none',
+                          borderColor: day.enabled ? '#034C53' : '#E2E8F0',
+                          boxShadow: day.enabled ? '0 0 0 3px rgba(3, 76, 83, 0.1)' : 'none',
                         },
                         '& .MuiInputBase-input': {
                           padding: '10px 14px',
@@ -362,6 +381,25 @@ export const WorkingDaysSection = ({ formData, handleFieldChange }: SectionProps
                       },
                     },
                   },
+                  layout: {
+                    sx: {
+                      '& .MuiPickersLayout-contentWrapper': {
+                        '& .Mui-selected': {
+                          backgroundColor: '#034C53 !important', 
+                        },
+                        '& .MuiClock-pin': {
+                          backgroundColor: '#034C53 !important',
+                        },
+                        '& .MuiClockPointer-root': {
+                          backgroundColor: '#034C53 !important',
+                          '& .MuiClockPointer-thumb': {
+                            backgroundColor: '#034C53 !important',
+                            borderColor: '#034C53 !important',
+                          }
+                        }
+                      }
+                    }
+                  }
                 }}
               />
             </LocalizationProvider>

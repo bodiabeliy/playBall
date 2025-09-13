@@ -7,11 +7,9 @@ import type { DateRange } from '@mui/x-date-pickers-pro'
 import { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 
-
 interface UniversalSeasonPickerProps {
   value: DateRange<Dayjs>;
   onChange: (value: DateRange<Dayjs>) => void;
-  label?: string;
   placeholder?: string;
   format?: string;
   disabled?: boolean;
@@ -24,13 +22,40 @@ interface UniversalSeasonPickerProps {
 const hideWatermarkStyles = `
  div.MuiDateRangeCalendar-root > div[style*="position: absolute"] {
   opacity: 0 !important;
-}
+ }
+ 
+ /* Remove borders from navigation arrows */
+ .MuiPickersCalendarHeader-switchViewButton,
+ .MuiPickersArrowSwitcher-button {
+   border: none !important;
+   outline: none !important;
+   box-shadow: none !important;
+ }
+ 
+ /* Hide action buttons area */
+ .MuiDialogActions-root {
+   display: none !important;
+ }
+ 
+ /* Fix for green borders on selected dates */
+ .Mui-selected {
+   box-shadow: none !important;
+ }
+ 
+ /* Fix for current date */
+ .MuiPickersDay-today:not(.Mui-selected) {
+   border: none !important;
+ }
+ 
+ /* Day with circle background */
+ .MuiPickersDay-root[aria-current="date"] {
+   background-color: transparent !important;
+ }
 `;
 
 export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
   value,
   onChange,
-  label = 'Season',
   placeholder = "May 4, 2025 - June 22, 2025",
   format = 'MMM d, yyyy',
   disabled = false,
@@ -54,12 +79,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
   
   return (
     <Box>
-      {label && (
-        <Typography variant="body2" color="rgba(21, 22, 24, 0.6)" sx={{ mb: 2 }}>
-          {label}
-        </Typography>
-      )}
-      
+    
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateRangePicker
           value={value}
@@ -105,19 +125,22 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                       padding: '8px 14px',
                       paddingRight: '40px',
                       outline: 'none',
-                      borderRadius: '8px',
-                      // Match the orange border from the screenshot for selected dates
+                      borderRadius: '12px',
                       border: '1px solid #E5E5E5',
                       fontSize: '14px',
-                      fontWeight: 400,
                       fontFamily: 'inherit',
                       cursor: 'pointer',
                       backgroundColor: disabled ? '#F3F4F6' : '#fff',
-                      color: disabled ? '#A0A0A0' : '#111827',
+                      color: displayValue ? '#151618' : '#64748B',
+                      fontWeight:  500,
                       '&:hover': {
                         border: '1px solid #CBD5E1',
                       },
-                     
+                      '& input::placeholder': {
+                        color: '#64748B',
+                        opacity: 1,
+                        fontWeight: 500,
+                      },
                     }}
                   />
                   <Box
@@ -129,6 +152,8 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                       transform: 'translateY(-50%)',
                       color:'#64748B',
                       pointerEvents: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -141,21 +166,9 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
           }}
           slotProps={{
             actionBar: {
-              actions: ['clear', 'today', 'accept'],
+              actions: [], // Empty array to hide action buttons
               sx: {
-                '& .MuiButton-root': {
-                  color: '#034C53',
-                  textTransform: 'capitalize',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                },
-                '& .MuiButton-root:first-of-type': {
-                  color: '#111827',
-                },
-                '& .MuiButton-root:last-of-type': {
-                  color: '#034C53',
-                  fontWeight: 500,
-                }
+                display: 'none', // Hide the action bar completely
               }
             },
             mobilePaper: {
@@ -166,6 +179,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   borderRadius: '4px !important',
                   fontWeight: 600,
                   border: '1px solid #CDFA50 !important',
+                  boxShadow: 'none !important',
                 },
                 '& .MuiPickersDay-dayWithinRange:not(.Mui-selected)': {
                   backgroundColor: '#E6F4F1 !important',
@@ -179,6 +193,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   borderBottomRightRadius: '4px !important',
                   border: '1px solid #CDFA50 !important',
                   borderRight: '3px solid #15c28a',
+                  boxShadow: 'none !important',
                 },
                 '& .MuiPickersDay-root.MuiPickersDay-rangeStart': {
                   backgroundColor: '#00676f !important',
@@ -186,6 +201,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   borderTopLeftRadius: '4px !important',
                   borderBottomLeftRadius: '4px !important',
                   border: '1px solid #CDFA50 !important',
+                  boxShadow: 'none !important',
                 }
               }
             },
@@ -205,6 +221,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   borderRadius: '4px !important',
                   fontWeight: 600,
                   border: '1px solid #CDFA50 !important',
+                  boxShadow: 'none !important',
                   '&:hover': {
                     backgroundColor: '#023940 !important',
                   },
@@ -244,10 +261,16 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
               }
             },
             nextIconButton: {
-              sx: { color: '#64748B' }
+              sx: { 
+                color: '#64748B',
+                border: 'none' // Remove border around the arrow
+              }
             },
             previousIconButton: {
-              sx: { color: '#64748B' }
+              sx: { 
+                color: '#64748B',
+                border: 'none' // Remove border around the arrow
+              }
             },
             calendarHeader: {
               sx: { 
@@ -264,7 +287,11 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                 '&.MuiPopper-root': {
                   zIndex: 1400,
                   boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.08)',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  transform: 'none !important',
+                  top: '45px !important',
+                  left: '0 !important',
+                  position: 'absolute !important'
                 },
                 // Hide only the MUI X Missing license key watermark
                 '& div[style*="MUI X Missing license key"]': {
@@ -274,6 +301,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   backgroundColor: '#034C53 !important',
                   color: 'white !important',
                   border: '1px solid #CDFA50 !important',
+                  boxShadow: 'none !important',
                 },
                 '& .MuiDateRangePickerDay-rangeIntervalDayHighlight': {
                   backgroundColor: '#E6F4F1 !important'
@@ -311,6 +339,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   borderBottomRightRadius: '4px !important',
                   border: '1px solid #CDFA50 !important',
                   borderRight: '3px solid #15c28a',
+                  boxShadow: 'none !important',
                 },
                 '& .MuiPickersDay-root.MuiPickersDay-rangeStart': {
                   backgroundColor: '#00676f !important',
@@ -318,6 +347,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   borderTopLeftRadius: '4px !important',
                   borderBottomLeftRadius: '4px !important',
                   border: '1px solid #CDFA50 !important',
+                  boxShadow: 'none !important',
                 },
                 // General selected day styling is already handled above
                 '& .MuiPickersLayout-root': {
@@ -344,8 +374,10 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   paddingRight: '12px',
                 },
                 '& .MuiPickersLayout-actionBar': {
-                  padding: '16px 24px',
-                  borderTop: '1px solid #E5E7EB',
+                  display: 'none', // Completely hide the action bar
+                  padding: 0,
+                  height: 0,
+                  overflow: 'hidden'
                 },
                 '@media (max-width: 600px)': {
                   '& .MuiPickersDay-root.Mui-selected': {
@@ -354,6 +386,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                     borderRadius: '4px !important',
                     fontWeight: 600,
                     border: '1px solid #CDFA50 !important',
+                    boxShadow: 'none !important',
                   },
                   '& .MuiPickersDay-dayWithinRange:not(.Mui-selected)': {
                     backgroundColor: '#E6F4F1 !important',
@@ -367,6 +400,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                     borderBottomRightRadius: '4px !important',
                     border: '1px solid #CDFA50 !important',
                     borderRight: '3px solid #15c28a',
+                    boxShadow: 'none !important',
                   },
                   '& .MuiPickersDay-root.MuiPickersDay-rangeStart': {
                     backgroundColor: '#00676f !important',
@@ -374,6 +408,7 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                     borderTopLeftRadius: '4px !important',
                     borderBottomLeftRadius: '4px !important',
                     border: '1px solid #CDFA50 !important',
+                    boxShadow: 'none !important',
                   }
                 }
               }
