@@ -5,7 +5,6 @@ import { MultiInputDateRangeField } from '@mui/x-date-pickers-pro/MultiInputDate
 import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField'
 import { DateTimeRangePicker } from '@mui/x-date-pickers-pro/DateTimeRangePicker'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
-import { Box, Stack, Typography } from '@mui/material'
 import type { TextFieldProps } from '@mui/material'
 import type { DateRange } from '@mui/x-date-pickers-pro'
 import dayjs, { Dayjs } from 'dayjs'
@@ -44,6 +43,10 @@ export const UniversalDateTimeRangePicker: React.FC<UniversalDateTimeRangePicker
   endTextFieldProps,
   singleTextFieldProps
 }) => {
+  // Convert minDate and maxDate from Date to Dayjs if provided
+  const minDayjs = minDate ? dayjs(minDate) : undefined;
+  const maxDayjs = maxDate ? dayjs(maxDate) : undefined;
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       {displayMode === 'single' ? (
@@ -54,8 +57,8 @@ export const UniversalDateTimeRangePicker: React.FC<UniversalDateTimeRangePicker
           onChange={onChange}
           format={format}
           disabled={disabled}
-          minDate={minDate}
-          maxDate={maxDate}
+          minDate={minDayjs}
+          maxDate={maxDayjs}
           slotProps={{
             textField: {
               size: "small",
@@ -89,8 +92,8 @@ export const UniversalDateTimeRangePicker: React.FC<UniversalDateTimeRangePicker
           <DateTimeRangePicker
             value={value}
             onChange={onChange}
-            minDate={minDate}
-            maxDate={maxDate}
+            minDate={minDayjs}
+            maxDate={maxDayjs}
             disabled={disabled}
           />
         </DemoContainer>
@@ -101,8 +104,8 @@ export const UniversalDateTimeRangePicker: React.FC<UniversalDateTimeRangePicker
           onChange={onChange}
           format={format}
           disabled={disabled}
-          minDate={minDate}
-          maxDate={maxDate}
+          minDate={minDayjs}
+          maxDate={maxDayjs}
           slotProps={{
             textField: ({ position }) => ({
               label: position === 'start' ? startLabel : endLabel,
@@ -172,7 +175,7 @@ export const DateRangePickerDemo = () => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <SingleInputDateRangeField 
-          label="Single Input (Departure - Return)" 
+          label="(Departure - Return)" 
           value={value}
           onChange={(newValue) => setValue(newValue)}
         />

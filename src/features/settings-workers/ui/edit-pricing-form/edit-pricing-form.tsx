@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import {
   Box,
   Button,
@@ -8,10 +8,13 @@ import {
   Typography,
   FormControl,
   Stack,
-  Checkbox,
   Divider,
   Switch,
 } from '@mui/material'
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { enUS } from 'date-fns/locale'
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import type { DateRange } from '@mui/x-date-pickers-pro'
 import dayjs, { Dayjs } from 'dayjs'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -23,7 +26,7 @@ import { courtsSelector } from '../../../../app/providers/reducers/CourtSlice'
 import { getAllCourts } from '../../../../app/services/CourtService'
 import { COLORS, DAYS } from '../../../settings-pricing/model/constants'
 import { useNavigate } from 'react-router'
-import { SimpleUniversalDateTimeRangePicker } from '../../../../shared/components/universal-date-time-range-picker'
+import { SimpleUniversalSeasonPicker } from '../../../../shared/components/date-pickers'
 
 interface EditPricingFormProps {
   onCancel?: () => void
@@ -49,6 +52,22 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
   const dispatch = useAppDispatch()
   const currentClub = useAppSelector(clubSelector)
   const courtsList = useAppSelector(courtsSelector)
+  
+  // Time helper functions
+  const makeTime = useCallback((h: number, m: number, s = 0): Date => {
+    const d = new Date();
+    d.setHours(h, m, s, 0);
+    return d;
+  }, []);
+
+  const parseTimeToDate = useCallback((value: string): Date => {
+    if (typeof value === 'string' && value.includes(':')) {
+      const parts = value.split(':').map((n) => parseInt(n, 10));
+      const [h = 0, m = 0] = parts;
+      return makeTime(h, m, 0);
+    }
+    return makeTime(9, 0);
+  }, [makeTime]);
 
   // Fetch courts for current club when dialog opens
   useEffect(() => {
@@ -208,7 +227,7 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
             width: { md: 320 },
             flexShrink: 0,
             background: '#fff',
-            borderRadius: '8px',
+            borderRadius: '12px',
             boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06)',
             p: 3,
           }}>
@@ -235,7 +254,7 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
               }}
               sx={{
                 height: '42px',
-                borderRadius: '8px',
+                borderRadius: '12px',
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: '#E5E5E5'
                 },
@@ -394,16 +413,11 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
               })}
             </Select>
           </FormControl>
-
-          <Typography variant="body2" color="rgba(21, 22, 24, 0.6)" sx={{ mb: 2 }}>
-            Season
-          </Typography>
-          
-          <SimpleUniversalDateTimeRangePicker
+          <SimpleUniversalSeasonPicker
+            label="Season"
             initialValue={dateRange}
-            displayMode="single"
-            format="MMM d, yyyy"
-            singleLabel=""
+            format="MMM D, yyyy"
+            placeholder="Oct 1, yyyy - Oct 5, yyyy"
             onRangeChange={(newRange) => {
               if (newRange[0]) {
                 handleChange('start_date', newRange[0].format('YYYY-MM-DD'));
@@ -413,35 +427,14 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
               }
               setDateRange(newRange);
             }}
-            singleTextFieldProps={{
-              fullWidth: true,
-              placeholder: "May 4, 2025 - June 22, 2025",
-              sx: {
-                mb: 0,
-                '& .MuiOutlinedInput-root': { 
-                  height: '42px',
-                  borderRadius: '8px',
-                  border: formData.start_date && formData.end_date ? '1px solid #FCA5A5' : '1px solid #E5E5E5',
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: formData.start_date && formData.end_date ? '#FCA5A5' : '#E5E5E5',
-                  },
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: formData.start_date && formData.end_date ? '#FCA5A5' : '#CBD5E1',
-                  },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: formData.start_date && formData.end_date ? '#FCA5A5' : '#034C53',
-                    borderWidth: '1px',
-                  },
-                }
-              }
-            }}
+            errorMessage={!isDateRangeValid ? "End date must be after start date" : ""}
           />
         </Box>
         <Box
           sx={{
             flex: 1,
             background: '#fff',
-            borderRadius: '8px',
+            borderRadius: '12px',
             boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06)',
             p: 3,
           }}>
@@ -475,7 +468,7 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
                 sx={{
                   position: 'relative',
                   border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
+                  borderRadius: '12px',
                   px: 3,
                   pt: 3,
                   pb: 2,
@@ -518,7 +511,7 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
                       sx={{ 
                         '& .MuiOutlinedInput-root': { 
                           height: '42px',
-                          borderRadius: '8px',
+                          borderRadius: '12px',
                           '& .MuiOutlinedInput-notchedOutline': {
                             borderColor: '#E5E5E5'
                           },
@@ -532,52 +525,126 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
                         } 
                       }}
                     />
-                    <TextField
-                      fullWidth
-                      type="time"
-                      value={seg.start_time}
-                      onChange={(e) => updateSegment(idx, { start_time: e.target.value })}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': { 
-                          height: '42px',
-                          borderRadius: '8px',
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#E5E5E5'
+                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
+                      <TimePicker
+                        value={parseTimeToDate(seg.start_time)}
+                        onChange={(newValue) => {
+                          if (newValue) {
+                            const hours = newValue.getHours().toString().padStart(2, '0');
+                            const minutes = newValue.getMinutes().toString().padStart(2, '0');
+                            updateSegment(idx, { start_time: `${hours}:${minutes}` });
+                          }
+                        }}
+                        format="HH:mm"
+                        ampm={false}
+                        slots={{
+                          openPickerIcon: AccessTimeIcon,
+                        }}
+                        slotProps={{
+                          inputAdornment: {
+                            sx: {scale: 0.75},
+                            position: 'start',
                           },
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#CBD5E1',
+                          textField: {
+                            size: 'small',
+                            fullWidth: true,
+                            sx: {
+                              '& .MuiInputBase-root': {
+                                borderRadius: '12px',
+                                backgroundColor: '#ffffff',
+                                border: '1px solid #E2E8F0',
+                                fontSize: '14px',
+                                fontWeight: 400,
+                                color: '#1E293B',
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                  borderColor: '#CBD5E1',
+                                },
+                                '&.Mui-focused': {
+                                  borderColor: '#0F766E',
+                                  boxShadow: '0 0 0 3px rgba(15, 118, 110, 0.1)',
+                                },
+                                '& .MuiInputBase-input': {
+                                  padding: '10px 14px',
+                                  fontFamily: 'inherit',
+                                  '&::placeholder': {
+                                    color: '#94A3B8',
+                                    opacity: 1,
+                                  },
+                                },
+                              },
+                              '& .MuiOutlinedInput-notchedOutline': {
+                                border: 'none',
+                              },
+                              '& .MuiInputAdornment-root': {
+                                color: '#64748B',
+                                marginRight: '8px',
+                              },
+                            },
                           },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#034C53',
-                            borderWidth: '1px',
+                        }}
+                      />
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enUS}>
+                      <TimePicker
+                        value={parseTimeToDate(seg.end_time)}
+                        onChange={(newValue) => {
+                          if (newValue) {
+                            const hours = newValue.getHours().toString().padStart(2, '0');
+                            const minutes = newValue.getMinutes().toString().padStart(2, '0');
+                            updateSegment(idx, { end_time: `${hours}:${minutes}` });
+                          }
+                        }}
+                        format="HH:mm"
+                        ampm={false}
+                        slots={{
+                          openPickerIcon: AccessTimeIcon,
+                        }}
+                        slotProps={{
+                          inputAdornment: {
+                            sx: {scale: 0.75},
+                            position: 'start',
                           },
-                        } 
-                      }}
-                    />
-                    <TextField
-                      fullWidth
-                      type="time"
-                      value={seg.end_time}
-                      onChange={(e) => updateSegment(idx, { end_time: e.target.value })}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': { 
-                          height: '42px',
-                          borderRadius: '8px',
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#E5E5E5'
+                          textField: {
+                            size: 'small',
+                            fullWidth: true,
+                            sx: {
+                              '& .MuiInputBase-root': {
+                                borderRadius: '12px',
+                                backgroundColor: '#ffffff',
+                                border: '1px solid #E2E8F0',
+                                fontSize: '14px',
+                                fontWeight: 400,
+                                color: '#1E293B',
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                  borderColor: '#CBD5E1',
+                                },
+                                '&.Mui-focused': {
+                                  borderColor: '#0F766E',
+                                  boxShadow: '0 0 0 3px rgba(15, 118, 110, 0.1)',
+                                },
+                                '& .MuiInputBase-input': {
+                                  padding: '10px 14px',
+                                  fontFamily: 'inherit',
+                                  '&::placeholder': {
+                                    color: '#94A3B8',
+                                    opacity: 1,
+                                  },
+                                },
+                              },
+                              '& .MuiOutlinedInput-notchedOutline': {
+                                border: 'none',
+                              },
+                              '& .MuiInputAdornment-root': {
+                                color: '#64748B',
+                                marginRight: '8px',
+                              },
+                            },
                           },
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#CBD5E1',
-                          },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#034C53',
-                            borderWidth: '1px',
-                          },
-                        } 
-                      }}
-                    />
+                        }}
+                      />
+                    </LocalizationProvider>
                     <TextField
                       fullWidth
                       type="number"
@@ -588,7 +655,7 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
                       sx={{ 
                         '& .MuiOutlinedInput-root': { 
                           height: '42px',
-                          borderRadius: '8px',
+                          borderRadius: '12px',
                           '& .MuiOutlinedInput-notchedOutline': {
                             borderColor: '#E5E5E5'
                           },
@@ -618,53 +685,110 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
                       <Typography variant="body2" color="rgba(21, 22, 24, 0.6)" sx={{ mb: 2 }}>
                         Day of the week
                       </Typography>
-                      <TextField
-                        fullWidth
-                        value={seg.days_of_week?.map(v => DAYS.find(d => d.value === v)?.label).join(', ') || "Mon, Tue, Fri"}
-                        placeholder="Select days"
-                        InputProps={{
-                          readOnly: true,
-                          endAdornment: (
-                            <Box sx={{ color: "#777", marginLeft: 1 }}>▼</Box>
-                          ),
-                        }}
-                        sx={{ 
-                          '& .MuiOutlinedInput-root': { 
+                      
+                      <FormControl fullWidth>
+                        <Select
+                          multiple
+                          value={(seg.days_of_week || []) as number[]}
+                          onChange={(e) => {
+                            updateSegment(idx, { days_of_week: e.target.value as number[] });
+                          }}
+                          displayEmpty
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                maxHeight: 300
+                              }
+                            }
+                          }}
+                          sx={{
                             height: '42px',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             '& .MuiOutlinedInput-notchedOutline': {
-                              borderColor: '#E5E5E5'
+                              borderColor: '#E2E8F0'
                             },
                             '&:hover .MuiOutlinedInput-notchedOutline': {
                               borderColor: '#CBD5E1',
                             },
                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                              borderColor: '#034C53',
+                              borderColor: '#0F766E',
+                              boxShadow: '0 0 0 3px rgba(15, 118, 110, 0.1)',
                               borderWidth: '1px',
-                            },
-                          } 
-                        }}
-                      />
-                      
-                      <Box sx={{ display: 'none' }}>
-                        <FormControl fullWidth>
-                          <Select
-                            multiple
-                            value={seg.days_of_week as number[]}
-                            onChange={(e) => {
-                              const val = e.target.value as number[]
-                              updateSegment(idx, { days_of_week: val })
-                            }}
-                          >
-                            {DAYS.map((d) => (
-                              <MenuItem key={d.value} value={d.value}>
-                                <Checkbox size="small" checked={seg.days_of_week.includes(d.value)} />
-                                <Typography ml={1}>{d.label}</Typography>
+                            }
+                          }}
+                          renderValue={(selected) => {
+                            const selectedValues = selected as number[];
+                            if (selectedValues.length === 0) {
+                              return <Typography sx={{ color: 'text.secondary' }}>Select days</Typography>;
+                            }
+                            
+                            return (
+                              <Typography>
+                                {selectedValues
+                                  .map(value => DAYS.find(d => d.value === value)?.label)
+                                  .filter(Boolean)
+                                  .join(', ')}
+                              </Typography>
+                            );
+                          }}
+                        >
+                          {/* Individual day items */}
+                          {DAYS.map((day) => {
+                            const isSelected = (seg.days_of_week || []).includes(day.value);
+                            
+                            return (
+                              <MenuItem 
+                                key={day.value} 
+                                value={day.value} 
+                                sx={{ display: 'flex', alignItems: 'center', gap: 1, padding: '6px 16px' }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  
+                                  const currentDays = [...(seg.days_of_week || [])];
+                                  
+                                  if (isSelected) {
+                                    // Remove this day
+                                    updateSegment(
+                                      idx, 
+                                      { days_of_week: currentDays.filter(d => d !== day.value) }
+                                    );
+                                  } else {
+                                    // Add this day
+                                    updateSegment(
+                                      idx,
+                                      { days_of_week: [...currentDays, day.value] }
+                                    );
+                                  }
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    position: 'relative',
+                                    width: 18,
+                                    height: 18,
+                                    border: isSelected ? '2px solid #034C53' : '2px solid #ccc',
+                                    borderRadius: '4px',
+                                    backgroundColor: isSelected ? '#034C53' : 'transparent',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease'
+                                  }}
+                                >
+                                  {isSelected && (
+                                    <Box component="span" sx={{ color: 'white', fontSize: '16px', fontWeight: 'bold', lineHeight: 1 }}>
+                                      ✓
+                                    </Box>
+                                  )}
+                                </Box>
+                                <Typography ml={1}>{day.label}</Typography>
                               </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Box>
+                            );
+                          })}
+                        </Select>
+                      </FormControl>
                     </Box>
                     
                     <Box>
@@ -712,7 +836,7 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
                     variant="text"
                     onClick={() => removeSegment(idx)}
                     sx={{
-                      borderRadius: '8px',
+                      borderRadius: '12px',
                       backgroundColor: '#F9FAFB',
                       color: '#64748B',
                       padding: '8px 16px',
@@ -742,7 +866,7 @@ export function EditPricingForm({  pricing, onCancel,onSave }: EditPricingFormPr
                 '&:hover': { 
                   background: '#023940',
                 },
-                borderRadius: '8px',
+                borderRadius: '12px',
                 py: 2,
                 textTransform: 'none',
                 fontWeight: 'normal',
