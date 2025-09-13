@@ -7,6 +7,7 @@ import type { DateRange } from '@mui/x-date-pickers-pro'
 import { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 
+
 interface UniversalSeasonPickerProps {
   value: DateRange<Dayjs>;
   onChange: (value: DateRange<Dayjs>) => void;
@@ -20,6 +21,12 @@ interface UniversalSeasonPickerProps {
   errorMessage?: string;
 }
 
+const hideWatermarkStyles = `
+ div.MuiDateRangeCalendar-root > div[style*="position: absolute"] {
+  opacity: 0 !important;
+}
+`;
+
 export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
   value,
   onChange,
@@ -32,7 +39,18 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
   isError = false,
   errorMessage = ''
 }) => {
+
   const [open, setOpen] = useState(false);
+  // Insert style element to hide watermark
+  React.useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = hideWatermarkStyles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
   
   return (
     <Box>
@@ -47,13 +65,14 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
           value={value}
           onChange={onChange}
           format={format}
-          calendars={2}
+          calendars={1}
           open={open}
           onOpen={() => setOpen(true)}
           onClose={() => setOpen(false)}
           disabled={disabled}
           minDate={minDate ? dayjs(minDate) : undefined}
           maxDate={maxDate ? dayjs(maxDate) : undefined}
+          dayOfWeekFormatter={(day) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][parseInt(day.toString()) % 7]}
           slots={{
             field: ({ startDate, endDate }) => {
               // Use value directly from props if startDate/endDate not provided
@@ -86,39 +105,34 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                       padding: '8px 14px',
                       paddingRight: '40px',
                       outline: 'none',
-                      borderRadius: '12px',
+                      borderRadius: '8px',
                       // Match the orange border from the screenshot for selected dates
                       border: '1px solid #E5E5E5',
-                      fontSize: '16px',
+                      fontSize: '14px',
+                      fontWeight: 400,
                       fontFamily: 'inherit',
                       cursor: 'pointer',
                       backgroundColor: disabled ? '#F3F4F6' : '#fff',
-                      color: disabled ? '#A0A0A0' : 'inherit',
+                      color: disabled ? '#A0A0A0' : '#111827',
                       '&:hover': {
-                        border: isError ? '1px solid #FCA5A5' : '1px solid #CBD5E1',
+                        border: '1px solid #CBD5E1',
                       },
-                      '&:focus': {
-                        border: isError ? '1px solid #FCA5A5' : '1px solid #034C53',
-                        boxShadow: isError ? 'none' : '0 0 0 2px rgba(3, 76, 83, 0.1)',
-                      },
+                     
                     }}
                   />
                   <Box
                     component="span"
                     sx={{
                       position: 'absolute',
-                      right: '10px',
+                      right: '12px',
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      color: '#64748B',
+                      color:'#64748B',
                       pointerEvents: 'none',
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6.66669 1.66699V4.16699M13.3334 1.66699V4.16699M2.91669 7.57533H17.0834M3.33335 3.33366H16.6667C17.1269 3.33366 17.5 3.70671 17.5 4.16699V16.667C17.5 17.1273 17.1269 17.5003 16.6667 17.5003H3.33335C2.87307 17.5003 2.50002 17.1273 2.50002 16.667V4.16699C2.50002 3.70671 2.87307 3.33366 3.33335 3.33366Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </Box>
                 </Box>
@@ -131,16 +145,66 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
               sx: {
                 '& .MuiButton-root': {
                   color: '#034C53',
+                  textTransform: 'capitalize',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                },
+                '& .MuiButton-root:first-of-type': {
+                  color: '#111827',
+                },
+                '& .MuiButton-root:last-of-type': {
+                  color: '#034C53',
+                  fontWeight: 500,
+                }
+              }
+            },
+            mobilePaper: {
+              sx: {
+                '& .MuiPickersDay-root.Mui-selected': {
+                  backgroundColor: '#00676F !important',
+                  color: '#fff !important',
+                  borderRadius: '4px !important',
+                  fontWeight: 600,
+                  border: '1px solid #CDFA50 !important',
+                },
+                '& .MuiPickersDay-dayWithinRange:not(.Mui-selected)': {
+                  backgroundColor: '#E6F4F1 !important',
+                  color: '#034C53',
+                  borderRadius: '0px !important',
+                },
+                '& .MuiPickersDay-root.MuiPickersDay-rangeEnd': {
+                  backgroundColor: '#00676f !important',
+                  color: 'white !important',
+                  borderTopRightRadius: '4px !important', 
+                  borderBottomRightRadius: '4px !important',
+                  border: '1px solid #CDFA50 !important',
+                  borderRight: '3px solid #15c28a',
+                },
+                '& .MuiPickersDay-root.MuiPickersDay-rangeStart': {
+                  backgroundColor: '#00676f !important',
+                  color: 'white !important',
+                  borderTopLeftRadius: '4px !important',
+                  borderBottomLeftRadius: '4px !important',
+                  border: '1px solid #CDFA50 !important',
                 }
               }
             },
             day: {
               sx: {
+                margin: '0',
+                borderRadius: '0',
+                fontSize: '14px',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 '&.Mui-selected': {
-                  backgroundColor: '#034C53 !important',
+                  backgroundColor: '#00676F !important',
                   color: '#fff !important',
-                  borderRadius: '50% !important',
-                  fontWeight: 'bold',
+                  borderRadius: '4px !important',
+                  fontWeight: 600,
+                  border: '1px solid #CDFA50 !important',
                   '&:hover': {
                     backgroundColor: '#023940 !important',
                   },
@@ -149,20 +213,33 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
                   color: '#A0A0A0',
                 },
                 '&.MuiPickersDay-dayWithinRange:not(.Mui-selected)': {
-                  backgroundColor: '#e6f4f1 !important',
+                  backgroundColor: '#E6F4F1 !important',
                   color: '#034C53',
+                  borderRadius: '0px !important',
+                },
+                '&:first-of-type.MuiPickersDay-dayWithinRange': {
+                
+                },
+                '&:last-of-type.MuiPickersDay-dayWithinRange': {
+                
                 },
                 '&.Mui-selected.MuiPickersDay-dayWithinRange': {
                   color: '#fff !important',
-                  borderRadius: '50% !important',
+                  borderRadius: '4px !important',
+                },
+                '&.MuiPickersDay-dayInsideRangeInterval': {
+                  backgroundColor: '#E6F4F1 !important',
                 },
                 '&.MuiPickersDay-root:hover': {
                   backgroundColor: 'rgba(3, 76, 83, 0.1)',
+                  borderRadius: '4px',
                 },
                 '&.MuiPickersDay-root.MuiPickersDay-today': {
-                  border: '1px solid #034C53',
+                  border: 'none',
                   color: '#034C53',
-                  fontWeight: 'bold',
+                  fontWeight: 600,
+                  backgroundColor: 'rgba(3, 76, 83, 0.1) !important',
+                  borderRadius: '4px',
                 }
               }
             },
@@ -176,23 +253,128 @@ export const UniversalSeasonPicker: React.FC<UniversalSeasonPickerProps> = ({
               sx: { 
                 '& .MuiTypography-root': {
                   color: '#111827',
-                  fontWeight: 500
+                  fontWeight: 500,
+                  fontSize: '16px'
                 }
               }
             },
             popper: {
               sx: {
-                // Center the calendar vertically
+                // Calendar positioning
                 '&.MuiPopper-root': {
-                  transform: 'translateY(-50%) !important',
-                  top: '50% !important',
+                  zIndex: 1400,
+                  boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.08)',
+                  overflow: 'hidden'
                 },
-                '& .MuiPickersDay-root.Mui-selected': {
+                // Hide only the MUI X Missing license key watermark
+                '& div[style*="MUI X Missing license key"]': {
+                  display: 'none !important',
+                },
+                '& .MuiPickersDay-root.Mui-selected, & .MuiPickersDay-dayWithinRange.Mui-selected': {
                   backgroundColor: '#034C53 !important',
                   color: 'white !important',
+                  border: '1px solid #CDFA50 !important',
                 },
                 '& .MuiDateRangePickerDay-rangeIntervalDayHighlight': {
-                  backgroundColor: '#e6f4f1 !important'
+                  backgroundColor: '#E6F4F1 !important'
+                },
+                '& .MuiDateRangePickerDay-day.MuiDateRangePickerDay-dayInsideRangeInterval': {
+                  backgroundColor: 'transparent',
+                },
+                '& .MuiDateRangePickerDay-dayInsideRangeInterval:not(.MuiButtonBase-root)': {
+                  backgroundColor: '#E6F4F1',
+                },
+                '& .MuiPickersDay-root.MuiPickersDay-rangeEnd, & .MuiPickersDay-root.MuiPickersDay-rangeStart': {
+                  backgroundColor: '#034C53 !important',
+                  color: '#fff !important',
+                },
+                // Specific styles for the end of range selection
+                '& .MuiPickersDay-root:has(+ .Mui-selected)': {
+                  borderTopRightRadius: '0 !important',
+                  borderBottomRightRadius: '0 !important',
+                },
+                '& .MuiPickersDay-root.Mui-selected:last-child': {
+                  borderTopRightRadius: '4px !important',
+                  borderBottomRightRadius: '4px !important',
+                  backgroundColor: '#00676f !important',
+                },
+                '& .MuiPickersDay-root.Mui-selected:first-of-type': {
+                  borderTopLeftRadius: '4px !important',
+                  borderBottomLeftRadius: '4px !important',
+                  backgroundColor: '#00676f !important',
+                },
+                // Styling for range selection
+                '& .MuiPickersDay-root.MuiPickersDay-rangeEnd': {
+                  backgroundColor: '#00676f !important',
+                  color: 'white !important',
+                  borderTopRightRadius: '4px !important', 
+                  borderBottomRightRadius: '4px !important',
+                  border: '1px solid #CDFA50 !important',
+                  borderRight: '3px solid #15c28a',
+                },
+                '& .MuiPickersDay-root.MuiPickersDay-rangeStart': {
+                  backgroundColor: '#00676f !important',
+                  color: 'white !important',
+                  borderTopLeftRadius: '4px !important',
+                  borderBottomLeftRadius: '4px !important',
+                  border: '1px solid #CDFA50 !important',
+                },
+                // General selected day styling is already handled above
+                '& .MuiPickersLayout-root': {
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  backgroundColor: '#fff',
+                  width: '320px',
+                  '@media (max-width: 600px)': {
+                    width: '100%',
+                    maxWidth: '100vw',
+                  },
+                },
+                '& .MuiPickersCalendarHeader-root': {
+                  paddingLeft: '24px',
+                  paddingRight: '24px',
+                  marginTop: '8px'
+                },
+                '& .MuiDayCalendar-header': {
+                  paddingLeft: '12px',
+                  paddingRight: '12px',
+                },
+                '& .MuiDayCalendar-monthContainer': {
+                  paddingLeft: '12px',
+                  paddingRight: '12px',
+                },
+                '& .MuiPickersLayout-actionBar': {
+                  padding: '16px 24px',
+                  borderTop: '1px solid #E5E7EB',
+                },
+                '@media (max-width: 600px)': {
+                  '& .MuiPickersDay-root.Mui-selected': {
+                    backgroundColor: '#00676F !important',
+                    color: '#fff !important',
+                    borderRadius: '4px !important',
+                    fontWeight: 600,
+                    border: '1px solid #CDFA50 !important',
+                  },
+                  '& .MuiPickersDay-dayWithinRange:not(.Mui-selected)': {
+                    backgroundColor: '#E6F4F1 !important',
+                    color: '#034C53',
+                    borderRadius: '0px !important',
+                  },
+                  '& .MuiPickersDay-root.MuiPickersDay-rangeEnd': {
+                    backgroundColor: '#00676f !important',
+                    color: 'white !important',
+                    borderTopRightRadius: '4px !important', 
+                    borderBottomRightRadius: '4px !important',
+                    border: '1px solid #CDFA50 !important',
+                    borderRight: '3px solid #15c28a',
+                  },
+                  '& .MuiPickersDay-root.MuiPickersDay-rangeStart': {
+                    backgroundColor: '#00676f !important',
+                    color: 'white !important',
+                    borderTopLeftRadius: '4px !important',
+                    borderBottomLeftRadius: '4px !important',
+                    border: '1px solid #CDFA50 !important',
+                  }
                 }
               }
             }
